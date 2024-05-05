@@ -64,8 +64,8 @@ if __name__ == "__main__":
     ].copy()
 
     filtered_students_list.loc[:, StudentListKey.NEW] = filtered_students_list.loc[
-                                                        :, StudentListKey.NEW
-                                                        ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
+        :, StudentListKey.NEW
+    ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
 
     existing_nis = set(
         col[StudentListKey.NI] for col in students.find({}, {StudentListKey.NI: 1})
