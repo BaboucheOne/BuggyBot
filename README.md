@@ -13,6 +13,12 @@ This directory contains tools to help development. Add all python files that wil
 
 :arrow_right: You can use constants from the Bot directory if needed.
 
+### Commands
+To upload a new list of students provided by the department, run :
+```commandline
+python ./tools/update_students_list.py FILENAME.xlsx
+```
+
 # Contribution
 - Download Python 3.8.10 via https://www.python.org/downloads/release/python-3810/
 - Download MongoDB Community Server via https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.9-signed.msi
@@ -35,7 +41,9 @@ MONGODB_DB_NAME = "YOUR MONGODB NAME"
 
 ##Commands
 To fix linter et format error run theses two commands
-```md
-> ruff check . --fix
-> black .
+```commandline
+ruff check . --fix
+```
+```commandline
+black .
 ```
