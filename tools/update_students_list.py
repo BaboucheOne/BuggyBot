@@ -14,8 +14,6 @@ STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
     StudentListKey.NEW,
 ]
 
-print(STUDENTS_LIST_COLUMNS_TO_KEEP)
-
 STUDENT_ALLOWED_PROGRAM = [UniProgram.IFT, UniProgram.GLO, UniProgram.CERTIFICATE]
 STUDENT_NOUVEAU_COLUMN_MAPPING = {"Oui": True, "Non": False}
 
@@ -46,7 +44,43 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
         exit(-1)
 
 
-if __name__ == "__main__":
+def read_students_csv(file_path: str) -> pd.DataFrame:
+    return pd.read_excel(file_path, usecols=STUDENTS_LIST_COLUMNS_TO_KEEP)
+
+
+def filter_students_by_program(students_df: pd.DataFrame) -> pd.DataFrame:
+    return students_df[
+        students_df[StudentListKey.PROGRAM_CODE].isin(STUDENT_ALLOWED_PROGRAM)
+    ].copy()
+
+
+def map_nouveau_column(students_df: pd.DataFrame) -> pd.DataFrame:
+    students_df.loc[:, StudentListKey.NEW] = students_df.loc[
+        :, StudentListKey.NEW
+    ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
+    return students_df
+
+
+def get_nis_from_collection(collection) -> set:
+    return set(
+        col[StudentListKey.NI] for col in collection.find({}, {StudentListKey.NI: 1})
+    )
+
+
+def get_students_to_insert(students_df: pd.DataFrame, existing_nis: set) -> List:
+    return [
+        row.to_dict()
+        for _, row in students_df.iterrows()
+        if row[StudentListKey.NI] not in existing_nis
+    ]
+
+
+def insert_students_into_collection(collection, students_to_insert):
+    if len(students_to_insert):
+        collection.insert_many(students_to_insert)
+
+
+def main():
     arguments = read_arguments()
     configurations = read_configurations()
 
@@ -54,33 +88,23 @@ if __name__ == "__main__":
         configurations["MONGODB_LOCALHOST_SERVER_CONNECTION_STRING"]
     )
     database = client[configurations["MONGODB_DB_NAME"]]
-    students = database["students"]
+    students_collection = database["students"]
 
-    students_list = pd.read_excel(
-        arguments.csv_filename, usecols=STUDENTS_LIST_COLUMNS_TO_KEEP
-    )
-    filtered_students_list = students_list[
-        students_list[StudentListKey.PROGRAM_CODE].isin(STUDENT_ALLOWED_PROGRAM)
-    ].copy()
+    students_df = read_students_csv(arguments.csv_filename)
+    filtered_students_df = filter_students_by_program(students_df)
+    filtered_students_df = map_nouveau_column(filtered_students_df)
 
-    filtered_students_list.loc[:, StudentListKey.NEW] = filtered_students_list.loc[
-        :, StudentListKey.NEW
-    ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
-
-    existing_nis = set(
-        col[StudentListKey.NI] for col in students.find({}, {StudentListKey.NI: 1})
-    )
-    students_to_insert = [
-        row.to_dict()
-        for _, row in filtered_students_list.iterrows()
-        if row[StudentListKey.NI] not in existing_nis
-    ]
+    existing_nis = get_nis_from_collection(students_collection)
+    students_to_insert = get_students_to_insert(filtered_students_df, existing_nis)
 
     for student in students_to_insert:
         student[StudentListKey.DISCORD_USER_ID] = MISSING_DISCORD_USER_ID
 
-    if len(students_to_insert):
-        students.insert_many(students_to_insert)
+    insert_students_into_collection(students_collection, students_to_insert)
 
     print(f"{len(students_to_insert)} new students inserted")
-    print("Students tables has been updated!")
+    print("Students table has been updated!")
+
+
+if __name__ == "__main__":
+    main()
