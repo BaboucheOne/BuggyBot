@@ -1,9 +1,10 @@
+import os
 import argparse
 import pandas as pd
 from typing import Dict, Optional, List
 from dotenv import dotenv_values
 from pymongo import MongoClient
-from constants import StudentListKey, UniProgram
+from constants import StudentListKey, UniProgram, Filename
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
@@ -30,7 +31,8 @@ def read_arguments() -> argparse.Namespace:
 
 def read_configurations() -> Dict[str, Optional[str]]:
     try:
-        return dotenv_values("../.env")
+        dot_env_filepath = get_dot_env_filepath()
+        return dotenv_values(dot_env_filepath)
     except FileNotFoundError as e:
         print(f".env file is not found. {e}")
         exit(-1)
@@ -78,6 +80,12 @@ def get_students_to_insert(students_df: pd.DataFrame, existing_nis: set) -> List
 def insert_students_into_collection(collection, students_to_insert):
     if len(students_to_insert):
         collection.insert_many(students_to_insert)
+
+
+def get_dot_env_filepath():
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    root_directory = os.path.dirname(current_directory)
+    return os.path.join(root_directory, Filename.ENV)
 
 
 def main():
