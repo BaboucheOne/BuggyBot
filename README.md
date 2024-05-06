@@ -39,7 +39,7 @@ MONGODB_LOCALHOST_SERVER_CONNECTION_STRING = "YOUR MONGODB CONNECTION STRING"
 MONGODB_DB_NAME = "YOUR MONGODB NAME"
 ```
 
-##Commands
+## Commands
 To fix linter et format error run theses two commands
 ```commandline
 ruff check . --fix
