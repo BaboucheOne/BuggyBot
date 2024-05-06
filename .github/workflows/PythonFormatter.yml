@@ -1,0 +1,44 @@
+name: PythonFormatter
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        pip install ruff
+
+    - name: Check if ./bot exists
+      id: bot_exists
+      run: echo ::set-output name=exists::$(test -d ./bot && echo "true" || echo "false")
+
+    - name: Check if ./tools exists
+      id: tools_exists
+      run: echo ::set-output name=exists::$(test -d ./tools && echo "true" || echo "false")
+
+    - name: Check code with ruff for ./bot
+      if: steps.bot_exists.outputs.exists == 'true'
+      run: |
+        ruff check ./bot
+
+    - name: Check code with ruff for ./tools
+      if: steps.tools_exists.outputs.exists == 'true'
+      run: |
+        ruff check ./tools
