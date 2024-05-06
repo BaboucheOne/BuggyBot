@@ -25,7 +25,20 @@ jobs:
       run: |
         pip install ruff
 
-    - name: Check code with ruff
+    - name: Check if ./bot exists
+      id: bot_exists
+      run: echo ::set-output name=exists::$(test -d ./bot && echo "true" || echo "false")
+
+    - name: Check if ./tools exists
+      id: tools_exists
+      run: echo ::set-output name=exists::$(test -d ./tools && echo "true" || echo "false")
+
+    - name: Check code with ruff for ./bot
+      if: steps.bot_exists.outputs.exists == 'true'
       run: |
         ruff check ./bot
+
+    - name: Check code with ruff for ./tools
+      if: steps.tools_exists.outputs.exists == 'true'
+      run: |
         ruff check ./tools
