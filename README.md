@@ -1,12 +1,12 @@
 # BuggyBot
 Simply a customs agent
 
-#Directories
+# Directories
 
-##Bot
+## Bot
 This directory contains all the source code.
 
-##Tools
+## Tools
 This directory contains tools to help development. Add all python files that will help you to dev easier.
 
 :warning: This directory should not be called from the `Bot` directory.
