@@ -12,7 +12,7 @@ This directory contains tools to help development. Add all python files that wil
 :arrow_right: You can use constants from the Bot directory if needed.
 
 # Contribution
-- Download Python 3.10 via https://www.python.org/downloads/release/python-3100/
+- Download Python 3.8.10 via https://www.python.org/downloads/release/python-3810/
 - Download MongoDB Community Server via https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.9-signed.msi
 - Download Mongo MongoDB Compass via https://downloads.mongodb.com/compass/mongodb-compass-1.43.0-win32-x64.exe
 
