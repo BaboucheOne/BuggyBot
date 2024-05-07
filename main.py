@@ -1,10 +1,13 @@
 import os
 import asyncio
 import discord
+import argparse
 from discord.ext import commands
 from dotenv import load_dotenv
 
+
 from bot.cog.registration.register_member import RegisterMemberCog
+from bot.config.context import Context
 
 
 def create_bot() -> commands.Bot:
@@ -17,8 +20,31 @@ async def register_cogs(bot: commands.Bot):
     await bot.add_cog(RegisterMemberCog(bot))
 
 
+def get_env_program():
+    args = read_arguments()
+    context = Context(args)
+    return context.get_env_path()
+
+
+def read_arguments() -> argparse.Namespace:
+
+    parser = argparse.ArgumentParser(description="Discord bot which is basically a customs agent for the server")
+
+    parser.add_argument("--env",
+                        type=str,
+                        nargs="?",
+                        choices=["dev", "prod"],
+                        default="prod",
+                        help="Specify if the bot should run in development (dev) or production (prod) mode")
+
+    return parser.parse_args()
+
+
 async def main():
-    load_dotenv()
+    environnement = get_env_program()
+    dotenv_path = f".env.{environnement}"
+
+    load_dotenv(dotenv_path)
     _ = os.getenv("DISCORD_TOKEN")
 
     bot = create_bot()
