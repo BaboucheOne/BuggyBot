@@ -15,7 +15,7 @@ STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
     StudentListKey.NEW,
 ]
 
-STUDENT_ALLOWED_PROGRAM = [UniProgram.IFT, UniProgram.GLO, UniProgram.CERTIFICATE]
+STUDENT_ALLOWED_PROGRAM = [UniProgram.IFT, UniProgram.GLO, UniProgram.CERTIFICATE, UniProgram.IIG]
 STUDENT_NOUVEAU_COLUMN_MAPPING = {"Oui": True, "Non": False}
 
 MISSING_DISCORD_USER_ID = -1
