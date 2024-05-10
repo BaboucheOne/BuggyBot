@@ -1,5 +1,6 @@
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
+from bot.infra.constants import StudentMongoDbKey
 from bot.infra.student.assembler.student_assembler import StudentAssembler
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
@@ -13,7 +14,7 @@ class MongoDbStudentRepository(StudentRepository):
         self.student_assembler = StudentAssembler()
 
     def get_student_by_ni(self, ni: int) -> Student:
-        query = {"ni": ni}
+        query = {StudentMongoDbKey.NI: ni}
         student_response = self.student_collection.find_one(query)
 
         if not student_response:
@@ -23,7 +24,7 @@ class MongoDbStudentRepository(StudentRepository):
 
     def update_student(self, student: Student):
         student_dict = self.student_assembler.to_dict(student)
-        filter_query = {"ni": student.ni.value}
+        filter_query = {StudentMongoDbKey.NI: student.ni.value}
         update_query = {"$set": student_dict}
 
         self.student_collection.update_one(filter_query, update_query)
