@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Dict
 
 from bot.domain.student.attributs.discord_user_id import DiscordUserId
 from bot.domain.student.attributs.firstname import Firstname
