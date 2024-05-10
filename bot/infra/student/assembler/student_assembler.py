@@ -1,4 +1,3 @@
-import json
 from typing import Dict
 
 from bot.domain.student.attributs.discord_user_id import DiscordUserId
