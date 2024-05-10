@@ -1,19 +1,25 @@
 from dataclasses import dataclass
+from typing import Dict
 
-from dataclasses_jsonschema import JsonSchemaMixin
+from bot.domain.student.attributs.discord_user_id import DiscordUserId
+from bot.domain.student.attributs.firstname import Firstname
+from bot.domain.student.attributs.lastname import Lastname
+from bot.domain.student.attributs.new_admitted import NewAdmitted
+from bot.domain.student.attributs.ni import NI
+from bot.domain.student.attributs.program_code import ProgramCode
 
 
 @dataclass
-class Student(JsonSchemaMixin):
-    ni: str
-    firstname: str
-    lastname: str
-    program_code: str
-    new: bool
-    discord_user_id: int
+class Student:
+    ni: NI
+    firstname: Firstname
+    lastname: Lastname
+    program_code: ProgramCode
+    new_admitted: NewAdmitted
+    discord_user_id: DiscordUserId
 
     def is_registered(self) -> bool:
-        return self.discord_user_id != -1
+        return self.discord_user_id.is_valid()
 
     def __eq__(self, other):
         if isinstance(other, Student):

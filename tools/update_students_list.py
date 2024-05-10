@@ -4,7 +4,9 @@ import pandas as pd
 from typing import Dict, Optional, List
 from dotenv import dotenv_values
 from pymongo import MongoClient
-from constants import StudentListKey, UniProgram, Filename, StudentMongoDbKey
+
+from bot.infra.constants import StudentMongoDbKey
+from constants import StudentListKey, UniProgram, Filename
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [

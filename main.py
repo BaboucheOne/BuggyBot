@@ -37,8 +37,7 @@ async def main():
     mongodb_client = connect_to_mongo_db(mongodb_localhost_connection_string)
     database = mongodb_client[os.getenv("MONGODB_DB_NAME")]
     student_collection = database["students"]
-    student_repository = MongoDbStudentRepository(student_collection)
-    student = student_repository.get_student_by_ni(0)
+    _ = MongoDbStudentRepository(student_collection)
 
     bot = create_bot()
     await register_cogs(bot)
