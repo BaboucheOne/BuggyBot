@@ -1,3 +1,4 @@
+from bot.domain.student.attributs.ni import NI
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.constants import StudentMongoDbKey
@@ -13,8 +14,8 @@ class MongoDbStudentRepository(StudentRepository):
         self.student_collection = student_collection
         self.student_assembler = StudentAssembler()
 
-    def get_student_by_ni(self, ni: int) -> Student:
-        query = {StudentMongoDbKey.NI: ni}
+    def get_student_by_ni(self, ni: NI) -> Student:
+        query = {StudentMongoDbKey.NI: ni.value}
         student_response = self.student_collection.find_one(query)
 
         if not student_response:
