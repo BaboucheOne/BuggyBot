@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 
 from bot.cog.registration.register_member import RegisterMemberCog
-from bot.config.context import Context
+from bot.config.context import ServiceLocator
 
 
 def create_bot() -> commands.Bot:
@@ -18,12 +18,6 @@ def create_bot() -> commands.Bot:
 
 async def register_cogs(bot: commands.Bot):
     await bot.add_cog(RegisterMemberCog(bot))
-
-
-def get_env_program():
-    args = read_arguments()
-    context = Context(args)
-    return context.get_env_path()
 
 
 def read_arguments() -> argparse.Namespace:
@@ -41,11 +35,11 @@ def read_arguments() -> argparse.Namespace:
 
 
 async def main():
-    environnement = get_env_program()
-    dotenv_path = f".env.{environnement}"
+    args = read_arguments()
+    service_locator = ServiceLocator(args.env)
+    mode_service = service_locator.get_database_service()
 
-    load_dotenv(dotenv_path)
-    _ = os.getenv("DISCORD_TOKEN")
+
 
     bot = create_bot()
     await register_cogs(bot)
