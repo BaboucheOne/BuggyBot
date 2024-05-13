@@ -2,7 +2,9 @@ import discord
 from discord import Message
 from discord.ext import commands
 
-from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import KeepDigitsHandler
+from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
+    KeepDigitsHandler,
+)
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.domain.student.attributs.ni import NI
@@ -14,9 +16,12 @@ class RegisterMemberCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.ni_sanitizer = ResponsibilityBuilder()\
-            .with_handler(StripHandler())\
-            .with_handler(KeepDigitsHandler()).build()
+        self.ni_sanitizer = (
+            ResponsibilityBuilder()
+            .with_handler(StripHandler())
+            .with_handler(KeepDigitsHandler())
+            .build()
+        )
 
     def __is_self(self, message: Message) -> bool:
         return message.author == self.bot.user
@@ -33,7 +38,9 @@ class RegisterMemberCog(commands.Cog):
 
         if isinstance(message.channel, discord.channel.DMChannel):
             sanitized_ni = self.ni_sanitizer.handle(message.content)
-            if len(sanitized_ni) is not self.NI_DIGITS_COUNT:
+            if (
+                len(sanitized_ni) is not self.NI_DIGITS_COUNT
+            ):  # TODO: This is business rule, put it in the service!
                 await message.channel.send("Bad NI")
                 await self.bot.process_commands(message)
                 return
