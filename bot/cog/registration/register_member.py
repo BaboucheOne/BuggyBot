@@ -49,9 +49,8 @@ class RegisterMemberCog(commands.Cog):
             await message.channel.send(
                 "Your are already registered.\nIf you haven't registered yet, please contact an admin."
             )
-        except Exception as e:
+        except Exception:
             await message.channel.send(
                 "Unable to registered you.\nCheck your NI. If your NI is the good one, please contact an admin."
             )
-            print(e)
             await self.__bot.process_commands(message)
