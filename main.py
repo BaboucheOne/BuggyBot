@@ -29,7 +29,7 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
 
 async def main():
     load_dotenv()
-    _ = os.getenv("DISCORD_TOKEN")
+    discord_token = os.getenv("DISCORD_TOKEN")
     mongodb_localhost_connection_string = os.getenv(
         "MONGODB_LOCALHOST_SERVER_CONNECTION_STRING"
     )
@@ -42,7 +42,7 @@ async def main():
     bot = create_bot()
     await register_cogs(bot)
 
-    # bot.run(discord_token)
+    await bot.start(discord_token)
 
 
 if __name__ == "__main__":
