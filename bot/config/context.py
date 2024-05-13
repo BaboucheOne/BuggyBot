@@ -32,8 +32,40 @@ class DevelopmentModeService(ModeService):
         self.GUILD_ID = os.getenv("DISCORD_GUILD_ID")
 
 
+class Cache:
+    def __init__(self):
+        self.services = []
+
+    def add_service(self, service: ModeService):
+
+        for s in self.services:
+            if s.__class__.__name__ == service.__class__.__name__:
+                return
+
+        self.services.append(service)
+
+    def get_service(self, service_name: str) -> ModeService:
+        for service in self.services:
+            if service.__class__.__name__ == service_name:
+                return service
+        return None
+
+
 class ServiceLocator:
-    def __init__(self, mode: str == "prod"):
+    cache = Cache()
+
+    def get_service(self, service_name: str == "prod") -> ModeService:
+        service = self.cache.get_service(service_name)
+        if service is None:
+            context_service = InitialContext(str)
+            service = context_service.get_database_service()
+            self.cache.add_service(service)
+
+        return service
+
+
+class InitialContext:
+    def __init__(self, mode: str):
         self.mode = mode
 
     def set_mode(self, mode: str):

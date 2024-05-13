@@ -3,11 +3,10 @@ import asyncio
 import discord
 import argparse
 from discord.ext import commands
-from dotenv import load_dotenv
+from bot.config.context import ServiceLocator
 
 
 from bot.cog.registration.register_member import RegisterMemberCog
-from bot.config.context import ServiceLocator
 
 
 def create_bot() -> commands.Bot:
@@ -36,10 +35,7 @@ def read_arguments() -> argparse.Namespace:
 
 async def main():
     args = read_arguments()
-    service_locator = ServiceLocator(args.env)
-    mode_service = service_locator.get_database_service()
-
-
+    service = ServiceLocator().get_service(args.env)
 
     bot = create_bot()
     await register_cogs(bot)
