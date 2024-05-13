@@ -30,7 +30,7 @@ STUDENTS_LIST_RENAMING_MAPPING = {
     StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
     StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
     StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-    StudentListKey.NEW: StudentMongoDbKey.NEW,
+    StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
 }
 
 MISSING_DISCORD_USER_ID = -1
@@ -72,7 +72,7 @@ def rename_student_list_to_mongodb_schema(students_df: pd.DataFrame):
             StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
             StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
             StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-            StudentListKey.NEW: StudentMongoDbKey.NEW,
+            StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
         },
         inplace=True,
     )
@@ -85,8 +85,8 @@ def filter_students_by_program(students_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def map_nouveau_column(students_df: pd.DataFrame) -> pd.DataFrame:
-    students_df.loc[:, StudentMongoDbKey.NEW] = students_df.loc[
-        :, StudentMongoDbKey.NEW
+    students_df.loc[:, StudentMongoDbKey.NEW_ADMITTED] = students_df.loc[
+        :, StudentMongoDbKey.NEW_ADMITTED
     ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
     return students_df
 

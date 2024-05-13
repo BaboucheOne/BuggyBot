@@ -5,6 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+from bot.application.student.student_service import StudentService
 from bot.cog.registration.register_member import RegisterMemberCog
 from bot.infra.student.mongodb_student_repository import MongoDbStudentRepository
 
@@ -15,8 +16,8 @@ def create_bot() -> commands.Bot:
     return commands.Bot(command_prefix="!", intents=intents)
 
 
-async def register_cogs(bot: commands.Bot):
-    await bot.add_cog(RegisterMemberCog(bot))
+async def register_cogs(bot: commands.Bot, student_service: StudentService):
+    await bot.add_cog(RegisterMemberCog(bot, student_service))
 
 
 def connect_to_mongo_db(connection_url: str) -> MongoClient:
@@ -37,10 +38,12 @@ async def main():
     mongodb_client = connect_to_mongo_db(mongodb_localhost_connection_string)
     database = mongodb_client[os.getenv("MONGODB_DB_NAME")]
     student_collection = database["students"]
-    _ = MongoDbStudentRepository(student_collection)
+    student_repository = MongoDbStudentRepository(student_collection)
+
+    student_service = StudentService(student_repository)
 
     bot = create_bot()
-    await register_cogs(bot)
+    await register_cogs(bot, student_service)
 
     await bot.start(discord_token)
 
