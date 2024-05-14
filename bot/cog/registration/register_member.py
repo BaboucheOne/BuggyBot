@@ -11,7 +11,7 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 )
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
-from bot.cog.constants import ReplyMessages
+from bot.cog.constants import ReplyMessage
 
 
 class RegisterMemberCog(commands.Cog):
@@ -35,7 +35,7 @@ class RegisterMemberCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await member.create_dm()
-        await member.dm_channel.send(ReplyMessages.WELCOME)
+        await member.dm_channel.send(ReplyMessage.WELCOME)
 
     @commands.Cog.listener("on_message")
     async def retrieve_ni(self, message: Message):
@@ -45,9 +45,9 @@ class RegisterMemberCog(commands.Cog):
         try:
             ni = self.__ni_sanitizer.handle(message.content)
             self.__student_service.register_student(ni, message.author.id)
-            await message.channel.send("Good NI")
+            await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
         except StudentAlreadyRegisteredException:
-            await message.channel.send(ReplyMessages.ALREADY_REGISTERED)
+            await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception:
-            await message.channel.send(ReplyMessages.UNABLE_TO_REGISTER)
+            await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
             await self.__bot.process_commands(message)

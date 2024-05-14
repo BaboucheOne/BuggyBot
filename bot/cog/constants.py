@@ -1,4 +1,4 @@
-class ReplyMessages:
+class ReplyMessage:
     WELCOME: str = (
         "Bienvenue dans le serveur Discord de l'ASETIN (Association des étudiantes et étudiants en informatique)! \n"
         "Afin de confirmer que tu es bel et bien un(e) étudiant(e) inscrit(e) à l'association, entre ton numéro d'identification personnel (NI).\n"
@@ -11,4 +11,8 @@ class ReplyMessages:
     )
     UNABLE_TO_REGISTER: str = (
         "Unable to registered you.\nCheck your NI. If your NI is the good one, please contact an admin."
+    )
+
+    SUCCESSFUL_REGISTRATION: str = (
+        "You are now registered! Your role is now apply and your name is set."
     )
