@@ -11,6 +11,7 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 )
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
+from bot.cog.constants import ReplyMessages
 
 
 class RegisterMemberCog(commands.Cog):
@@ -34,7 +35,7 @@ class RegisterMemberCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await member.create_dm()
-        await member.dm_channel.send(f"Hi {member.name}, welcome to my Discord server!")
+        await member.dm_channel.send(ReplyMessages.WELCOME)
 
     @commands.Cog.listener("on_message")
     async def retrieve_ni(self, message: Message):
@@ -46,11 +47,7 @@ class RegisterMemberCog(commands.Cog):
             self.__student_service.register_student(ni, message.author.id)
             await message.channel.send("Good NI")
         except StudentAlreadyRegisteredException:
-            await message.channel.send(
-                "Your are already registered.\nIf you haven't registered yet, please contact an admin."
-            )
+            await message.channel.send(ReplyMessages.ALREADY_REGISTERED)
         except Exception:
-            await message.channel.send(
-                "Unable to registered you.\nCheck your NI. If your NI is the good one, please contact an admin."
-            )
+            await message.channel.send(ReplyMessages.UNABLE_TO_REGISTER)
             await self.__bot.process_commands(message)
