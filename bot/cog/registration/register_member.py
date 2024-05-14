@@ -1,4 +1,5 @@
 from discord.ext import commands
+from tools.constants import Messages
 
 
 class RegisterMemberCog(commands.Cog):
@@ -8,9 +9,4 @@ class RegisterMemberCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await member.create_dm()
-        await member.dm_channel.send(f"Bienvenue {member.name} dans le serveur Discord de l'ASETIN (Association des étudiantes et étudiants en informatique)! \n"
-                                     f"L'ASETIN représente les intérêts des étudiantes et étudiants de premier cycle en informatique auprès des différentes instances officielles de l’Université Laval,"
-                                     f" sur les différents comités et devant les autres associations étudiantes."
-                                     f"Afin de confirmer que tu es bel et bien un(e) étudiant(e) inscrit(e) à l'association, entre ton numéro d'identification personnel (NI).\n"
-                                     f"Au plaisir de te rencontrer!\n"
-                                     f"ps: Si tu ne sais pas où trouver ton NI, tu peux le consulter sur MonPortail ou encore sur ta carte étudiante.")
+        await member.dm_channel.send(Messages.WELCOME)
