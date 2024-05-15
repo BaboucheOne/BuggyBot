@@ -1,3 +1,6 @@
+from bot.application.discord.events.student_registered.student_registered_observable import (
+    StudentRegisteredObservable,
+)
 from bot.application.student.exceptions.invalid_ni_format_exception import (
     InvalidNIFormatException,
 )
@@ -14,9 +17,11 @@ from bot.infra.student.exception.student_not_found_exception import (
 )
 
 
-class StudentService:
+class StudentService(StudentRegisteredObservable):
 
     def __init__(self, student_repository: StudentRepository):
+        super().__init__()
+
         self.__student_repository = student_repository
         self.__ni_validator = NIValidator()
         self.__ni_factory = NIFactory()
@@ -37,3 +42,5 @@ class StudentService:
         if self.__does_student_already_registered(student_ni):
             raise StudentAlreadyRegisteredException()
         self.__student_repository.register_student(student_ni, discord_user_id)
+
+        self.notify_on_student_registered(student_ni)
