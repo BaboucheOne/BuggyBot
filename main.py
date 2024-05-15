@@ -9,6 +9,7 @@ from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
 from bot.cog.registration.register_member import RegisterMemberCog
 from bot.domain.discord_client.discord_client import DiscordClient
+from bot.infra.student.cached_student_repository import CachedStudentRepository
 from bot.infra.student.mongodb_student_repository import MongoDbStudentRepository
 
 
@@ -41,10 +42,11 @@ async def main():
     database = mongodb_client[os.getenv("MONGODB_DB_NAME")]
     student_collection = database["students"]
     student_repository = MongoDbStudentRepository(student_collection)
+    cached_student_repository = CachedStudentRepository(student_repository)
 
     bot = create_bot(server_id)
-    student_service = StudentService(student_repository)
-    discord_service = DiscordService(bot, student_repository)
+    student_service = StudentService(cached_student_repository)
+    discord_service = DiscordService(bot, cached_student_repository)
 
     student_service.register_to_on_student_registered(discord_service)
 
