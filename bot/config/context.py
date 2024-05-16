@@ -76,5 +76,3 @@ class InitialContext:
             return ProductionModeService()
         else:
             return DevelopmentModeService()
-
-

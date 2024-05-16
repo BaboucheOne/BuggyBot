@@ -34,14 +34,18 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
 
 def read_arguments() -> argparse.Namespace:
 
-    parser = argparse.ArgumentParser(description="Discord bot which is basically a customs agent for the server")
+    parser = argparse.ArgumentParser(
+        description="Discord bot which is basically a customs agent for the server"
+    )
 
-    parser.add_argument("--env",
-                        type=str,
-                        nargs="?",
-                        choices=["dev", "prod"],
-                        default="prod",
-                        help="Specify if the bot should run in development (dev) or production (prod) mode")
+    parser.add_argument(
+        "--env",
+        type=str,
+        nargs="?",
+        choices=["dev", "prod"],
+        default="prod",
+        help="Specify if the bot should run in development (dev) or production (prod) mode",
+    )
 
     return parser.parse_args()
 
