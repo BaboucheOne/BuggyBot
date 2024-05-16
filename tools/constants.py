@@ -16,4 +16,3 @@ class UniProgram:
     GLO: str = "B-GLO"
     IIG: str = "B-IIG"
     CERTIFICATE: str = "C-IFT"
-

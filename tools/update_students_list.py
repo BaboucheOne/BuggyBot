@@ -4,6 +4,8 @@ import pandas as pd
 from typing import Dict, Optional, List
 from dotenv import dotenv_values
 from pymongo import MongoClient
+
+from bot.infra.constants import StudentMongoDbKey
 from constants import StudentListKey, UniProgram, Filename
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
@@ -15,8 +17,21 @@ STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
     StudentListKey.NEW,
 ]
 
-STUDENT_ALLOWED_PROGRAM = [UniProgram.IFT, UniProgram.GLO, UniProgram.CERTIFICATE, UniProgram.IIG]
+STUDENT_ALLOWED_PROGRAM = [
+    UniProgram.IFT,
+    UniProgram.GLO,
+    UniProgram.CERTIFICATE,
+    UniProgram.IIG,
+]
+
 STUDENT_NOUVEAU_COLUMN_MAPPING = {"Oui": True, "Non": False}
+STUDENTS_LIST_RENAMING_MAPPING = {
+    StudentListKey.NI: StudentMongoDbKey.NI,
+    StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+    StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+    StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+    StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+}
 
 MISSING_DISCORD_USER_ID = -1
 
@@ -50,22 +65,36 @@ def read_students_csv(file_path: str) -> pd.DataFrame:
     return pd.read_excel(file_path, usecols=STUDENTS_LIST_COLUMNS_TO_KEEP)
 
 
+def rename_student_list_to_mongodb_schema(students_df: pd.DataFrame):
+    students_df.rename(
+        columns={
+            StudentListKey.NI: StudentMongoDbKey.NI,
+            StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+            StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+            StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+            StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+        },
+        inplace=True,
+    )
+
+
 def filter_students_by_program(students_df: pd.DataFrame) -> pd.DataFrame:
     return students_df[
-        students_df[StudentListKey.PROGRAM_CODE].isin(STUDENT_ALLOWED_PROGRAM)
+        students_df[StudentMongoDbKey.PROGRAM_CODE].isin(STUDENT_ALLOWED_PROGRAM)
     ].copy()
 
 
 def map_nouveau_column(students_df: pd.DataFrame) -> pd.DataFrame:
-    students_df.loc[:, StudentListKey.NEW] = students_df.loc[
-        :, StudentListKey.NEW
+    students_df.loc[:, StudentMongoDbKey.NEW_ADMITTED] = students_df.loc[
+        :, StudentMongoDbKey.NEW_ADMITTED
     ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
     return students_df
 
 
 def get_nis_from_collection(collection) -> set:
     return set(
-        col[StudentListKey.NI] for col in collection.find({}, {StudentListKey.NI: 1})
+        col[StudentMongoDbKey.NI]
+        for col in collection.find({}, {StudentMongoDbKey.NI: 1})
     )
 
 
@@ -73,7 +102,7 @@ def get_students_to_insert(students_df: pd.DataFrame, existing_nis: set) -> List
     return [
         row.to_dict()
         for _, row in students_df.iterrows()
-        if row[StudentListKey.NI] not in existing_nis
+        if row[StudentMongoDbKey.NI] not in existing_nis
     ]
 
 
@@ -99,14 +128,15 @@ def main():
     students_collection = database["students"]
 
     students_df = read_students_csv(arguments.csv_filename)
+    rename_student_list_to_mongodb_schema(students_df)
+
     filtered_students_df = filter_students_by_program(students_df)
     filtered_students_df = map_nouveau_column(filtered_students_df)
-
     existing_nis = get_nis_from_collection(students_collection)
     students_to_insert = get_students_to_insert(filtered_students_df, existing_nis)
 
     for student in students_to_insert:
-        student[StudentListKey.DISCORD_USER_ID] = MISSING_DISCORD_USER_ID
+        student[StudentMongoDbKey.DISCORD_USER_ID] = MISSING_DISCORD_USER_ID
 
     insert_students_into_collection(students_collection, students_to_insert)
 
