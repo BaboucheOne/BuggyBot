@@ -1,5 +1,5 @@
 class Filename:
-    ENV = ".env.dev"
+    ENV = ".env.prod.dev"
 
 
 class StudentListKey:
