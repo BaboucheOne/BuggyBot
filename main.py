@@ -10,6 +10,9 @@ from pymongo import MongoClient
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
 from bot.cog.registration.register_member import RegisterMemberCog
+from bot.config.application_context import ApplicationContext
+from bot.config.development_context import DevelopmentContext
+from bot.config.production_context import ProductionContext
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.infra.student.cached_student_repository import CachedStudentRepository
 from bot.infra.student.mongodb_student_repository import MongoDbStudentRepository
@@ -42,6 +45,7 @@ def read_arguments() -> argparse.Namespace:
         "--env",
         type=str,
         nargs="?",
+        dest="env",
         choices=["dev", "prod"],
         default="prod",
         help="Specify if the bot should run in development (dev) or production (prod) mode",
@@ -50,8 +54,19 @@ def read_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def get_application_context(args: argparse.Namespace) -> ApplicationContext:
+    if args.env == "dev":
+        print("Development context is being used.")
+        return DevelopmentContext()
+    print("Production context is being used.")
+    return ProductionContext()
+
+
 async def main():
     args = read_arguments()
+
+    _ = get_application_context(args)
+
     load_dotenv()
     discord_token: str = os.getenv("DISCORD_TOKEN")
     server_id: int = int(os.getenv("SERVER_ID"))
