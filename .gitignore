@@ -163,3 +163,4 @@ cython_debug/
 # Custom one for buggybot
 *.csv
 *.xlsx
+.env
