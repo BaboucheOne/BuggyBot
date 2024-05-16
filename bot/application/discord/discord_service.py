@@ -34,9 +34,21 @@ class DiscordService(StudentRegisteredObserver):
             return self.__role_mapping[student_role]
         raise RoleNotFoundException(student_role)
 
+    @staticmethod
+    def __get_name(student_firstname, student_lastname) -> str:
+
+        student_name = student_firstname + " " + student_lastname
+
+        if len(student_name) > 32:
+            student_name = student_firstname + " " + student_lastname[0] + "."
+
+        return student_name
+
     def on_student_registered(self, ni: NI):
         student = self.__student_repository.find_student_by_ni(ni)
         member = self.__discord_client.server.get_member(student.discord_user_id.value)
         role_name = self.__get_role_name(student.program_code.value)
+        student_name = self.__get_name(student.firstname.value, student.lastname.value)
         role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
         asyncio.ensure_future(member.add_roles(role))
+        asyncio.ensure_future(member.edit(nick=student_name))
