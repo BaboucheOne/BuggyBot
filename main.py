@@ -55,6 +55,12 @@ async def main():
 
     student_service.unregister_all_from_on_student_registered()
 
+    while not bot.is_ready():
+        await asyncio.sleep(1)
+
+    @bot.event
+    async def on_ready():
+        print(f"Logged in as {bot.user.name}")
 
 if __name__ == "__main__":
     asyncio.run(main())
