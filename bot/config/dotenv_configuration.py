@@ -12,7 +12,6 @@ class DotEnvConfiguration:
 
     @property
     def mongodb_connection_string(self) -> str:
-        print(os.getenv(DotenvConfigurationKey.MONGODB_CONNECTION_STRING))
         return os.getenv(DotenvConfigurationKey.MONGODB_CONNECTION_STRING)
 
     @property
