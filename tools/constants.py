@@ -1,7 +1,3 @@
-class Filename:
-    ENV = ".env"
-
-
 class StudentListKey:
     NI: str = "NI"
     PROGRAM_CODE: str = "CODE_PROGRAMME"

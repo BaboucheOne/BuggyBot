@@ -1,59 +1,49 @@
-import os
 import asyncio
-import discord
-from discord.ext import commands
-from dotenv import load_dotenv
-from pymongo import MongoClient
+import argparse
 
-from bot.application.discord.discord_service import DiscordService
-from bot.application.student.student_service import StudentService
-from bot.cog.registration.register_member import RegisterMemberCog
-from bot.domain.discord_client.discord_client import DiscordClient
-from bot.infra.student.cached_student_repository import CachedStudentRepository
-from bot.infra.student.mongodb_student_repository import MongoDbStudentRepository
+from bot.config.application_context import ApplicationContext
+from bot.config.development_context import DevelopmentContext
+from bot.config.production_context import ProductionContext
 
 
-def create_bot(server_id: int) -> DiscordClient:
-    intents = discord.Intents.all()
-    return DiscordClient(command_prefix="!", intents=intents, server_id=server_id)
+def read_arguments() -> argparse.Namespace:
+
+    parser = argparse.ArgumentParser(
+        description="Discord bot which is basically a customs agent for the server"
+    )
+
+    parser.add_argument(
+        "--env",
+        type=str,
+        nargs="?",
+        dest="env",
+        choices=["dev", "prod"],
+        default="dev",
+        help="Specify if the bot should run in development (dev) or production (prod) mode",
+    )
+
+    return parser.parse_args()
 
 
-async def register_cogs(bot: commands.Bot, student_service: StudentService):
-    await bot.add_cog(RegisterMemberCog(bot, student_service))
-
-
-def connect_to_mongo_db(connection_url: str) -> MongoClient:
-    try:
-        return MongoClient(connection_url)
-    except ConnectionError as e:
-        print(f"Unable to connect to the MongoDB. {e}")
-        exit(-1)
+def get_application_context(args: argparse.Namespace) -> ApplicationContext:
+    if args.env == "dev":
+        print("Development context is being used.")
+        return DevelopmentContext()
+    print("Production context is being used.")
+    return ProductionContext()
 
 
 async def main():
-    load_dotenv()
-    discord_token: str = os.getenv("DISCORD_TOKEN")
-    server_id: int = int(os.getenv("SERVER_ID"))
-    mongodb_localhost_connection_string = os.getenv(
-        "MONGODB_LOCALHOST_SERVER_CONNECTION_STRING"
-    )
+    args = read_arguments()
 
-    mongodb_client = connect_to_mongo_db(mongodb_localhost_connection_string)
-    database = mongodb_client[os.getenv("MONGODB_DB_NAME")]
-    student_collection = database["students"]
-    student_repository = MongoDbStudentRepository(student_collection)
-    cached_student_repository = CachedStudentRepository(student_repository)
+    application_context = get_application_context(args)
+    try:
+        await application_context.build_application()
+    except ConnectionError as e:
+        print(f"Unable to connect to the MongoDB. Closing the app.\n{e}")
+        exit(-1)
 
-    bot = create_bot(server_id)
-    student_service = StudentService(cached_student_repository)
-    discord_service = DiscordService(bot, cached_student_repository)
-
-    student_service.register_to_on_student_registered(discord_service)
-
-    await register_cogs(bot, student_service)
-    await bot.start(discord_token)
-
-    student_service.unregister_all_from_on_student_registered()
+    await application_context.start_application()
 
 
 if __name__ == "__main__":

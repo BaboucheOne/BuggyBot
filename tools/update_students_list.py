@@ -5,8 +5,9 @@ from typing import Dict, Optional, List
 from dotenv import dotenv_values
 from pymongo import MongoClient
 
+from bot.config.constants import ConfigurationFilename
 from bot.infra.constants import StudentMongoDbKey
-from constants import StudentListKey, UniProgram, Filename
+from constants import StudentListKey, UniProgram
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
@@ -114,7 +115,7 @@ def insert_students_into_collection(collection, students_to_insert):
 def get_dot_env_filepath():
     current_directory = os.path.dirname(os.path.abspath(__file__))
     root_directory = os.path.dirname(current_directory)
-    return os.path.join(root_directory, Filename.ENV)
+    return os.path.join(root_directory, ConfigurationFilename.DEVELOPMENT)
 
 
 def main():

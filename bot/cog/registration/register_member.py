@@ -12,13 +12,16 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
+from bot.config.service_locator import ServiceLocator
 
 
 class RegisterMemberCog(commands.Cog):
 
-    def __init__(self, bot: commands.Bot, student_service: StudentService):
+    def __init__(self, bot: commands.Bot):
         self.__bot = bot
-        self.__student_service = student_service
+        self.__student_service: StudentService = ServiceLocator.get_dependency(
+            StudentService
+        )
         self.__ni_sanitizer = (
             ResponsibilityBuilder()
             .with_handler(StripHandler())
