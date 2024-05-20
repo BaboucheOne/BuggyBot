@@ -23,7 +23,7 @@ class ApplicationContext(ABC):
         )
 
     async def build_application(self):
-        mongo_client = self.__create_mongo_client()
+        mongo_client = self._instantiate_mongo_client()
         student_collection = self.__instantiate_student_collection(mongo_client)
         student_repository = self._instantiate_student_repository(student_collection)
 
@@ -56,13 +56,6 @@ class ApplicationContext(ABC):
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
 
-    def __create_mongo_client(self) -> MongoClient:
-        try:
-            return MongoClient(self._configuration.mongodb_connection_string)
-        except ConnectionError as e:
-            print(f"Unable to connect to the MongoDB. {e}")
-            exit(-1)
-
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]
         return database[self._configuration.student_collection_name]
@@ -71,6 +64,10 @@ class ApplicationContext(ABC):
         self, discord_client: DiscordClient
     ) -> RegisterMemberCog:
         return RegisterMemberCog(discord_client)
+
+    @abstractmethod
+    def _instantiate_mongo_client(self) -> MongoClient:
+        pass
 
     @abstractmethod
     def _instantiate_discord_client(self) -> DiscordClient:

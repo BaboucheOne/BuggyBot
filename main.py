@@ -37,7 +37,12 @@ async def main():
     args = read_arguments()
 
     application_context = get_application_context(args)
-    await application_context.build_application()
+    try:
+        await application_context.build_application()
+    except ConnectionError as e:
+        print(f"Unable to connect to the MongoDB. Closing the app.\n{e}")
+        exit(-1)
+
     await application_context.start_application()
 
 

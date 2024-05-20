@@ -1,4 +1,5 @@
 import discord
+from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
@@ -15,6 +16,9 @@ class ProductionContext(ApplicationContext):
 
     def __init__(self):
         super().__init__(ConfigurationFilename.PRODUCTION)
+
+    def _instantiate_mongo_client(self) -> MongoClient:
+        return MongoClient(self._configuration.mongodb_connection_string)
 
     def _instantiate_discord_client(self) -> DiscordClient:
         intents = discord.Intents.all()
