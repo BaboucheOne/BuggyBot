@@ -31,8 +31,16 @@ class MongoDbStudentRepository(StudentRepository):
 
     def add_student(self, student: Student):
         # TODO: Check if already in the db.
-        # TODO : Add the student to the db.
-        pass
+        student_dict = {
+            StudentMongoDbKey.NI: student.ni.value,
+            StudentMongoDbKey.FIRSTNAME: student.firstname.value,
+            StudentMongoDbKey.LASTNAME: student.lastname.value,
+            StudentMongoDbKey.PROGRAM_CODE: student.program_code.value,
+            StudentMongoDbKey.NEW_ADMITTED: student.new_admitted.value,
+            StudentMongoDbKey.DISCORD_USER_ID: student.discord_user_id.value,
+        }
+        
+        self.__student_collection.insert_one(student_dict)
 
     def update_student(self, student: Student):
         student_dict = self.__student_assembler.to_dict(student)
