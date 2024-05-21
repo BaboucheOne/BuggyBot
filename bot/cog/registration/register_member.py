@@ -12,6 +12,8 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
+from bot.cog.request.add_student_request import AddStudentRequest
+from bot.cog.request.register_student_request import RegisterStudentRequest
 from bot.config.service_locator import ServiceLocator
 
 
@@ -46,8 +48,6 @@ class RegisterMemberCog(commands.Cog):
             return
 
         try:
-            # TODO : Create a request class.
-            # TODO : Add a not empty string handler.
             arguments = message.content.split(" ")
             ni = arguments[0].strip()
             firstname = arguments[1].strip()
@@ -55,9 +55,10 @@ class RegisterMemberCog(commands.Cog):
             program = arguments[3].strip()
             new_admitted = arguments[4].strip()
 
-            self.__student_service.add_student(
+            add_student_request = AddStudentRequest(
                 ni, firstname, lastname, program, new_admitted
             )
+            self.__student_service.add_student(add_student_request)
 
         except Exception:
             pass
@@ -69,8 +70,8 @@ class RegisterMemberCog(commands.Cog):
 
         try:
             ni = self.__ni_sanitizer.handle(message.content)
-            # TODO : Create a request class.
-            self.__student_service.register_student(ni, message.author.id)
+            register_student_request = RegisterStudentRequest(ni, message.author.id)
+            self.__student_service.register_student(register_student_request)
             await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
         except StudentAlreadyRegisteredException:
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)

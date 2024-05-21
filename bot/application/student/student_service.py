@@ -8,6 +8,8 @@ from bot.application.student.exceptions.student_already_registered_exception imp
     StudentAlreadyRegisteredException,
 )
 from bot.application.student.validators.ni_validator import NIValidator
+from bot.cog.request.add_student_request import AddStudentRequest
+from bot.cog.request.register_student_request import RegisterStudentRequest
 from bot.domain.constants import UniProgram
 from bot.domain.student.attributs.discord_user_id import DiscordUserId
 from bot.domain.student.attributs.firstname import Firstname
@@ -51,22 +53,15 @@ class StudentService(StudentRegisteredObservable):
             UniProgram.CERTIFICATE,
         }
 
-    def add_student(
-        self,
-        request_ni: str,
-        request_firstname: str,
-        request_lastname: str,
-        request_program: str,
-        request_new_admitted: str,
-    ):
-        if not self.is_valid_program(request_program):
+    def add_student(self, add_student_request: AddStudentRequest):
+        if not self.is_valid_program(add_student_request.program):
             raise Exception()
 
-        ni = self.__ni_factory.create(request_ni)
-        firstname = Firstname(request_firstname)
-        lastname = Lastname(request_lastname)
-        program_code = ProgramCode(request_program)
-        new_admitted = NewAdmitted(self.str_to_bool(request_new_admitted))
+        ni = self.__ni_factory.create(add_student_request.ni)
+        firstname = Firstname(add_student_request.firstname)
+        lastname = Lastname(add_student_request.lastname)
+        program_code = ProgramCode(add_student_request.program)
+        new_admitted = NewAdmitted(self.str_to_bool(add_student_request.new_admitted))
         discord_user_id = DiscordUserId(-1)
 
         student = Student(
@@ -80,12 +75,12 @@ class StudentService(StudentRegisteredObservable):
 
         self.__student_repository.add_student(student)
 
-    def register_student(self, request_ni: str, request_discord_user_id: int):
-        if not self.__ni_validator.validate(request_ni):
+    def register_student(self, register_student_request: RegisterStudentRequest):
+        if not self.__ni_validator.validate(register_student_request.ni):
             raise InvalidNIFormatException()
 
-        student_ni = self.__ni_factory.create(request_ni)
-        discord_user_id = DiscordUserId(request_discord_user_id)
+        student_ni = self.__ni_factory.create(register_student_request.ni)
+        discord_user_id = DiscordUserId(register_student_request.discord_id)
 
         if self.__does_student_already_registered(student_ni):
             raise StudentAlreadyRegisteredException()
