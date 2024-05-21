@@ -11,6 +11,10 @@ class StudentRepository(ABC):
         pass
 
     @abstractmethod
+    def add_student(self, student: Student):
+        pass
+
+    @abstractmethod
     def update_student(self, student: Student):
         pass
 

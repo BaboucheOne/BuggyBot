@@ -40,6 +40,28 @@ class RegisterMemberCog(commands.Cog):
         await member.create_dm()
         await member.dm_channel.send(ReplyMessage.WELCOME)
 
+    @commands.command(name="add_student")
+    async def add_student(self, message: Message):
+        if self.__is_self(message) or not self.__is_dm_message(message):
+            return
+
+        try:
+            # TODO : Create a request class.
+            # TODO : Add a not empty string handler.
+            arguments = message.content.split(" ")
+            ni = arguments[0].strip()
+            firstname = arguments[1].strip()
+            lastname = arguments[2].strip()
+            program = arguments[3].strip()
+            new_admitted = arguments[4].strip()
+
+            self.__student_service.add_student(
+                ni, firstname, lastname, program, new_admitted
+            )
+
+        except Exception:
+            pass
+
     @commands.Cog.listener("on_message")
     async def retrieve_ni(self, message: Message):
         if self.__is_self(message) or not self.__is_dm_message(message):
@@ -47,10 +69,12 @@ class RegisterMemberCog(commands.Cog):
 
         try:
             ni = self.__ni_sanitizer.handle(message.content)
+            # TODO : Create a request class.
             self.__student_service.register_student(ni, message.author.id)
             await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
         except StudentAlreadyRegisteredException:
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception:
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
+        finally:
             await self.__bot.process_commands(message)

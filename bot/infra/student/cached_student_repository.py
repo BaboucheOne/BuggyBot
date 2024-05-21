@@ -15,6 +15,9 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         self._set_dirty(ni)
         self.__repository.register_student(ni, discord_user_id)
 
+    def add_student(self, student: Student):
+        self.__repository.add_student(student)
+
     def update_student(self, student: Student):
         self._set_dirty(student.ni)
         self.__repository.update_student(student)
