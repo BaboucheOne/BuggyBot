@@ -39,7 +39,7 @@ class MongoDbStudentRepository(StudentRepository):
             StudentMongoDbKey.NEW_ADMITTED: student.new_admitted.value,
             StudentMongoDbKey.DISCORD_USER_ID: student.discord_user_id.value,
         }
-        
+
         self.__student_collection.insert_one(student_dict)
 
     def update_student(self, student: Student):
