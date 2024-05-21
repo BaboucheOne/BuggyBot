@@ -12,14 +12,11 @@ from bot.cog.request.add_student_request import AddStudentRequest
 from bot.cog.request.register_student_request import RegisterStudentRequest
 from bot.domain.constants import UniProgram
 from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.firstname import Firstname
-from bot.domain.student.attributs.lastname import Lastname
-from bot.domain.student.attributs.new_admitted import NewAdmitted
 from bot.domain.student.attributs.ni import NI
-from bot.domain.student.attributs.program_code import ProgramCode
 from bot.domain.student.ni_factory import NIFactory
-from bot.domain.student.student import Student
+from bot.domain.student.student_factory import StudentFactory
 from bot.domain.student.student_repository import StudentRepository
+from bot.domain.utility import Utility
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
@@ -33,17 +30,13 @@ class StudentService(StudentRegisteredObservable):
         self.__student_repository = student_repository
         self.__ni_validator = NIValidator()
         self.__ni_factory = NIFactory()
+        self.__student_factory = StudentFactory(self.__ni_factory)
 
     def __does_student_already_registered(self, ni: NI):
         try:
             return self.__student_repository.find_student_by_ni(ni).is_registered()
         except StudentNotFoundException:
             return False
-
-    def str_to_bool(self, s: str):  # TODO : Put this in a utility.
-        if s.lower() not in {"true", "1", "yes", "y", "oui", "o"}:
-            return False
-        return True
 
     def is_valid_program(self, program: str):  # TODO : Put this somewhere else.
         return program in {
@@ -54,23 +47,19 @@ class StudentService(StudentRegisteredObservable):
         }
 
     def add_student(self, add_student_request: AddStudentRequest):
-        if not self.is_valid_program(add_student_request.program):
+        if not self.__ni_validator.validate(add_student_request.ni):
+            raise InvalidNIFormatException()
+
+        if not self.is_valid_program(add_student_request.program_code):
             raise Exception()
 
-        ni = self.__ni_factory.create(add_student_request.ni)
-        firstname = Firstname(add_student_request.firstname)
-        lastname = Lastname(add_student_request.lastname)
-        program_code = ProgramCode(add_student_request.program)
-        new_admitted = NewAdmitted(self.str_to_bool(add_student_request.new_admitted))
-        discord_user_id = DiscordUserId(-1)
-
-        student = Student(
-            ni=ni,
-            firstname=firstname,
-            lastname=lastname,
-            program_code=program_code,
-            new_admitted=new_admitted,
-            discord_user_id=discord_user_id,
+        new_admitted = Utility.str_to_bool(add_student_request.new_admitted)
+        student = self.__student_factory.create(
+            add_student_request.ni,
+            add_student_request.firstname,
+            add_student_request.lastname,
+            add_student_request.program_code,
+            new_admitted,
         )
 
         self.__student_repository.add_student(student)
