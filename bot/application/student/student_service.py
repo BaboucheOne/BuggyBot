@@ -4,13 +4,18 @@ from bot.application.discord.events.student_registered.student_registered_observ
 from bot.application.student.exceptions.invalid_ni_format_exception import (
     InvalidNIFormatException,
 )
+from bot.application.student.exceptions.missing_program_code_exception import (
+    MissingProgramCodeException,
+)
 from bot.application.student.exceptions.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
 from bot.application.student.validators.ni_validator import NIValidator
+from bot.application.student.validators.program_code_validator import (
+    ProgramCodeValidator,
+)
 from bot.cog.request.add_student_request import AddStudentRequest
 from bot.cog.request.register_student_request import RegisterStudentRequest
-from bot.domain.constants import UniProgram
 from bot.domain.student.attributs.discord_user_id import DiscordUserId
 from bot.domain.student.attributs.ni import NI
 from bot.domain.student.ni_factory import NIFactory
@@ -28,7 +33,10 @@ class StudentService(StudentRegisteredObservable):
         super().__init__()
 
         self.__student_repository = student_repository
+
         self.__ni_validator = NIValidator()
+        self.__program_code_validator = ProgramCodeValidator()
+
         self.__ni_factory = NIFactory()
         self.__student_factory = StudentFactory(self.__ni_factory)
 
@@ -38,20 +46,12 @@ class StudentService(StudentRegisteredObservable):
         except StudentNotFoundException:
             return False
 
-    def is_valid_program(self, program: str):  # TODO : Put this somewhere else.
-        return program in {
-            UniProgram.GLO,
-            UniProgram.IFT,
-            UniProgram.IIG,
-            UniProgram.CERTIFICATE,
-        }
-
     def add_student(self, add_student_request: AddStudentRequest):
         if not self.__ni_validator.validate(add_student_request.ni):
             raise InvalidNIFormatException()
 
-        if not self.is_valid_program(add_student_request.program_code):
-            raise Exception()
+        if not self.__program_code_validator.validate(add_student_request.program_code):
+            raise MissingProgramCodeException()
 
         new_admitted = Utility.str_to_bool(add_student_request.new_admitted)
         student = self.__student_factory.create(
