@@ -30,7 +30,6 @@ class MongoDbStudentRepository(StudentRepository):
         return self.__student_assembler.from_json(student_response)
 
     def add_student(self, student: Student):
-        # TODO: Check if already in the db.
         student_dict = {
             StudentMongoDbKey.NI: student.ni.value,
             StudentMongoDbKey.FIRSTNAME: student.firstname.value,
