@@ -20,3 +20,5 @@ class ReplyMessage:
     SUCCESSFUL_STUDENT_ADDED: str = (
         "Student added ! He can now registered my himself by sending me a dm."
     )
+
+    STUDENT_ALREADY_EXISTS: str = "This student already exists."

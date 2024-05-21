@@ -2,6 +2,9 @@ import discord
 from discord import Message
 from discord.ext import commands
 
+from bot.application.student.exceptions.student_already_exist import (
+    StudentAlreadyExistsException,
+)
 from bot.application.student.student_service import (
     StudentService,
     StudentAlreadyRegisteredException,
@@ -62,6 +65,8 @@ class RegisterMemberCog(commands.Cog):
             self.__student_service.add_student(add_student_request)
 
             await message.channel.send(ReplyMessage.SUCCESSFUL_STUDENT_ADDED)
+        except StudentAlreadyExistsException:
+            await message.channel.send(ReplyMessage.STUDENT_ALREADY_EXISTS)
         except Exception as e:
             print(f"Exception occurs {e}")
         finally:

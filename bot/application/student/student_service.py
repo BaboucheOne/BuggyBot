@@ -7,6 +7,9 @@ from bot.application.student.exceptions.invalid_ni_format_exception import (
 from bot.application.student.exceptions.missing_program_code_exception import (
     MissingProgramCodeException,
 )
+from bot.application.student.exceptions.student_already_exist import (
+    StudentAlreadyExistsException,
+)
 from bot.application.student.exceptions.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
@@ -46,6 +49,13 @@ class StudentService(StudentRegisteredObservable):
         except StudentNotFoundException:
             return False
 
+    def __does_student_already_exists(self, ni: NI):
+        try:
+            _ = self.__student_repository.find_student_by_ni(ni)
+            return True
+        except StudentNotFoundException:
+            return False
+
     def add_student(self, add_student_request: AddStudentRequest):
         if not self.__ni_validator.validate(add_student_request.ni):
             raise InvalidNIFormatException()
@@ -61,6 +71,9 @@ class StudentService(StudentRegisteredObservable):
             add_student_request.program_code,
             new_admitted,
         )
+
+        if self.__does_student_already_exists(student.ni):
+            raise StudentAlreadyExistsException()
 
         self.__student_repository.add_student(student)
 
