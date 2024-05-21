@@ -15,7 +15,7 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
-from bot.cog.request.add_student_request import AddStudentRequest
+from bot.cog.registration.add_student_request_factory import AddStudentRequestFactory
 from bot.cog.request.register_student_request import RegisterStudentRequest
 from bot.config.service_locator import ServiceLocator
 
@@ -32,6 +32,10 @@ class RegisterMemberCog(commands.Cog):
             .with_handler(StripHandler())
             .with_handler(KeepDigitsHandler())
             .build()
+        )
+
+        self.__add_student_request_factory = AddStudentRequestFactory(
+            self.__ni_sanitizer
         )
 
     def __is_self(self, message: Message) -> bool:
@@ -51,15 +55,8 @@ class RegisterMemberCog(commands.Cog):
             return
 
         try:
-            arguments = message.content.split(" ")
-            ni = arguments[0].strip()
-            firstname = arguments[1].strip()
-            lastname = arguments[2].strip()
-            program = arguments[3].strip()
-            new_admitted = arguments[4].strip()
-
-            add_student_request = AddStudentRequest(
-                ni, firstname, lastname, program, new_admitted
+            add_student_request = self.__add_student_request_factory.create(
+                message.content
             )
 
             self.__student_service.add_student(add_student_request)
