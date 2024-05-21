@@ -3,7 +3,6 @@ from bot.domain.constants import UniProgram
 
 class ProgramCodeValidator:
 
-    NI_DIGITS_COUNT = 9
     PROGRAMS = {
         UniProgram.GLO,
         UniProgram.IFT,

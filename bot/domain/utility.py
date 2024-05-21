@@ -4,6 +4,4 @@ class Utility:
 
     @staticmethod
     def str_to_bool(s: str):
-        if s.lower() not in Utility.TRUE_BOOL_SET:
-            return False
-        return True
+        return s.lower() in Utility.TRUE_BOOL_SET
