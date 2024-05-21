@@ -58,10 +58,14 @@ class RegisterMemberCog(commands.Cog):
             add_student_request = AddStudentRequest(
                 ni, firstname, lastname, program, new_admitted
             )
+
             self.__student_service.add_student(add_student_request)
 
-        except Exception:
-            pass
+            await message.channel.send(ReplyMessage.SUCCESSFUL_STUDENT_ADDED)
+        except Exception as e:
+            print(f"Exception occurs {e}")
+        finally:
+            await self.__bot.process_commands(message)
 
     @commands.Cog.listener("on_message")
     async def retrieve_ni(self, message: Message):
@@ -71,7 +75,9 @@ class RegisterMemberCog(commands.Cog):
         try:
             ni = self.__ni_sanitizer.handle(message.content)
             register_student_request = RegisterStudentRequest(ni, message.author.id)
+
             self.__student_service.register_student(register_student_request)
+
             await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
         except StudentAlreadyRegisteredException:
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)

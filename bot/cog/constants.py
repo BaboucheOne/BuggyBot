@@ -16,3 +16,7 @@ class ReplyMessage:
     SUCCESSFUL_REGISTRATION: str = (
         "You are now registered! Your role is now apply and your name is set."
     )
+
+    SUCCESSFUL_STUDENT_ADDED: str = (
+        "Student added ! He can now registered my himself by sending me a dm."
+    )
