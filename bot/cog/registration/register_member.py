@@ -1,5 +1,6 @@
 from discord import Message
 from discord.ext import commands
+from discord.ext.commands import Context
 
 from bot.application.student.exceptions.student_already_exist import (
     StudentAlreadyExistsException,
@@ -48,7 +49,8 @@ class RegisterMemberCog(commands.Cog):
 
     @commands.command(name="add_student")
     @commands.dm_only()
-    async def add_student(self, message: Message):
+    async def add_student(self, context: Context):
+        message = context.message
         if self.__is_self(message):
             return
 
