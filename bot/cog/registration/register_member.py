@@ -1,4 +1,3 @@
-import discord
 from discord import Message
 from discord.ext import commands
 
@@ -41,17 +40,15 @@ class RegisterMemberCog(commands.Cog):
     def __is_self(self, message: Message) -> bool:
         return message.author == self.__bot.user
 
-    def __is_dm_message(self, message: Message) -> bool:
-        return isinstance(message.channel, discord.channel.DMChannel)
-
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await member.create_dm()
         await member.dm_channel.send(ReplyMessage.WELCOME)
 
     @commands.command(name="add_student")
+    @commands.dm_only()
     async def add_student(self, message: Message):
-        if self.__is_self(message) or not self.__is_dm_message(message):
+        if self.__is_self(message):
             return
 
         try:
@@ -70,8 +67,9 @@ class RegisterMemberCog(commands.Cog):
             await self.__bot.process_commands(message)
 
     @commands.Cog.listener("on_message")
+    @commands.dm_only()
     async def retrieve_ni(self, message: Message):
-        if self.__is_self(message) or not self.__is_dm_message(message):
+        if self.__is_self(message):
             return
 
         try:
