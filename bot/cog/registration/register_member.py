@@ -15,6 +15,7 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
+from bot.cog.exceptions.missing_arguments_exception import MissingArgumentsException
 from bot.cog.registration.add_student_request_factory import AddStudentRequestFactory
 from bot.cog.request.register_student_request import RegisterStudentRequest
 from bot.config.service_locator import ServiceLocator
@@ -64,6 +65,8 @@ class RegisterMemberCog(commands.Cog):
             await message.channel.send(ReplyMessage.SUCCESSFUL_STUDENT_ADDED)
         except StudentAlreadyExistsException:
             await message.channel.send(ReplyMessage.STUDENT_ALREADY_EXISTS)
+        except MissingArgumentsException:
+            await message.channel.send(ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND)
         except Exception as e:
             print(f"Exception occurs {e}")
         finally:

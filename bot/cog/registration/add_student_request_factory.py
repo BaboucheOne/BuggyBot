@@ -11,7 +11,6 @@ class AddStudentRequestFactory:
         self.__ni_sanitizer = ni_sanitizer
 
     def create(self, content: str) -> AddStudentRequest:
-        print(content)
         arguments = content.split(" ")
 
         if len(arguments) != self.REQUIRED_ARGUMENTS:

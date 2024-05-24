@@ -22,3 +22,6 @@ class ReplyMessage:
     )
 
     STUDENT_ALREADY_EXISTS: str = "This student already exists."
+
+    MISSING_ARGUMENTS_IN_COMMAND: str = "Missing arguments in the command."
+
