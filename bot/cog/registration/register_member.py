@@ -17,12 +17,13 @@ from bot.cog.constants import ReplyMessage
 from bot.cog.registration.add_student_request_factory import AddStudentRequestFactory
 from bot.cog.request.register_student_request import RegisterStudentRequest
 from bot.config.service_locator import ServiceLocator
+from bot.domain.discord_client.discord_client import DiscordClient
 
 
 class RegisterMemberCog(commands.Cog):
 
-    def __init__(self, bot: commands.Bot):
-        self.__bot = bot
+    def __init__(self):
+        self.__bot = ServiceLocator.get_dependency(DiscordClient)
         self.__student_service: StudentService = ServiceLocator.get_dependency(
             StudentService
         )

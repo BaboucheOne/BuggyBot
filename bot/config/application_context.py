@@ -44,7 +44,7 @@ class ApplicationContext(ABC):
         ]
         self.__assemble_dependencies(dependencies)
 
-        cogs = [self._instantiate_register_member_cog(discord_client)]
+        cogs = [self._instantiate_register_member_cog()]
         await self.__register_cogs(discord_client, cogs)
 
     async def __register_cogs(self, discord_client: DiscordClient, cogs: List):
@@ -61,9 +61,7 @@ class ApplicationContext(ABC):
         return database[self._configuration.student_collection_name]
 
     @abstractmethod
-    def _instantiate_register_member_cog(
-        self, discord_client: DiscordClient
-    ) -> RegisterMemberCog:
+    def _instantiate_register_member_cog(self) -> RegisterMemberCog:
         pass
 
     @abstractmethod
