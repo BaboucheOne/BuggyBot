@@ -29,6 +29,10 @@ class MongoDbStudentRepository(StudentRepository):
 
         return self.__student_assembler.from_json(student_response)
 
+    def add_student(self, student: Student):
+        student_dict = self.__student_assembler.to_dict(student)
+        self.__student_collection.insert_one(student_dict)
+
     def update_student(self, student: Student):
         student_dict = self.__student_assembler.to_dict(student)
         filter_query = {StudentMongoDbKey.NI: student.ni.value}

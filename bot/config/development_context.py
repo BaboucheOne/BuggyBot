@@ -27,10 +27,8 @@ class DevelopmentContext(ApplicationContext):
             command_prefix="!", intents=intents, server_id=self._configuration.server_id
         )
 
-    def _instantiate_register_member_cog(
-        self, discord_client: DiscordClient
-    ) -> RegisterMemberCog:
-        return RegisterMemberCog(discord_client)
+    def _instantiate_register_member_cog(self) -> RegisterMemberCog:
+        return RegisterMemberCog()
 
     def _instantiate_student_repository(
         self, student_collection: Collection
