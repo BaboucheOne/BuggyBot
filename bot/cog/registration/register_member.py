@@ -20,6 +20,7 @@ from bot.cog.registration.add_student_request_factory import AddStudentRequestFa
 from bot.cog.request.register_student_request import RegisterStudentRequest
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
+from bot.domain.utility import Utility
 
 
 class RegisterMemberCog(commands.Cog):
@@ -56,9 +57,8 @@ class RegisterMemberCog(commands.Cog):
             return
 
         try:
-            add_student_request = self.__add_student_request_factory.create(
-                message.content
-            )
+            content = Utility.get_content_without_command(message.content)
+            add_student_request = self.__add_student_request_factory.create(content)
 
             self.__student_service.add_student(add_student_request)
 
@@ -70,12 +70,13 @@ class RegisterMemberCog(commands.Cog):
         except Exception as e:
             print(f"Exception occurs {e}")
         finally:
-            await self.__bot.process_commands(message)
+            await self.__bot.process_commands(context)
 
     @commands.Cog.listener("on_message")
     @commands.dm_only()
     async def retrieve_ni(self, message: Message):
-        if self.__is_self(message):
+        ctx: Context = await self.__bot.get_context(message)
+        if self.__is_self(message) or ctx.command is not None:
             return
 
         try:
