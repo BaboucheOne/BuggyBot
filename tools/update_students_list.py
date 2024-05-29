@@ -1,11 +1,11 @@
 import os
 import argparse
 import pandas as pd
-from typing import Dict, Optional, List
-from dotenv import dotenv_values
+from typing import List
 from pymongo import MongoClient
 
 from bot.config.constants import ConfigurationFilename
+from bot.config.dotenv_configuration import DotEnvConfiguration
 from bot.infra.constants import StudentMongoDbKey
 from constants import StudentListKey, UniProgram
 
@@ -45,13 +45,8 @@ def read_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def read_configurations() -> Dict[str, Optional[str]]:
-    try:
-        dot_env_filepath = get_dot_env_filepath()
-        return dotenv_values(dot_env_filepath)
-    except FileNotFoundError as e:
-        print(f".env file is not found. {e}")
-        exit(-1)
+def read_configurations(filename: str) -> DotEnvConfiguration:
+    return DotEnvConfiguration(filename)
 
 
 def connect_to_mongo_db(connection_url: str) -> MongoClient:
@@ -120,13 +115,11 @@ def get_dot_env_filepath():
 
 def main():
     arguments = read_arguments()
-    configurations = read_configurations()
+    configuration = read_configurations(ConfigurationFilename.DEVELOPMENT)
 
-    client = connect_to_mongo_db(
-        configurations["MONGODB_LOCALHOST_SERVER_CONNECTION_STRING"]
-    )
-    database = client[configurations["MONGODB_DB_NAME"]]
-    students_collection = database["students"]
+    client = connect_to_mongo_db(configuration.mongodb_connection_string)
+    database = client[configuration.mongodb_database_name]
+    students_collection = database[configuration.student_collection_name]
 
     students_df = read_students_csv(arguments.csv_filename)
     rename_student_list_to_mongodb_schema(students_df)
@@ -140,6 +133,8 @@ def main():
         student[StudentMongoDbKey.DISCORD_USER_ID] = MISSING_DISCORD_USER_ID
 
     insert_students_into_collection(students_collection, students_to_insert)
+
+    client.close()
 
     print(f"{len(students_to_insert)} new students inserted")
     print("Students table has been updated!")

@@ -24,6 +24,17 @@ class StudentAssembler:
             ),
         )
 
+    def from_dict(self, entry: dict) -> Student:
+        return Student(
+            ni=NI(entry[StudentMongoDbKey.NI]),
+            firstname=Firstname(entry[StudentMongoDbKey.FIRSTNAME]),
+            lastname=Lastname(entry[StudentMongoDbKey.LASTNAME]),
+            program_code=ProgramCode(entry[StudentMongoDbKey.PROGRAM_CODE]),
+            new_admitted=NewAdmitted(entry[StudentMongoDbKey.NEW_ADMITTED]),
+            discord_user_id=DiscordUserId(entry[StudentMongoDbKey.DISCORD_USER_ID])
+        )
+
+
     def to_dict(self, student: Student) -> Dict:
         return {
             StudentMongoDbKey.NI: student.ni.value,
