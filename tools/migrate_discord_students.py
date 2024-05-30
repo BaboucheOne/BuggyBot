@@ -24,6 +24,10 @@ from constants import StudentListKey
 MISSING_DISCORD_USER_ID = -1
 STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
 
+MIGRATION_SENDING_REQUEST_SEC = 0.1
+MIGRATION_SENDING_MESSAGE_SEC = 0.5
+WAIT_FOR_THREAD_INITIALIZATION = 0.25
+
 
 def read_configurations(filename: str) -> DotEnvConfiguration:
     return DotEnvConfiguration(filename)
@@ -92,6 +96,68 @@ def migrate_student(collection: Collection, student: Student):
     collection.update_one(update_filter, update_operation)
 
 
+def check_migration_rules(
+    server_members: List[Member],
+    students: List[Student],
+    members_migration_successful: List[Student],
+    members_migration_missed: List[Member],
+):
+    for member in server_members:
+        try:
+            split = member.nick.split(" ")
+            index, student = find_with_first_and_lastname(students, split[0], split[1])
+
+            if student.discord_user_id.value == -1:
+                student.discord_user_id.value = member.id
+                members_migration_successful.append(student)
+        except StudentNotFoundException or IndexError:
+            members_migration_missed.append(member)
+
+
+def send_dm_non_migrated_members(members_migration_missed: List[Member]):
+    print("Starting contacting people. Can take some times.")
+    print(
+        f"Time to contact members : {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC}"
+    )
+    for member in members_migration_missed:
+        await member.send(
+            "Hello I'm buggybot from ASETIN's discord!\n"
+            "A migration has been done."
+            "Unfortunately we were unable to migrate your discord profile to our new database.\n"
+            "Use !register [IDUL] to perform this migration.\n"
+            "If you need help contact an admin."
+        )
+        time.sleep(MIGRATION_SENDING_MESSAGE_SEC)
+    print("All miss migrated has been contacted.")
+
+
+def notify_non_migrated_members(
+    server_members: List[Member], members_migration_missed: List[Member]
+):
+    print(
+        f"{len(members_migration_missed)} Students has not been migrated due to errors."
+    )
+    print(
+        f"This represent {len(server_members)/len(members_migration_missed) * 100}% of members."
+    )
+    print("Solution: Contact them and tell them to registered by them self.")
+    for member in members_migration_missed:
+        print(member.nick)
+
+
+def perform_migration(
+    collection: Collection, members_migration_successful: List[Student]
+):
+    print("Migration starting...")
+    print(
+        f"Estimated time to migrate members : {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC}"
+    )
+    for member in members_migration_successful:
+        migrate_student(collection, member)
+        time.sleep(MIGRATION_SENDING_REQUEST_SEC)
+    print(f"Migration successful for {len(members_migration_successful)} members")
+
+
 def migrate(
     collection: Collection, students: List[Student], discord_client: DiscordClient
 ):
@@ -104,55 +170,17 @@ def migrate(
 
     remove_none_values(server_members)
     remove_duplicate_values(server_members, members_migration_missed)
-
-    for member in server_members:
-        if member.nick is not None:
-            try:
-                split = member.nick.split(" ")
-                index, student = find_with_first_and_lastname(
-                    students, split[0], split[1]
-                )
-
-                if student.discord_user_id.value == -1:
-                    student.discord_user_id.value = member.id
-                    members_migration_successful.append(student)
-            except StudentNotFoundException or IndexError:
-                members_migration_missed.append(member)
-
-    print("Migration starting...")
-    print(
-        f"Estimated time to migrate members : {len(members_migration_successful) * 0.1}"
+    check_migration_rules(
+        server_members, students, members_migration_successful, members_migration_missed
     )
-    for member in members_migration_successful:
-        migrate_student(collection, member)
-        time.sleep(0.1)
-    print(f"Migration successful for {len(members_migration_successful)} members")
 
-    print(
-        f"{len(members_migration_missed)} Students has not been migrated due to errors."
-    )
-    print(
-        f"This represent {len(server_members)/len(members_migration_missed) * 100} of total users."
-    )
-    print("Solution: Contact them and tell them to registered by them self.")
-    for member in members_migration_missed:
-        print(member.nick)
+    perform_migration(collection, members_migration_successful)
+    notify_non_migrated_members(server_members, members_migration_missed)
 
-    response = input("Automatically contact them ?")
+    response = input("Automatically contact them ?\n Use: true, 1, yes, y, oui or o")
     can_contact = Utility.str_to_bool(response)
     if can_contact:
-        print("Starting contacting people. Can take some times.")
-        print(f"Time to contact members : {len(members_migration_missed) * 0.5}")
-        for member in members_migration_missed:
-            await member.send(
-                "Hello I'm buggybot from ASETIN's discord!\n"
-                "A migration has been done."
-                "Unfortunately we were unable to migrate your discord profile to our new database.\n"
-                "Use !register [IDUL] to perform this migration.\n"
-                "If you need help contact an admin."
-            )
-            time.sleep(0.5)
-        print("All miss migrated has been contacted.")
+        send_dm_non_migrated_members(members_migration_missed)
 
     discord_client.close()
 
@@ -180,10 +208,9 @@ def main():
             discord_client,
         ),
     )
+
     thread.start()
-
-    time.sleep(0.5)
-
+    time.sleep(WAIT_FOR_THREAD_INITIALIZATION)
     discord_client.run(configuration.discord_token)
 
     print("Migration done.")
