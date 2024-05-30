@@ -16,8 +16,12 @@ from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
 from bot.cog.exceptions.missing_arguments_exception import MissingArgumentsException
-from bot.cog.registration.add_student_request_factory import AddStudentRequestFactory
-from bot.cog.request.register_student_request import RegisterStudentRequest
+from bot.cog.registration.factory.add_student_request_factory import (
+    AddStudentRequestFactory,
+)
+from bot.cog.registration.factory.register_student_request_factory import (
+    RegisterStudentRequestFactory,
+)
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.utility import Utility
@@ -38,6 +42,10 @@ class RegisterMemberCog(commands.Cog):
         )
 
         self.__add_student_request_factory = AddStudentRequestFactory(
+            self.__ni_sanitizer
+        )
+
+        self.__register_student_request_factory = RegisterStudentRequestFactory(
             self.__ni_sanitizer
         )
 
@@ -72,16 +80,18 @@ class RegisterMemberCog(commands.Cog):
         finally:
             await self.__bot.process_commands(context)
 
-    @commands.Cog.listener("on_message")
+    @commands.command(name="register")
     @commands.dm_only()
-    async def retrieve_ni(self, message: Message):
-        ctx: Context = await self.__bot.get_context(message)
-        if self.__is_self(message) or ctx.command is not None:
+    async def register(self, context: Context):
+        message = context.message
+        if self.__is_self(message):
             return
 
         try:
-            ni = self.__ni_sanitizer.handle(message.content)
-            register_student_request = RegisterStudentRequest(ni, message.author.id)
+            content = Utility.get_content_without_command(message.content)
+            register_student_request = self.__register_student_request_factory.create(
+                content, message.author.id
+            )
 
             self.__student_service.register_student(register_student_request)
 
