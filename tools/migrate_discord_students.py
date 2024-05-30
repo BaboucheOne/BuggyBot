@@ -1,4 +1,7 @@
+import asyncio
+import concurrent
 import copy
+import functools
 import threading
 import time
 
@@ -26,7 +29,7 @@ STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
 
 MIGRATION_SENDING_REQUEST_SEC = 0.1
 MIGRATION_SENDING_MESSAGE_SEC = 0.5
-WAIT_FOR_THREAD_INITIALIZATION = 0.25
+WAIT_FOR_THREAD_INITIALIZATION = 1.0
 
 
 def read_configurations(filename: str) -> DotEnvConfiguration:
@@ -114,7 +117,7 @@ def check_migration_rules(
             members_migration_missed.append(member)
 
 
-def send_dm_non_migrated_members(members_migration_missed: List[Member]):
+async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
     print("Starting contacting people. Can take some times.")
     print(
         f"Time to contact members : {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC}"
@@ -158,7 +161,7 @@ def perform_migration(
     print(f"Migration successful for {len(members_migration_successful)} members")
 
 
-def migrate(
+async def migrate(
     collection: Collection, students: List[Student], discord_client: DiscordClient
 ):
     while not discord_client.ready:
@@ -180,14 +183,18 @@ def migrate(
     response = input("Automatically contact them ?\n Use: true, 1, yes, y, oui or o")
     can_contact = Utility.str_to_bool(response)
     if can_contact:
-        send_dm_non_migrated_members(members_migration_missed)
+        await send_dm_non_migrated_members(members_migration_missed)
     else:
         print("You chose to not contact these members")
 
-    discord_client.close()
+    await discord_client.close()
 
 
-def main():
+def start_bot(discord_client: DiscordClient, configuration: DotEnvConfiguration):
+    discord_client.run(configuration.discord_token)
+
+
+async def main():
     configuration = read_configurations(ConfigurationFilename.PRODUCTION)
 
     intents = discord.Intents.all()
@@ -202,21 +209,19 @@ def main():
     unregistered_students = get_unregistered_students(students_collection)
 
     thread = threading.Thread(
-        target=migrate,
+        target=start_bot,
         args=(
             discord_client,
-            students_collection,
-            unregistered_students,
-            discord_client,
+            configuration,
         ),
     )
-
     thread.start()
+
     time.sleep(WAIT_FOR_THREAD_INITIALIZATION)
-    discord_client.run(configuration.discord_token)
+
+    await migrate(students_collection, unregistered_students, discord_client)
 
     print("Migration done.")
 
-
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
