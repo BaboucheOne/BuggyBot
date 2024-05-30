@@ -107,19 +107,16 @@ def migrate(
 
     for member in server_members:
         if member.nick is not None:
-            split = member.nick.split(" ")
-            if len(split) != 2:
-                members_migration_missed.append(member)
-                continue
-
             try:
+                split = member.nick.split(" ")
                 index, student = find_with_first_and_lastname(
                     students, split[0], split[1]
                 )
+
                 if student.discord_user_id.value == -1:
                     student.discord_user_id.value = member.id
                     members_migration_successful.append(student)
-            except StudentNotFoundException:
+            except StudentNotFoundException or IndexError:
                 members_migration_missed.append(member)
 
     print("Migration starting...")
