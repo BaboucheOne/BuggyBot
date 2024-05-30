@@ -181,6 +181,8 @@ def migrate(
     can_contact = Utility.str_to_bool(response)
     if can_contact:
         send_dm_non_migrated_members(members_migration_missed)
+    else:
+        print("You chose to not contact these members")
 
     discord_client.close()
 
