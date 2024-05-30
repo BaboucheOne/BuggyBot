@@ -3,7 +3,6 @@ import threading
 import time
 
 import discord
-import pandas as pd
 from typing import List, Tuple
 
 from discord import Member
@@ -13,48 +12,21 @@ from pymongo.collection import Collection
 from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
 from bot.domain.discord_client.discord_client import DiscordClient
-from bot.domain.student.attributs.firstname import Firstname
-from bot.domain.student.attributs.ni import NI
 from bot.domain.student.student import Student
+from bot.domain.utility import Utility
 from bot.infra.constants import StudentMongoDbKey
 from bot.infra.student.assembler.student_assembler import StudentAssembler
-from constants import StudentListKey, UniProgram
-
-STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
-    StudentListKey.NI,
-    StudentListKey.PROGRAM_CODE,
-    StudentListKey.LASTNAME,
-    StudentListKey.FIRSTNAME,
-    StudentListKey.NEW,
-]
-
-STUDENT_ALLOWED_PROGRAM = [
-    UniProgram.IFT,
-    UniProgram.GLO,
-    UniProgram.CERTIFICATE,
-    UniProgram.IIG,
-]
-
-STUDENT_NOUVEAU_COLUMN_MAPPING = {"Oui": True, "Non": False}
-STUDENTS_LIST_RENAMING_MAPPING = {
-    StudentListKey.NI: StudentMongoDbKey.NI,
-    StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
-    StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
-    StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-    StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
-}
+from bot.infra.student.exception.student_not_found_exception import (
+    StudentNotFoundException,
+)
+from constants import StudentListKey
 
 MISSING_DISCORD_USER_ID = -1
-
 STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
 
 
 def read_configurations(filename: str) -> DotEnvConfiguration:
     return DotEnvConfiguration(filename)
-
-
-def read_students_csv(file_path: str) -> pd.DataFrame:
-    return pd.read_excel(file_path, usecols=STUDENTS_LIST_COLUMNS_TO_KEEP)
 
 
 def connect_to_mongo_db(connection_url: str) -> MongoClient:
@@ -67,40 +39,42 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
 
 def get_unregistered_students(students_collection) -> List[Student]:
     query = {StudentListKey.DISCORD_USER_ID: {"$ne": MISSING_DISCORD_USER_ID}}
-    projection = {'_id': 0}
+    projection = {"_id": 0}
     results = students_collection.find(query, projection)
 
-    students = []
-    for r in results:
-        students.append(STUDENT_ASSEMBLER.from_dict(r))
-    return students
+    return [STUDENT_ASSEMBLER.from_dict(result) for result in results]
 
 
-def do(collection: Collection, students: List[Student], discord_client: DiscordClient):
-    while not discord_client.ready:
-        pass
+def find_with_first_and_lastname(
+    students: List[Student], firstname: str, lastname: str
+) -> Tuple[int, Student or None]:
+    for k, s in enumerate(students):
+        if s.firstname.value == firstname and s.lastname.value == lastname:
+            return k, s
+    raise StudentNotFoundException()
 
-    miss = []
-    migrated = []
-    server_members: List[Member] = list(discord_client.server.members)
-    # Remove none or bot.
-    for member in server_members:
+
+def remove_none_values(list_to_modify: List[Member]):
+    for member in list_to_modify:
         if member.bot or member.nick is None:
-            server_members.remove(member)
+            list_to_modify.remove(member)
 
-    # checks for duplicated and notify them.
-    for i, member in enumerate(server_members):
+
+def remove_duplicate_values(
+    list_to_modify: List[Member], members_migration_missed: List[Member]
+):
+    for i, member in enumerate(list_to_modify):
         member_is_removed = False
-        for j, other in enumerate(server_members):
+        for j, other in enumerate(list_to_modify):
             if i == j:
                 continue
 
             if member.nick == other.nick:
-                miss.append(copy.deepcopy(member.nick))
-                miss.append(copy.deepcopy(other.nick))
+                members_migration_missed.append(copy.deepcopy(member))
+                members_migration_missed.append(copy.deepcopy(other))
 
-                server_members.remove(member)
-                server_members.remove(other)
+                list_to_modify.remove(member)
+                list_to_modify.remove(other)
 
                 member_is_removed = True
 
@@ -109,39 +83,81 @@ def do(collection: Collection, students: List[Student], discord_client: DiscordC
         if member_is_removed:
             continue
 
-    def find_with_first_and_lastname(firstname: str, lastname: str) -> Tuple[int, Student or None]:
-        for k, s in enumerate(students):
-            if s.firstname.value == firstname and s.lastname.value == lastname:
-                return k, s
-        return -1, None
+
+def migrate_student(collection: Collection, student: Student):
+    update_filter = {StudentMongoDbKey.NI: student.ni.value}
+    update_operation = {
+        "$set": {StudentMongoDbKey.DISCORD_USER_ID: student.discord_user_id.value}
+    }
+    collection.update_one(update_filter, update_operation)
+
+
+def migrate(
+    collection: Collection, students: List[Student], discord_client: DiscordClient
+):
+    while not discord_client.ready:
+        pass
+
+    members_migration_missed: List[Member] = []
+    members_migration_successful: List[Student] = []
+    server_members: List[Member] = list(discord_client.server.members)
+
+    remove_none_values(server_members)
+    remove_duplicate_values(server_members, members_migration_missed)
 
     for member in server_members:
         if member.nick is not None:
-            split = member.nick.split(' ')
+            split = member.nick.split(" ")
             if len(split) != 2:
-                miss.append(member.nick)
+                members_migration_missed.append(member)
                 continue
 
-            index, match = find_with_first_and_lastname(split[0], split[1])
-            if index == -1 or match is None:
-                miss.append(member.nick)
-                continue
+            try:
+                index, student = find_with_first_and_lastname(
+                    students, split[0], split[1]
+                )
+                if student.discord_user_id.value == -1:
+                    student.discord_user_id.value = member.id
+                    members_migration_successful.append(student)
+            except StudentNotFoundException:
+                members_migration_missed.append(member)
 
-            if match.discord_user_id.value == -1:
-                match.discord_user_id.value = member.id
-                migrated.append(match)
-                print(index, member.id, member.nick, member.global_name)
+    print("Migration starting...")
+    print(
+        f"Estimated time to migrate members : {len(members_migration_successful) * 0.1}"
+    )
+    for member in members_migration_successful:
+        migrate_student(collection, member)
+        time.sleep(0.1)
+    print(f"Migration successful for {len(members_migration_successful)} members")
 
-    for m in migrated:
-        ffilter = {'ni': m.ni.value}
-        operation = {'$set': {'discord_user_id': m.discord_user_id.value}}
-        collection.update_one(ffilter, operation)
+    print(
+        f"{len(members_migration_missed)} Students has not been migrated due to errors."
+    )
+    print(
+        f"This represent {len(server_members)/len(members_migration_missed) * 100} of total users."
+    )
+    print("Solution: Contact them and tell them to registered by them self.")
+    for member in members_migration_missed:
+        print(member.nick)
 
-    print("Student not migrated")
-    for m in miss:
-        print(m)
+    response = input("Automatically contact them ?")
+    can_contact = Utility.str_to_bool(response)
+    if can_contact:
+        print("Starting contacting people. Can take some times.")
+        print(f"Time to contact members : {len(members_migration_missed) * 0.5}")
+        for member in members_migration_missed:
+            await member.send(
+                "Hello I'm buggybot from ASETIN's discord!\n"
+                "A migration has been done."
+                "Unfortunately we were unable to migrate your discord profile to our new database.\n"
+                "Use !register [IDUL] to perform this migration.\n"
+                "If you need help contact an admin."
+            )
+            time.sleep(0.5)
+        print("All miss migrated has been contacted.")
 
-    exit(-1)
+    discord_client.close()
 
 
 def main():
@@ -158,16 +174,22 @@ def main():
 
     unregistered_students = get_unregistered_students(students_collection)
 
-    thread = threading.Thread(target=do, args=(students_collection, unregistered_students, discord_client))
+    thread = threading.Thread(
+        target=migrate,
+        args=(
+            discord_client,
+            students_collection,
+            unregistered_students,
+            discord_client,
+        ),
+    )
     thread.start()
 
     time.sleep(0.5)
 
-    # for student in unregistered_students:
-    #     student["discord_user_id"] = 10
-    #     print(student)
-
     discord_client.run(configuration.discord_token)
+
+    print("Migration done.")
 
 
 if __name__ == "__main__":
