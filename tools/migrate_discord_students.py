@@ -1,7 +1,4 @@
 import asyncio
-import concurrent
-import copy
-import functools
 import threading
 import time
 
@@ -62,7 +59,7 @@ def find_with_first_and_lastname(
 
 
 def remove_none_values(list_to_modify: List[Member]):
-    for member in list_to_modify:
+    for member in list_to_modify[:]:
         if member.bot or member.nick is None:
             list_to_modify.remove(member)
 
@@ -70,15 +67,19 @@ def remove_none_values(list_to_modify: List[Member]):
 def remove_duplicate_values(
     list_to_modify: List[Member], members_migration_missed: List[Member]
 ):
-    for i, member in enumerate(list_to_modify):
+    for i, member in enumerate(list_to_modify[:]):
         member_is_removed = False
-        for j, other in enumerate(list_to_modify):
-            if i == j:
+        for j, other in enumerate(list_to_modify[:]):
+            if (
+                i == j
+                or member in members_migration_missed
+                or other in members_migration_missed
+            ):
                 continue
 
             if member.nick == other.nick:
-                members_migration_missed.append(copy.deepcopy(member))
-                members_migration_missed.append(copy.deepcopy(other))
+                members_migration_missed.append(member)
+                members_migration_missed.append(other)
 
                 list_to_modify.remove(member)
                 list_to_modify.remove(other)
@@ -120,14 +121,14 @@ def check_migration_rules(
 async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
     print("Starting contacting people. Can take some times.")
     print(
-        f"Time to contact members : {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC}"
+        f"Time to contact members : {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC} secs"
     )
     for member in members_migration_missed:
         await member.send(
             "Hello I'm buggybot from ASETIN's discord!\n"
             "A migration has been done."
             "Unfortunately we were unable to migrate your discord profile to our new database.\n"
-            "Use !register [IDUL] to perform this migration.\n"
+            "Use !register [NI] to perform this migration.\n"
             "If you need help contact an admin."
         )
         time.sleep(MIGRATION_SENDING_MESSAGE_SEC)
@@ -141,7 +142,7 @@ def notify_non_migrated_members(
         f"{len(members_migration_missed)} Students has not been migrated due to errors."
     )
     print(
-        f"This represent {len(server_members)/len(members_migration_missed) * 100}% of members."
+        f"This represent {len(members_migration_missed)/len(server_members) * 100}% of members."
     )
     print("Solution: Contact them and tell them to registered by them self.")
     for member in members_migration_missed:
@@ -153,7 +154,7 @@ def perform_migration(
 ):
     print("Migration starting...")
     print(
-        f"Estimated time to migrate members : {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC}"
+        f"Estimated time to migrate members : {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs"
     )
     for member in members_migration_successful:
         migrate_student(collection, member)
@@ -177,17 +178,26 @@ async def migrate(
         server_members, students, members_migration_successful, members_migration_missed
     )
 
-    perform_migration(collection, members_migration_successful)
-    notify_non_migrated_members(server_members, members_migration_missed)
-
-    response = input("Automatically contact them ?\n Use: true, 1, yes, y, oui or o")
-    can_contact = Utility.str_to_bool(response)
-    if can_contact:
-        await send_dm_non_migrated_members(members_migration_missed)
+    if len(members_migration_successful) > 0:
+        perform_migration(collection, members_migration_successful)
     else:
-        print("You chose to not contact these members")
+        print("No members to migrate.")
 
-    await discord_client.close()
+    if len(members_migration_missed) > 0:
+        notify_non_migrated_members(server_members, members_migration_missed)
+        response = input(
+            "Automatically contact them ? Use: true, 1, yes, y, oui or o -> "
+        )
+        can_contact = Utility.str_to_bool(response)
+        if can_contact:
+            await send_dm_non_migrated_members(members_migration_missed)
+        else:
+            print("You chose to not contact these members")
+    else:
+        print("No miss migrated members.")
+
+    print("Migration done.")
+    exit(0)
 
 
 def start_bot(discord_client: DiscordClient, configuration: DotEnvConfiguration):
@@ -221,7 +231,6 @@ async def main():
 
     await migrate(students_collection, unregistered_students, discord_client)
 
-    print("Migration done.")
 
 if __name__ == "__main__":
     asyncio.run(main())
