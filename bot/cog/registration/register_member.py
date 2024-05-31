@@ -15,6 +15,7 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
+from bot.cog.decorators.role_check import role_check
 from bot.cog.exceptions.missing_arguments_exception import MissingArgumentsException
 from bot.cog.registration.factory.add_student_request_factory import (
     AddStudentRequestFactory,
@@ -23,6 +24,7 @@ from bot.cog.registration.factory.register_student_request_factory import (
     RegisterStudentRequestFactory,
 )
 from bot.config.service_locator import ServiceLocator
+from bot.domain.constants import DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.utility import Utility
 
@@ -59,6 +61,7 @@ class RegisterMemberCog(commands.Cog):
 
     @commands.command(name="add_student")
     @commands.dm_only()
+    @role_check(DiscordRole.ASETIN, DiscordRole.AEGLO, DiscordRole.ADMIN)
     async def add_student(self, context: Context):
         message = context.message
         if self.__is_self(message):

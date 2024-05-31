@@ -1,3 +1,6 @@
+from typing import List
+
+
 class UniProgram:
     IFT: str = "B-IFT"
     GLO: str = "B-GLO"
@@ -10,3 +13,9 @@ class DiscordRole:
     GLO: str = "GLO"
     IIG: str = "IIG"
     CERTIFICATE: str = "CERTIFICAT"
+
+    ASETIN: str = "ASETIN"
+    AEGLO: str = "AEGLO"
+    ADMIN: str = "ADMIN"
+
+    ADMINS: List[str] = [ASETIN, AEGLO, ADMIN]
