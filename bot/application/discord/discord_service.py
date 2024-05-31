@@ -50,9 +50,11 @@ class DiscordService(StudentRegisteredObserver):
         member = self.__discord_client.server.get_member(student.discord_user_id.value)
         role_name = self.__get_role_name(student.program_code.value)
 
-        if member != self.__discord_client.server.owner:
-            role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
-            asyncio.ensure_future(member.add_roles(role))
+        role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
+        asyncio.ensure_future(member.add_roles(role))
 
-        student_name = self.__get_name(student.firstname.value, student.lastname.value)
-        asyncio.ensure_future(member.edit(nick=student_name))
+        if member != self.__discord_client.server.owner:
+            student_name = self.__get_name(
+                student.firstname.value, student.lastname.value
+            )
+            asyncio.ensure_future(member.edit(nick=student_name))
