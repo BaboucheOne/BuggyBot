@@ -78,8 +78,6 @@ class RegisterMemberCog(commands.Cog):
         except Exception as e:
             print(f"Exception occurs {e}")
 
-        await self.__bot.process_commands(context)
-
     @commands.command(name="register")
     @commands.dm_only()
     async def register(self, context: Context):
@@ -100,5 +98,3 @@ class RegisterMemberCog(commands.Cog):
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception:
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
-
-        await self.__bot.process_commands(message)
