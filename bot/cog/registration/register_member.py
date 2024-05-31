@@ -61,7 +61,7 @@ class RegisterMemberCog(commands.Cog):
 
     @commands.command(name="add_student")
     @commands.dm_only()
-    @role_check(DiscordRole.ASETIN, DiscordRole.AEGLO, DiscordRole.ADMIN)
+    @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def add_student(self, context: Context):
         message = context.message
         if self.__is_self(message):

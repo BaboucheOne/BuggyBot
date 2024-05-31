@@ -21,4 +21,4 @@ class DiscordRole:
     AEGLO: str = "AEGLO"
     ADMIN: str = "ADMIN"
 
-    ADMINS: List[str] = [ASETIN, AEGLO, ADMIN]
+    ADMINS: List[str] = [ASETIN, ADMIN]
