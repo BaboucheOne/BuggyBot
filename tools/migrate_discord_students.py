@@ -51,10 +51,10 @@ def get_unregistered_students(students_collection) -> List[Student]:
 
 def find_with_first_and_lastname(
     students: List[Student], firstname: str, lastname: str
-) -> Tuple[int, Student or None]:
-    for k, s in enumerate(students):
-        if s.firstname.value == firstname and s.lastname.value == lastname:
-            return k, s
+) -> Student:
+    for student in students:
+        if student.firstname.value == firstname and student.lastname.value == lastname:
+            return student
     raise StudentNotFoundException()
 
 
@@ -109,11 +109,9 @@ def check_migration_rules(
     for member in server_members:
         try:
             split = member.nick.split(" ")
-            index, student = find_with_first_and_lastname(students, split[0], split[1])
-
-            if student.discord_user_id.value == -1:
-                student.discord_user_id.value = member.id
-                members_migration_successful.append(student)
+            student = find_with_first_and_lastname(students, split[0], split[1])
+            student.discord_user_id.value = member.id
+            members_migration_successful.append(student)
         except StudentNotFoundException or IndexError:
             members_migration_missed.append(member)
 
