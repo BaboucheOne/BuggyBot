@@ -16,7 +16,7 @@ from bot.domain.student.student_repository import StudentRepository
 
 class DiscordService(StudentRegisteredObserver):
 
-    NAME_MAX_LENGTH = 32
+    MAX_NICKNAME_LENGTH = 32
 
     def __init__(
         self, discord_client: DiscordClient, student_repository: StudentRepository
@@ -40,8 +40,8 @@ class DiscordService(StudentRegisteredObserver):
 
         student_name = f"{student_firstname} {student_lastname}"
 
-        if len(student_name) > self.NAME_MAX_LENGTH:
-            student_name = "{student_firstname} {student_lastname[0]}."
+        if len(student_name) > self.MAX_NICKNAME_LENGTH:
+            student_name = f"{student_firstname} {student_lastname[0]}."
 
         return student_name
 
@@ -49,7 +49,10 @@ class DiscordService(StudentRegisteredObserver):
         student = self.__student_repository.find_student_by_ni(ni)
         member = self.__discord_client.server.get_member(student.discord_user_id.value)
         role_name = self.__get_role_name(student.program_code.value)
-        role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
-        asyncio.ensure_future(member.add_roles(role))
+
+        if member != self.__discord_client.server.owner:
+            role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
+            asyncio.ensure_future(member.add_roles(role))
+
         student_name = self.__get_name(student.firstname.value, student.lastname.value)
         asyncio.ensure_future(member.edit(nick=student_name))
