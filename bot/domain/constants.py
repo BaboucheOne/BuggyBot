@@ -6,6 +6,7 @@ class UniProgram:
     GLO: str = "B-GLO"
     IIG: str = "B-IIG"
     CERTIFICATE: str = "C-IFT"
+    HONORIFIQUE: str = "HONORIFIQUE"
 
 
 class DiscordRole:
@@ -14,8 +15,10 @@ class DiscordRole:
     IIG: str = "IIG"
     CERTIFICATE: str = "CERTIFICAT"
 
+    HONORIFIQUE: str = "Membre Honorifique"
+
     ASETIN: str = "ASETIN"
     AEGLO: str = "AEGLO"
     ADMIN: str = "ADMIN"
 
-    ADMINS: List[str] = [ASETIN, AEGLO, ADMIN]
+    ADMINS: List[str] = [ASETIN, ADMIN]

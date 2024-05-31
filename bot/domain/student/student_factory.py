@@ -25,7 +25,7 @@ class StudentFactory:
         ni = self.__ni_factory.create(ni)
         firstname = Firstname(firstname)
         lastname = Lastname(lastname)
-        program_code = ProgramCode(program_code)
+        program_code = ProgramCode(program_code.upper())
         new_admitted = NewAdmitted(new_admitted)
         discord_user_id = DiscordUserId(self.INVALID_DISCORD_USER_ID)
 
