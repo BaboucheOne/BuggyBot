@@ -3,7 +3,7 @@ import threading
 import time
 
 import discord
-from typing import List, Tuple
+from typing import List
 
 from discord import Member
 from pymongo import MongoClient
