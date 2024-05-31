@@ -23,6 +23,9 @@ from bot.cog.registration.factory.add_student_request_factory import (
 from bot.cog.registration.factory.register_student_request_factory import (
     RegisterStudentRequestFactory,
 )
+from bot.cog.registration.factory.unregister_student_request_factory import (
+    UnregisterStudentRequestFactory,
+)
 from bot.config.service_locator import ServiceLocator
 from bot.domain.constants import DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
@@ -48,6 +51,10 @@ class RegisterMemberCog(commands.Cog):
         )
 
         self.__register_student_request_factory = RegisterStudentRequestFactory(
+            self.__ni_sanitizer
+        )
+
+        self.__unregister_student_request_factory = UnregisterStudentRequestFactory(
             self.__ni_sanitizer
         )
 
@@ -79,7 +86,7 @@ class RegisterMemberCog(commands.Cog):
         except MissingArgumentsException:
             await message.channel.send(ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND)
         except Exception as e:
-            print(f"Exception occurs {e}")
+            print(f"Exception occur {e}")
 
     @commands.command(name="register")
     @commands.dm_only()
@@ -101,3 +108,19 @@ class RegisterMemberCog(commands.Cog):
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception:
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
+
+    @commands.command(name="unregister")
+    @commands.dm_only()
+    @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
+    async def unregister(self, context: Context):
+        message = context.message
+        if self.__is_self(message):
+            return
+
+        try:
+            content = Utility.get_content_without_command(message.content)
+            unregister_student_request = (
+                self.__unregister_student_request_factory.create(content)
+            )
+        except Exception as e:
+            print(f"Exception occur {e}")
