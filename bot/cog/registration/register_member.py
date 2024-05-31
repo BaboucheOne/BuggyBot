@@ -77,8 +77,8 @@ class RegisterMemberCog(commands.Cog):
             await message.channel.send(ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND)
         except Exception as e:
             print(f"Exception occurs {e}")
-        finally:
-            await self.__bot.process_commands(context)
+
+        await self.__bot.process_commands(context)
 
     @commands.command(name="register")
     @commands.dm_only()
@@ -100,5 +100,5 @@ class RegisterMemberCog(commands.Cog):
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception:
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
-        finally:
-            await self.__bot.process_commands(message)
+
+        await self.__bot.process_commands(message)
