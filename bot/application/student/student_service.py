@@ -86,6 +86,6 @@ class StudentService(StudentRegisteredObservable):
 
         if self.__does_student_already_registered(student_ni):
             raise StudentAlreadyRegisteredException()
-        self.__student_repository.register_student(student_ni, discord_user_id)
 
+        self.__student_repository.register_student(student_ni, discord_user_id)
         self.notify_on_student_registered(student_ni)
