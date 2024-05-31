@@ -6,6 +6,7 @@ class UniProgram:
     GLO: str = "B-GLO"
     IIG: str = "B-IIG"
     CERTIFICATE: str = "C-IFT"
+    HONORIFIQUE: str = "HONORIFIQUE"
 
 
 class DiscordRole:
@@ -13,6 +14,8 @@ class DiscordRole:
     GLO: str = "GLO"
     IIG: str = "IIG"
     CERTIFICATE: str = "CERTIFICAT"
+
+    HONORIFIQUE: str = "Membre Honorifique"
 
     ASETIN: str = "ASETIN"
     AEGLO: str = "AEGLO"
