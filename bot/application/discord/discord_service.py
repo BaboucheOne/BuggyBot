@@ -1,6 +1,8 @@
 import asyncio
+from typing import List
 
 import discord
+from discord import Role, Member
 
 from bot.application.discord.events.student_registered.student_registered_observer import (
     StudentRegisteredObserver,
@@ -29,12 +31,22 @@ class DiscordService(StudentRegisteredObserver):
             UniProgram.IFT: DiscordRole.IFT,
             UniProgram.IIG: DiscordRole.IIG,
             UniProgram.CERTIFICATE: DiscordRole.CERTIFICATE,
+            UniProgram.HONORIFIQUE: DiscordRole.HONORIFIQUE,
         }
 
-    def __get_role_name(self, student_role) -> str:
+    def __get_role_name(self, student_role: str) -> str:
         if student_role in self.__role_mapping:
             return self.__role_mapping[student_role]
         raise RoleNotFoundException(student_role)
+
+    def __get_uni_roles(self, member: Member) -> List[Role]:
+        role_names = {
+            DiscordRole.IFT,
+            DiscordRole.GLO,
+            DiscordRole.IIG,
+            DiscordRole.CERTIFICATE,
+        }
+        return list(filter(lambda role: role.name in role_names, member.roles))
 
     def __get_name(self, student_firstname, student_lastname) -> str:
 
@@ -58,3 +70,12 @@ class DiscordService(StudentRegisteredObserver):
                 student.firstname.value, student.lastname.value
             )
             asyncio.ensure_future(member.edit(nick=student_name))
+
+    def on_student_unregistered(self, ni: NI):
+        student = self.__student_repository.find_student_by_ni(ni)
+        member = self.__discord_client.server.get_member(student.discord_user_id.value)
+
+        uni_roles = self.__get_uni_roles(member)
+        asyncio.ensure_future(member.remove_roles(*uni_roles))
+
+        member.send("ADD TEXT HERE")

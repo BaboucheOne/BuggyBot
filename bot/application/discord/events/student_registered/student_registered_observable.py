@@ -19,3 +19,7 @@ class StudentRegisteredObservable:
     def notify_on_student_registered(self, ni: NI):
         for observer in self.__observers:
             observer.on_student_registered(ni)
+
+    def notify_on_student_unregistered(self, ni: NI):
+        for observer in self.__observers:
+            observer.on_student_unregistered(ni)

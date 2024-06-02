@@ -19,6 +19,7 @@ from bot.application.student.validators.program_code_validator import (
 )
 from bot.cog.request.add_student_request import AddStudentRequest
 from bot.cog.request.register_student_request import RegisterStudentRequest
+from bot.cog.request.unregister_student_request import UnregisterStudentRequest
 from bot.domain.student.attributs.discord_user_id import DiscordUserId
 from bot.domain.student.attributs.ni import NI
 from bot.domain.student.ni_factory import NIFactory
@@ -89,3 +90,16 @@ class StudentService(StudentRegisteredObservable):
 
         self.__student_repository.register_student(student_ni, discord_user_id)
         self.notify_on_student_registered(student_ni)
+
+    def unregister_student(self, unregister_student_request: UnregisterStudentRequest):
+        if not self.__ni_validator.validate(unregister_student_request.ni):
+            raise InvalidNIFormatException()
+
+        student_ni = self.__ni_factory.create(unregister_student_request.ni)
+
+        # Sus
+        student = self.__student_repository.find_student_by_ni(student_ni)
+        student.discord_user_id.value = -1
+        self.__student_repository.update_student(student)
+
+        self.notify_on_student_unregistered(student_ni)
