@@ -32,7 +32,7 @@ from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.utility import Utility
 
 
-class RegisterMemberCog(commands.Cog):
+class RegisterMemberCog(commands.Cog, name="Registration"):
 
     def __init__(self):
         self.__bot = ServiceLocator.get_dependency(DiscordClient)
@@ -66,7 +66,11 @@ class RegisterMemberCog(commands.Cog):
         await member.create_dm()
         await member.dm_channel.send(ReplyMessage.WELCOME)
 
-    @commands.command(name="add_student")
+    @commands.command(
+        name="add_student",
+        help="Arguments needed in order:\n !add_student ni firstname lastname program_code new_admitted",
+        brief="Add a user to the student list. ONLY ADMIN",
+    )
     @commands.dm_only()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def add_student(self, context: Context):
@@ -89,7 +93,11 @@ class RegisterMemberCog(commands.Cog):
             print(f"Exception occur {e}")
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
 
-    @commands.command(name="register")
+    @commands.command(
+        name="register",
+        help="Required your NI. Example !register 123456789",
+        brief="Register you to access the discord.",
+    )
     @commands.dm_only()
     async def register(self, context: Context):
         message = context.message
@@ -110,7 +118,11 @@ class RegisterMemberCog(commands.Cog):
         except Exception:
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
 
-    @commands.command(name="unregister")
+    @commands.command(
+        name="unregister",
+        help="Arguments needed in order:\n !unregister ni",
+        brief="Delete a user from the student list. ONLY ADMIN",
+    )
     @commands.dm_only()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def unregister(self, context: Context):

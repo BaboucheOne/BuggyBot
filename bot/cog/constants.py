@@ -6,6 +6,10 @@ class ReplyMessage:
         "ps: Si tu ne sais pas où trouver ton NI, tu peux le consulter sur MonPortail ou encore sur ta carte étudiante."
     )
 
+    ASETIN_INFO: str = "Ask people to detail this."
+
+    AEGLO_INFO: str = "Ask people to detail this."
+
     UNSUCCESSFUL_GENERIC: str = "Oh oh... something went wrong."
 
     ALREADY_REGISTERED: str = (

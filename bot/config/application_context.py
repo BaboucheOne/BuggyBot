@@ -6,6 +6,7 @@ from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
+from bot.cog.association.association import AssociationCog
 from bot.cog.registration.register_member import RegisterMemberCog
 from bot.config.dotenv_configuration import DotEnvConfiguration
 from bot.config.service_locator import ServiceLocator
@@ -44,7 +45,10 @@ class ApplicationContext(ABC):
         ]
         self.__assemble_dependencies(dependencies)
 
-        cogs = [self._instantiate_register_member_cog()]
+        cogs = [
+            self._instantiate_register_member_cog(),
+            self._instantiate_association_cog(),
+        ]
         await self.__register_cogs(discord_client, cogs)
 
     async def __register_cogs(self, discord_client: DiscordClient, cogs: List):
@@ -59,6 +63,10 @@ class ApplicationContext(ABC):
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]
         return database[self._configuration.student_collection_name]
+
+    @abstractmethod
+    def _instantiate_association_cog(self) -> AssociationCog:
+        pass
 
     @abstractmethod
     def _instantiate_register_member_cog(self) -> RegisterMemberCog:
