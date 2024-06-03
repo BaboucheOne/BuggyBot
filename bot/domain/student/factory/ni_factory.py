@@ -1,4 +1,4 @@
-from bot.domain.student.attributs.ni import NI
+from bot.domain.student.attribut.ni import NI
 
 
 class NIFactory:

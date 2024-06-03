@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.ni import NI
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
+from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student import Student
 
 

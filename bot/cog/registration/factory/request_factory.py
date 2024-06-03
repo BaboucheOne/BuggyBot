@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Tuple
 
-from bot.cog.exceptions.missing_arguments_exception import MissingArgumentsException
+from bot.cog.exception.missing_arguments_exception import MissingArgumentsException
 
 
 class RequestFactory(ABC):

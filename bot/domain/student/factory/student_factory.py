@@ -1,9 +1,9 @@
-from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.firstname import Firstname
-from bot.domain.student.attributs.lastname import Lastname
-from bot.domain.student.attributs.new_admitted import NewAdmitted
-from bot.domain.student.attributs.program_code import ProgramCode
-from bot.domain.student.ni_factory import NIFactory
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
+from bot.domain.student.attribut.firstname import Firstname
+from bot.domain.student.attribut.lastname import Lastname
+from bot.domain.student.attribut.new_admitted import NewAdmitted
+from bot.domain.student.attribut.program_code import ProgramCode
+from bot.domain.student.factory.ni_factory import NIFactory
 from bot.domain.student.student import Student
 
 

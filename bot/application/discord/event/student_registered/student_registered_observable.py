@@ -1,10 +1,10 @@
 from typing import List
 
-from bot.application.discord.events.student_registered.student_registered_observer import (
+from bot.application.discord.event.student_registered.student_registered_observer import (
     StudentRegisteredObserver,
 )
-from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.ni import NI
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
+from bot.domain.student.attribut.ni import NI
 
 
 class StudentRegisteredObservable:
