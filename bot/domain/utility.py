@@ -1,4 +1,4 @@
-from bot.cog.exceptions.missing_arguments_exception import MissingArgumentsException
+from bot.cog.exception.missing_arguments_exception import MissingArgumentsException
 
 
 class Utility:

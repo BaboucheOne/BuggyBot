@@ -1,4 +1,4 @@
-from bot.application.discord.events.student_registered.student_registered_observable import (
+from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
 from bot.application.student.exceptions.invalid_ni_format_exception import (
@@ -17,13 +17,15 @@ from bot.application.student.validators.ni_validator import NIValidator
 from bot.application.student.validators.program_code_validator import (
     ProgramCodeValidator,
 )
-from bot.cog.request.add_student_request import AddStudentRequest
-from bot.cog.request.register_student_request import RegisterStudentRequest
-from bot.cog.request.unregister_student_request import UnregisterStudentRequest
-from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.ni import NI
-from bot.domain.student.ni_factory import NIFactory
-from bot.domain.student.student_factory import StudentFactory
+from bot.cog.registration.request.add_student_request import AddStudentRequest
+from bot.cog.registration.request.register_student_request import RegisterStudentRequest
+from bot.cog.registration.request.unregister_student_request import (
+    UnregisterStudentRequest,
+)
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
+from bot.domain.student.attribut.ni import NI
+from bot.domain.student.factory.ni_factory import NIFactory
+from bot.domain.student.factory.student_factory import StudentFactory
 from bot.domain.student.student_repository import StudentRepository
 from bot.domain.utility import Utility
 from bot.infra.student.exception.student_not_found_exception import (

@@ -15,8 +15,8 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
-from bot.cog.decorators.role_check import role_check
-from bot.cog.exceptions.missing_arguments_exception import MissingArgumentsException
+from bot.cog.decorator.role_check import role_check
+from bot.cog.exception.missing_arguments_exception import MissingArgumentsException
 from bot.cog.registration.factory.add_student_request_factory import (
     AddStudentRequestFactory,
 )
