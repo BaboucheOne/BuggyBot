@@ -13,6 +13,10 @@ class ReplyMessage:
         "3.`!aeglo` to have info on this association."
     )
 
+    ASETIN_INFO: str = "Ask people to detail this."
+
+    AEGLO_INFO: str = "Ask people to detail this."
+
     UNSUCCESSFUL_GENERIC: str = "Oh oh... something went wrong."
 
     ALREADY_REGISTERED: str = (
