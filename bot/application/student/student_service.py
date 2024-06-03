@@ -1,5 +1,3 @@
-import copy
-
 from bot.application.discord.events.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
