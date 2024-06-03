@@ -87,6 +87,7 @@ class RegisterMemberCog(commands.Cog):
             await message.channel.send(ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND)
         except Exception as e:
             print(f"Exception occur {e}")
+            await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
 
     @commands.command(name="register")
     @commands.dm_only()
@@ -122,5 +123,9 @@ class RegisterMemberCog(commands.Cog):
             unregister_student_request = (
                 self.__unregister_student_request_factory.create(content)
             )
+
+            self.__student_service.unregister_student(unregister_student_request)
+            await message.channel.send(ReplyMessage.SUCCESSFUL_UNREGISTER)
         except Exception as e:
             print(f"Exception occur {e}")
+            await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)

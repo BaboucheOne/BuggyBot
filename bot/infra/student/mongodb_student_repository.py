@@ -49,3 +49,10 @@ class MongoDbStudentRepository(StudentRepository):
 
         if result.modified_count == 0:
             raise StudentNotRegisteredException()
+
+    def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
+        filter_query = {StudentMongoDbKey.NI: ni.value}
+        update_query = {
+            "$set": {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
+        }
+        self.__student_collection.update_one(filter_query, update_query)

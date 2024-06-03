@@ -6,9 +6,12 @@ class ReplyMessage:
         "ps: Si tu ne sais pas où trouver ton NI, tu peux le consulter sur MonPortail ou encore sur ta carte étudiante."
     )
 
+    UNSUCCESSFUL_GENERIC: str = "Oh oh... something went wrong."
+
     ALREADY_REGISTERED: str = (
         "Your are already registered.\nIf you haven't registered yet, please contact an admin."
     )
+
     UNABLE_TO_REGISTER: str = (
         "Unable to registered you.\nCheck your NI. If your NI is the good one, please contact an admin."
     )
@@ -21,6 +24,12 @@ class ReplyMessage:
         "Student added ! He can now registered my himself by sending me a dm."
     )
 
+    SUCCESSFUL_UNREGISTER: str = "user has been successfully unregistered."
+
     STUDENT_ALREADY_EXISTS: str = "This student already exists."
 
     MISSING_ARGUMENTS_IN_COMMAND: str = "Missing arguments in the command."
+
+    NOTIFY_UNREGISTER: str = (
+        "You have been unregistered from ASETIN's server. Contact an admin for more info."
+    )

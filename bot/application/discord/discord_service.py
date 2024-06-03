@@ -10,8 +10,10 @@ from bot.application.discord.events.student_registered.student_registered_observ
 from bot.application.discord.exception.role_not_found_exception import (
     RoleNotFoundException,
 )
+from bot.cog.constants import ReplyMessage
 from bot.domain.constants import UniProgram, DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
+from bot.domain.student.attributs.discord_user_id import DiscordUserId
 from bot.domain.student.attributs.ni import NI
 from bot.domain.student.student_repository import StudentRepository
 
@@ -71,11 +73,10 @@ class DiscordService(StudentRegisteredObserver):
             )
             asyncio.ensure_future(member.edit(nick=student_name))
 
-    def on_student_unregistered(self, ni: NI):
-        student = self.__student_repository.find_student_by_ni(ni)
-        member = self.__discord_client.server.get_member(student.discord_user_id.value)
+    def on_student_unregistered(self, discord_user_id: DiscordUserId):
+        member = self.__discord_client.server.get_member(discord_user_id.value)
 
         uni_roles = self.__get_uni_roles(member)
         asyncio.ensure_future(member.remove_roles(*uni_roles))
 
-        member.send("ADD TEXT HERE")
+        member.send(ReplyMessage.NOTIFY_UNREGISTER)

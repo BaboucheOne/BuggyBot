@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from bot.domain.student.attributs.discord_user_id import DiscordUserId
 from bot.domain.student.attributs.ni import NI
 
 
@@ -9,5 +10,5 @@ class StudentRegisteredObserver(ABC):
         pass
 
     @abstractmethod
-    def on_student_unregistered(self, ni: NI):
+    def on_student_unregistered(self, discord_user_id: DiscordUserId):
         pass

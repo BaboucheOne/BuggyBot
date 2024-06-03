@@ -1,3 +1,5 @@
+import copy
+
 from bot.application.discord.events.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
@@ -97,9 +99,7 @@ class StudentService(StudentRegisteredObservable):
 
         student_ni = self.__ni_factory.create(unregister_student_request.ni)
 
-        # Sus
         student = self.__student_repository.find_student_by_ni(student_ni)
-        student.discord_user_id.value = -1
-        self.__student_repository.update_student(student)
 
-        self.notify_on_student_unregistered(student_ni)
+        self.__student_repository.unregister_student(student_ni, DiscordUserId(-1))
+        self.notify_on_student_unregistered(student.discord_user_id)

@@ -21,3 +21,7 @@ class StudentRepository(ABC):
     @abstractmethod
     def register_student(self, ni: NI, discord_user_id: DiscordUserId):
         pass
+
+    @abstractmethod
+    def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
+        pass
