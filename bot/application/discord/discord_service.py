@@ -79,4 +79,4 @@ class DiscordService(StudentRegisteredObserver):
         uni_roles = self.__get_uni_roles(member)
         asyncio.ensure_future(member.remove_roles(*uni_roles))
 
-        member.send(ReplyMessage.NOTIFY_UNREGISTER)
+        asyncio.ensure_future(member.send(ReplyMessage.NOTIFY_UNREGISTER))
