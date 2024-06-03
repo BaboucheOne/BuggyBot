@@ -99,5 +99,7 @@ class StudentService(StudentRegisteredObservable):
 
         student = self.__student_repository.find_student_by_ni(student_ni)
 
-        self.__student_repository.unregister_student(student_ni, DiscordUserId(-1))
+        self.__student_repository.unregister_student(
+            student_ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
+        )
         self.notify_on_student_unregistered(student.discord_user_id)
