@@ -6,13 +6,6 @@ class ReplyMessage:
         "ps: Si tu ne sais pas où trouver ton NI, tu peux le consulter sur MonPortail ou encore sur ta carte étudiante."
     )
 
-    HELP: str = (
-        "All my available commands:\n"
-        "1.`!register [NI]` -> Register you to access channels.\n"
-        "2.`!asetin` to have info on this association.\n"
-        "3.`!aeglo` to have info on this association."
-    )
-
     ASETIN_INFO: str = "Ask people to detail this."
 
     AEGLO_INFO: str = "Ask people to detail this."

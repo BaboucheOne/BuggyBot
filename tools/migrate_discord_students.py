@@ -127,7 +127,7 @@ async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
             "A migration has been done."
             "Unfortunately we were unable to migrate your discord profile to our new database.\n"
             "Use !register [NI] to perform this migration.\n"
-            "If you need association contact an admin."
+            "If you need help contact an admin."
         )
         time.sleep(MIGRATION_SENDING_MESSAGE_SEC)
     print("All miss migrated has been contacted.")
