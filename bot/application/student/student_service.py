@@ -17,9 +17,11 @@ from bot.application.student.validators.ni_validator import NIValidator
 from bot.application.student.validators.program_code_validator import (
     ProgramCodeValidator,
 )
-from bot.cog.request.add_student_request import AddStudentRequest
-from bot.cog.request.register_student_request import RegisterStudentRequest
-from bot.cog.request.unregister_student_request import UnregisterStudentRequest
+from bot.cog.registration.request.add_student_request import AddStudentRequest
+from bot.cog.registration.request.register_student_request import RegisterStudentRequest
+from bot.cog.registration.request.unregister_student_request import (
+    UnregisterStudentRequest,
+)
 from bot.domain.student.attributs.discord_user_id import DiscordUserId
 from bot.domain.student.attributs.ni import NI
 from bot.domain.student.ni_factory import NIFactory

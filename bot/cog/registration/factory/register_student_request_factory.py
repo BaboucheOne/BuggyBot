@@ -1,6 +1,6 @@
 from bot.cog.chain_of_responsibility.responsibility_handler import ResponsibilityHandler
 from bot.cog.registration.factory.request_factory import RequestFactory
-from bot.cog.request.register_student_request import RegisterStudentRequest
+from bot.cog.registration.request.register_student_request import RegisterStudentRequest
 
 
 class RegisterStudentRequestFactory(RequestFactory):

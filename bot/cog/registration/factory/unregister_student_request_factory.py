@@ -1,6 +1,8 @@
 from bot.cog.chain_of_responsibility.responsibility_handler import ResponsibilityHandler
 from bot.cog.registration.factory.request_factory import RequestFactory
-from bot.cog.request.unregister_student_request import UnregisterStudentRequest
+from bot.cog.registration.request.unregister_student_request import (
+    UnregisterStudentRequest,
+)
 
 
 class UnregisterStudentRequestFactory(RequestFactory):
