@@ -1,3 +1,5 @@
+import logging
+
 from discord import Message
 from discord.ext import commands
 from discord.ext.commands import Context
@@ -5,6 +7,9 @@ from discord.ext.commands import Context
 from bot.cog.constants import ReplyMessage
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
+
+
+logger = logging.getLogger(__name__)
 
 
 class AssociationCog(commands.Cog, name="Association"):
@@ -22,6 +27,8 @@ class AssociationCog(commands.Cog, name="Association"):
     )
     @commands.dm_only()
     async def asetin(self, context: Context):
+        logging.info(f"Executing ASETIN command by {context.message.author}")
+
         message = context.message
         if self.__is_self(message):
             return
@@ -29,7 +36,7 @@ class AssociationCog(commands.Cog, name="Association"):
         try:
             await message.channel.send(ReplyMessage.ASETIN_INFO)
         except Exception as e:
-            print(f"Exception occur {e}")
+            logging.error(f"Error while executing ASETIN command {e}")
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
 
     @commands.command(
@@ -39,6 +46,8 @@ class AssociationCog(commands.Cog, name="Association"):
     )
     @commands.dm_only()
     async def aeglo(self, context: Context):
+        logging.info(f"Executing AEGLO command by {context.message.author}")
+
         message = context.message
         if self.__is_self(message):
             return
@@ -46,5 +55,5 @@ class AssociationCog(commands.Cog, name="Association"):
         try:
             await message.channel.send(ReplyMessage.AEGLO_INFO)
         except Exception as e:
-            print(f"Exception occur {e}")
+            logging.error(f"Error while executing AEGLO command {e}")
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)

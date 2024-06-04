@@ -1,8 +1,12 @@
+import logging
+
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.cache.cache_repository import CacheRepository
+
+logger = logging.getLogger(__name__)
 
 
 class CachedStudentRepository(StudentRepository, CacheRepository):
@@ -14,22 +18,33 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
     def register_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._set_dirty(ni)
         self.__repository.register_student(ni, discord_user_id)
+        logger.debug(f"register_student - {repr(ni)} {repr(discord_user_id)}")
 
     def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._set_dirty(ni)
         self.__repository.unregister_student(ni, discord_user_id)
+        logger.debug(f"unregister_student - {repr(ni)} {repr(discord_user_id)}")
 
     def add_student(self, student: Student):
         self.__repository.add_student(student)
+        logger.debug(f"update_student - {repr(student)}")
 
     def update_student(self, student: Student):
         self._set_dirty(student.ni)
         self.__repository.update_student(student)
+        logger.debug(f"update_student - {repr(student)}")
 
     def find_student_by_ni(self, ni: NI) -> Student:
         if self._is_cached(ni) and not self._is_dirty(ni):
-            return self._get_cached_item(ni).data
+            cache_student = self._get_cached_item(ni).data
+            logger.info(
+                f"find_student_by_ni - get cached student {repr(cache_student)}"
+            )
+            return cache_student
 
         student = self.__repository.find_student_by_ni(ni)
         self._set_cached_item(ni, student)
+
+        logger.info(f"find_student_by_ni - add student to cache {repr(student)}")
+
         return student

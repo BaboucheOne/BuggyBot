@@ -1,5 +1,6 @@
 import asyncio
 import argparse
+import logging.config
 
 from bot.config.application_context import ApplicationContext
 from bot.config.development_context import DevelopmentContext
@@ -33,9 +34,14 @@ def get_application_context(args: argparse.Namespace) -> ApplicationContext:
     return ProductionContext()
 
 
-async def main():
-    args = read_arguments()
+def setup_logger():
+    logging.config.fileConfig("logging.ini")
 
+
+async def main():
+    setup_logger()
+
+    args = read_arguments()
     application_context = get_application_context(args)
     try:
         await application_context.build_application()
