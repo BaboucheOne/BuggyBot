@@ -6,6 +6,8 @@ from bot.config.application_context import ApplicationContext
 from bot.config.development_context import DevelopmentContext
 from bot.config.production_context import ProductionContext
 
+logger = logging.getLogger(__name__)
+
 
 def read_arguments() -> argparse.Namespace:
 
@@ -28,14 +30,16 @@ def read_arguments() -> argparse.Namespace:
 
 def get_application_context(args: argparse.Namespace) -> ApplicationContext:
     if args.env == "dev":
-        print("Development context is being used.")
         return DevelopmentContext()
-    print("Production context is being used.")
     return ProductionContext()
 
 
 def setup_logger():
-    logging.config.fileConfig("logging.ini")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler("buggy.log"), logging.StreamHandler()],
+    )
 
 
 async def main():
@@ -46,7 +50,7 @@ async def main():
     try:
         await application_context.build_application()
     except ConnectionError as e:
-        print(f"Unable to connect to the MongoDB. Closing the app.\n{e}")
+        logger.fatal(f"Unable to connect to the MongoDB. Exiting the app. {e}")
         exit(-1)
 
     await application_context.start_application()

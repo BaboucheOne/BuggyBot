@@ -1,3 +1,5 @@
+import logging
+
 import discord
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -13,11 +15,14 @@ from bot.domain.student.student_repository import StudentRepository
 from bot.infra.student.cached_student_repository import CachedStudentRepository
 from bot.infra.student.mongodb_student_repository import MongoDbStudentRepository
 
+logger = logging.getLogger(__name__)
+
 
 class ProductionContext(ApplicationContext):
 
     def __init__(self):
         super().__init__(ConfigurationFilename.PRODUCTION)
+        logger.info("Using production context")
 
     def _instantiate_mongo_client(self) -> MongoClient:
         return MongoClient(self._configuration.mongodb_connection_string)

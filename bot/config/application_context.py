@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
+from discord.ext import commands
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
@@ -60,10 +61,12 @@ class ApplicationContext(ABC):
 
         logger.info("build_application - Building completed")
 
-    async def __register_cogs(self, discord_client: DiscordClient, cogs: List):
+    async def __register_cogs(
+        self, discord_client: DiscordClient, cogs: List[commands.Cog]
+    ):
         for cog in cogs:
             await discord_client.add_cog(cog)
-            logger.debug(f"__register_cogs - cog registered: {cog.__name__}")
+            logger.debug(f"__register_cogs - cog registered: {cog.__cog_name__}")
 
     def __assemble_dependencies(self, dependencies: List[Tuple]):
         ServiceLocator.clear()
