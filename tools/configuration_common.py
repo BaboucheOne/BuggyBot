@@ -6,9 +6,9 @@ from bot.config.dotenv_configuration import DotEnvConfiguration
 
 def get_configuration(args: argparse.Namespace) -> DotEnvConfiguration:
     if args.env == "dev":
-        print("Development configuration is being used.")
+        print("La configuration de développement est en cours d'utilisation.")
         return DotEnvConfiguration(ConfigurationFilename.DEVELOPMENT)
-    print("Production configuration is being used.")
+    print("La configuration de production est en cours d'utilisation.")
     return DotEnvConfiguration(ConfigurationFilename.PRODUCTION)
 
 
@@ -20,5 +20,5 @@ def add_configuration_argument(parser: argparse.ArgumentParser):
         dest="env",
         choices=["dev", "prod"],
         default="dev",
-        help="Specify if the bot should run in development (dev) or production (prod) mode",
+        help="Spécifier si le bot doit fonctionner en mode développement (dev) ou production (prod).",
     )
