@@ -1,3 +1,5 @@
+from typing import List
+
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student import Student
@@ -10,6 +12,11 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
     def __init__(self, repository: StudentRepository):
         super().__init__()
         self.__repository = repository
+
+    def find_students_by_discord_user_id(
+        self, discord_user_id: DiscordUserId
+    ) -> List[Student]:
+        return self.__repository.find_students_by_discord_user_id(discord_user_id)
 
     def register_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._set_dirty(ni)
