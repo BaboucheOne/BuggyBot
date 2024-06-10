@@ -6,18 +6,19 @@ from pymongo import MongoClient
 
 from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.domain.constants import UniProgram
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.infra.constants import StudentMongoDbKey
-from constants import StudentListKey, UniProgram
+from constants import StudentCsvKey
 from tools.common import get_configuration, add_configuration_argument
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
-    StudentListKey.NI,
-    StudentListKey.PROGRAM_CODE,
-    StudentListKey.LASTNAME,
-    StudentListKey.FIRSTNAME,
-    StudentListKey.NEW,
+    StudentCsvKey.NI,
+    StudentCsvKey.PROGRAM_CODE,
+    StudentCsvKey.LASTNAME,
+    StudentCsvKey.FIRSTNAME,
+    StudentCsvKey.NEW,
 ]
 
 STUDENT_ALLOWED_PROGRAM = [
@@ -29,11 +30,11 @@ STUDENT_ALLOWED_PROGRAM = [
 
 STUDENT_NOUVEAU_COLUMN_MAPPING = {"Oui": True, "Non": False}
 STUDENTS_LIST_RENAMING_MAPPING = {
-    StudentListKey.NI: StudentMongoDbKey.NI,
-    StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
-    StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
-    StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-    StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+    StudentCsvKey.NI: StudentMongoDbKey.NI,
+    StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+    StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+    StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+    StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
 }
 
 
@@ -66,11 +67,11 @@ def read_students_csv(file_path: str) -> pd.DataFrame:
 def rename_student_list_to_mongodb_schema(students_df: pd.DataFrame):
     students_df.rename(
         columns={
-            StudentListKey.NI: StudentMongoDbKey.NI,
-            StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
-            StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
-            StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-            StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+            StudentCsvKey.NI: StudentMongoDbKey.NI,
+            StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+            StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+            StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+            StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
         },
         inplace=True,
     )

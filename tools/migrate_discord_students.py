@@ -20,7 +20,7 @@ from bot.infra.student.assembler.student_assembler import StudentAssembler
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
-from constants import StudentListKey
+from constants import StudentCsvKey
 from tools.common import add_configuration_argument, get_configuration
 
 STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
@@ -46,7 +46,7 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
 
 
 def get_unregistered_students(students_collection) -> List[Student]:
-    query = {StudentListKey.DISCORD_USER_ID: {"$ne": DiscordUserId.INVALID_DISCORD_ID}}
+    query = {StudentCsvKey.DISCORD_USER_ID: {"$ne": DiscordUserId.INVALID_DISCORD_ID}}
     projection = {"_id": 0}
     results = students_collection.find(query, projection)
 
