@@ -1,39 +1,35 @@
 class ReplyMessage:
     WELCOME: str = (
-        "Bienvenue dans le serveur Discord de l'ASETIN (Association des étudiantes et étudiants en informatique)! \n"
-        "Afin de confirmer que tu es bel et bien un(e) étudiant(e) inscrit(e) à l'association, entre ton numéro d'identification personnel (NI).\n"
+        "Bienvenue dans le serveur Discord de l'ASETIN.\n"
+        "Afin de confirmer que tu es bel et bien un(e) étudiant(e) inscrit(e) à l'association, entre ton numéro d'identification personnel (NI) via la commande !register [NI].\n"
         "Au plaisir de te rencontrer!\n"
-        "ps: Si tu ne sais pas où trouver ton NI, tu peux le consulter sur MonPortail ou encore sur ta carte étudiante."
+        "PS: Si tu ne sais pas où trouver ton NI, clique [ici](https://monportail.ulaval.ca/portail/carte-identite/apercus-carte)."
     )
 
-    ASETIN_INFO: str = "Ask people to detail this."
-
-    AEGLO_INFO: str = "Ask people to detail this."
-
-    UNSUCCESSFUL_GENERIC: str = "Oh oh... something went wrong."
+    UNSUCCESSFUL_GENERIC: str = "Oh oh... quelque chose s'est mal passé."
 
     ALREADY_REGISTERED: str = (
-        "Your are already registered.\nIf you haven't registered yet, please contact an admin."
+        "Vous êtes déjà enregistré. Si vous ne vous êtes pas encore enregistré, veuillez contacter un administrateur."
     )
 
     UNABLE_TO_REGISTER: str = (
-        "Unable to registered you.\nCheck your NI. If your NI is the good one, please contact an admin."
+        "Impossible de vous enregistrer. Vérifiez votre NI. Si votre NI est le bon, veuillez contacter un administrateur."
     )
 
     SUCCESSFUL_REGISTRATION: str = (
-        "You are now registered! Your role is now apply and your name is set."
+        "Vous êtes maintenant enregistré(e)! Votre rôle ainsi que votre nom sont désormais enregistrés."
     )
 
     SUCCESSFUL_STUDENT_ADDED: str = (
-        "Student added ! He can now registered my himself by sending me a dm."
+        "Étudiant ajouté ! Il peut maintenant s'inscrire lui-même en m'envoyant un message privé."
     )
 
-    SUCCESSFUL_UNREGISTER: str = "user has been successfully unregistered."
+    SUCCESSFUL_UNREGISTER: str = "L'utilisateur a été désenregistré avec succès."
 
-    STUDENT_ALREADY_EXISTS: str = "This student already exists."
+    STUDENT_ALREADY_EXISTS: str = "Cet étudiant existe déjà."
 
-    MISSING_ARGUMENTS_IN_COMMAND: str = "Missing arguments in the command."
+    MISSING_ARGUMENTS_IN_COMMAND: str = "Arguments manquants dans la commande."
 
     NOTIFY_UNREGISTER: str = (
-        "You have been unregistered from ASETIN's server. Contact an admin for more info."
+        "Vous avez été désenregistré du serveur ASETIN. Contactez un administrateur pour plus d'informations."
     )
