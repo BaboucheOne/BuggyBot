@@ -26,7 +26,7 @@ class MongoDbStudentRepository(StudentRepository):
         self, discord_user_id: DiscordUserId
     ) -> List[Student]:
         students = self.__student_collection.find(
-            {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id}
+            {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
         )
         return [self.__student_assembler.from_dict(student) for student in students]
 
