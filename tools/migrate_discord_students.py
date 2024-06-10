@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import threading
 import time
@@ -9,9 +10,9 @@ from discord import Member
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
-from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
 from bot.domain.discord_client.discord_client import DiscordClient
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.student import Student
 from bot.domain.utility import Utility
 from bot.infra.constants import StudentMongoDbKey
@@ -19,9 +20,9 @@ from bot.infra.student.assembler.student_assembler import StudentAssembler
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
-from constants import StudentListKey
+from constants import StudentCsvKey
+from tools.configuration_common import add_configuration_argument, get_configuration
 
-MISSING_DISCORD_USER_ID = -1
 STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
 
 MIGRATION_SENDING_REQUEST_SEC = 0.1
@@ -29,8 +30,11 @@ MIGRATION_SENDING_MESSAGE_SEC = 0.5
 WAIT_FOR_THREAD_INITIALIZATION = 1.0
 
 
-def read_configurations(filename: str) -> DotEnvConfiguration:
-    return DotEnvConfiguration(filename)
+def read_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Migrate student from discord to DB.")
+    add_configuration_argument(parser)
+
+    return parser.parse_args()
 
 
 def connect_to_mongo_db(connection_url: str) -> MongoClient:
@@ -42,7 +46,7 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
 
 
 def get_unregistered_students(students_collection) -> List[Student]:
-    query = {StudentListKey.DISCORD_USER_ID: {"$ne": MISSING_DISCORD_USER_ID}}
+    query = {StudentCsvKey.DISCORD_USER_ID: {"$ne": DiscordUserId.INVALID_DISCORD_ID}}
     projection = {"_id": 0}
     results = students_collection.find(query, projection)
 
@@ -203,7 +207,8 @@ def start_bot(discord_client: DiscordClient, configuration: DotEnvConfiguration)
 
 
 async def main():
-    configuration = read_configurations(ConfigurationFilename.PRODUCTION)
+    arguments = read_arguments()
+    configuration: DotEnvConfiguration = get_configuration(arguments)
 
     intents = discord.Intents.all()
     discord_client: DiscordClient = DiscordClient(

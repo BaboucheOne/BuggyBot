@@ -6,16 +6,19 @@ from pymongo import MongoClient
 
 from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.domain.constants import UniProgram
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.infra.constants import StudentMongoDbKey
-from constants import StudentListKey, UniProgram
+from constants import StudentCsvKey
+from tools.configuration_common import get_configuration, add_configuration_argument
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
-    StudentListKey.NI,
-    StudentListKey.PROGRAM_CODE,
-    StudentListKey.LASTNAME,
-    StudentListKey.FIRSTNAME,
-    StudentListKey.NEW,
+    StudentCsvKey.NI,
+    StudentCsvKey.PROGRAM_CODE,
+    StudentCsvKey.LASTNAME,
+    StudentCsvKey.FIRSTNAME,
+    StudentCsvKey.NEW,
 ]
 
 STUDENT_ALLOWED_PROGRAM = [
@@ -27,14 +30,12 @@ STUDENT_ALLOWED_PROGRAM = [
 
 STUDENT_NOUVEAU_COLUMN_MAPPING = {"Oui": True, "Non": False}
 STUDENTS_LIST_RENAMING_MAPPING = {
-    StudentListKey.NI: StudentMongoDbKey.NI,
-    StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
-    StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
-    StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-    StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+    StudentCsvKey.NI: StudentMongoDbKey.NI,
+    StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+    StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+    StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+    StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
 }
-
-MISSING_DISCORD_USER_ID = -1
 
 
 def read_arguments() -> argparse.Namespace:
@@ -42,6 +43,8 @@ def read_arguments() -> argparse.Namespace:
         description="Read CSV file and keep certain columns"
     )
     parser.add_argument(ARGUMENT_FILENAME_KEY, type=str, help="Path to the CSV file")
+    add_configuration_argument(parser)
+
     return parser.parse_args()
 
 
@@ -64,11 +67,11 @@ def read_students_csv(file_path: str) -> pd.DataFrame:
 def rename_student_list_to_mongodb_schema(students_df: pd.DataFrame):
     students_df.rename(
         columns={
-            StudentListKey.NI: StudentMongoDbKey.NI,
-            StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
-            StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
-            StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-            StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+            StudentCsvKey.NI: StudentMongoDbKey.NI,
+            StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+            StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+            StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+            StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
         },
         inplace=True,
     )
@@ -115,7 +118,7 @@ def get_dot_env_filepath():
 
 def main():
     arguments = read_arguments()
-    configuration = read_configurations(ConfigurationFilename.DEVELOPMENT)
+    configuration: DotEnvConfiguration = get_configuration(arguments)
 
     client = connect_to_mongo_db(configuration.mongodb_connection_string)
     database = client[configuration.mongodb_database_name]
@@ -130,7 +133,7 @@ def main():
     students_to_insert = get_students_to_insert(filtered_students_df, existing_nis)
 
     for student in students_to_insert:
-        student[StudentMongoDbKey.DISCORD_USER_ID] = MISSING_DISCORD_USER_ID
+        student[StudentMongoDbKey.DISCORD_USER_ID] = DiscordUserId.INVALID_DISCORD_ID
 
     insert_students_into_collection(students_collection, students_to_insert)
 
