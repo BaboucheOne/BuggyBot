@@ -1,3 +1,5 @@
+from typing import List
+
 from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
@@ -26,6 +28,7 @@ from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
 from bot.domain.student.factory.ni_factory import NIFactory
 from bot.domain.student.factory.student_factory import StudentFactory
+from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.domain.utility import Utility
 from bot.infra.student.exception.student_not_found_exception import (
@@ -59,6 +62,14 @@ class StudentService(StudentRegisteredObservable):
         except StudentNotFoundException:
             return False
 
+    def __does_student_already_have_account(
+        self, discord_user_id: DiscordUserId
+    ) -> bool:
+        students: List[Student] = (
+            self.__student_repository.find_students_by_discord_user_id(discord_user_id)
+        )
+        return len(students) > 0
+
     def add_student(self, add_student_request: AddStudentRequest):
         if not self.__ni_validator.validate(add_student_request.ni):
             raise InvalidNIFormatException()
@@ -75,7 +86,9 @@ class StudentService(StudentRegisteredObservable):
             new_admitted,
         )
 
-        if self.__does_student_already_exists(student.ni):
+        if self.__does_student_already_exists(
+            student.ni
+        ) or self.__does_student_already_have_account(student.discord_user_id):
             raise StudentAlreadyExistsException()
 
         self.__student_repository.add_student(student)
@@ -87,7 +100,9 @@ class StudentService(StudentRegisteredObservable):
         student_ni = self.__ni_factory.create(register_student_request.ni)
         discord_user_id = DiscordUserId(register_student_request.discord_id)
 
-        if self.__does_student_already_registered(student_ni):
+        if self.__does_student_already_registered(
+            student_ni
+        ) or self.__does_student_already_have_account(discord_user_id):
             raise StudentAlreadyRegisteredException()
 
         self.__student_repository.register_student(student_ni, discord_user_id)
