@@ -1,3 +1,5 @@
+from typing import List
+
 from pymongo.collection import Collection
 
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
@@ -19,6 +21,14 @@ class MongoDbStudentRepository(StudentRepository):
     def __init__(self, student_collection: Collection):
         self.__student_collection: Collection = student_collection
         self.__student_assembler: StudentAssembler = StudentAssembler()
+
+    def find_students_by_discord_user_id(
+        self, discord_user_id: DiscordUserId
+    ) -> List[Student]:
+        students = self.__student_collection.find(
+            {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
+        )
+        return [self.__student_assembler.from_dict(student) for student in students]
 
     def find_student_by_ni(self, ni: NI) -> Student:
         query = {StudentMongoDbKey.NI: ni.value}

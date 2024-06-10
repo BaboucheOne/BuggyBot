@@ -4,6 +4,8 @@ from discord import Message
 from discord.ext import commands
 from discord.ext.commands import Context
 
+from bot.cog.association.embed.aeglo_embed import AegloEmbed
+from bot.cog.association.embed.asetin_embed import AsetinEmbed
 from bot.cog.constants import ReplyMessage
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
@@ -22,8 +24,8 @@ class AssociationCog(commands.Cog, name="Association"):
 
     @commands.command(
         name="asetin",
-        help="Info about ASETIN association.",
-        brief="Info about ASETIN association.",
+        help="Informations sur l'ASETIN.",
+        brief="Informations sur l'ASETIN.",
     )
     @commands.dm_only()
     async def asetin(self, context: Context):
@@ -34,15 +36,15 @@ class AssociationCog(commands.Cog, name="Association"):
             return
 
         try:
-            await message.channel.send(ReplyMessage.ASETIN_INFO)
+            await message.channel.send(embed=AsetinEmbed().embed)
         except Exception as e:
             logging.error(f"Error while executing ASETIN command {e}")
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
 
     @commands.command(
         name="aeglo",
-        help="Info about AEGLO association.",
-        brief="Info about AEGLO association.",
+        help="Informations sur l'AEGLO.",
+        brief="Informations sur l'AEGLO.",
     )
     @commands.dm_only()
     async def aeglo(self, context: Context):
@@ -53,7 +55,7 @@ class AssociationCog(commands.Cog, name="Association"):
             return
 
         try:
-            await message.channel.send(ReplyMessage.AEGLO_INFO)
+            await message.channel.send(embed=AegloEmbed().embed)
         except Exception as e:
             logging.error(f"Error while executing AEGLO command {e}")
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
