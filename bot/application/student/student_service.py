@@ -88,7 +88,9 @@ class StudentService(StudentRegisteredObservable):
 
         if self.__does_student_exists(
             student.ni
-        ) or self.__does_discord_user_id_already_registered_an_account(student.discord_user_id):
+        ) or self.__does_discord_user_id_already_registered_an_account(
+            student.discord_user_id
+        ):
             raise StudentAlreadyExistsException()
 
         self.__student_repository.add_student(student)
