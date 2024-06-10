@@ -21,7 +21,7 @@ from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
 from constants import StudentCsvKey
-from tools.common import add_configuration_argument, get_configuration
+from tools.configuration_common import add_configuration_argument, get_configuration
 
 STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
 
