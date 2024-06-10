@@ -31,7 +31,9 @@ WAIT_FOR_THREAD_INITIALIZATION = 1.0
 
 
 def read_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Migrate student from discord to DB.")
+    parser = argparse.ArgumentParser(
+        description="Migrer les étudiants de Discord vers la base de données."
+    )
     add_configuration_argument(parser)
 
     return parser.parse_args()
@@ -121,32 +123,35 @@ def check_migration_rules(
 
 
 async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
-    print("Starting contacting people. Can take some times.")
+    print("Début du contact avec les personnes. Cela peut prendre du temps.")
     print(
-        f"Time to contact members : {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC} secs"
+        f"Temps pour contacter les membres.: {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC} secs"
     )
     for member in members_migration_missed:
         await member.send(
-            "Hello I'm buggybot from ASETIN's discord!\n"
-            "A migration has been done."
-            "Unfortunately we were unable to migrate your discord profile to our new database.\n"
-            "Use !register [NI] to perform this migration.\n"
-            "If you need help contact an admin."
+            "Bonjour, je suis BuggyBot du Discord d'ASETIN !\n"
+            "Une migration a été effectuée."
+            "Malheureusement, nous n'avons pas pu migrer votre profil Discord vers notre nouvelle base de données.\n"
+            "Utilisez !register [NI] pour effectuer cette migration.\n"
+            "Si vous avez besoin d'aide, contactez un administrateur."
         )
         time.sleep(MIGRATION_SENDING_MESSAGE_SEC)
-    print("All miss migrated has been contacted.")
+    print("Tous les utilisateurs non migrés ont été contactés.")
 
 
 def notify_non_migrated_members(
     server_members: List[Member], members_migration_missed: List[Member]
 ):
     print(
-        f"{len(members_migration_missed)} Students has not been migrated due to errors."
+        f"{len(members_migration_missed)} étudiants n'ont pas été migrés en raison d'erreurs."
     )
     print(
-        f"This represent {len(members_migration_missed)/len(server_members) * 100}% of members."
+        f"Cela représente {len(members_migration_missed)/len(server_members) * 100}% des membres."
     )
-    print("Solution: Contact them and tell them to registered by them self.")
+    print(
+        "Solution : Les contacter et leur demander de s'inscrire eux-mêmes.\nVoici la liste des personnes à "
+        "contacter:"
+    )
     for member in members_migration_missed:
         print(member.nick)
 
@@ -154,14 +159,14 @@ def notify_non_migrated_members(
 def perform_migration(
     collection: Collection, members_migration_successful: List[Student]
 ):
-    print("Migration starting...")
+    print("La migration démarre...")
     print(
-        f"Estimated time to migrate members : {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs"
+        f"Temps estimé pour migrer les membres: {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs."
     )
     for member in members_migration_successful:
         migrate_student(collection, member)
         time.sleep(MIGRATION_SENDING_REQUEST_SEC)
-    print(f"Migration successful for {len(members_migration_successful)} members")
+    print(f"Migration réussie pour {len(members_migration_successful)} membres.")
 
 
 async def migrate(
@@ -183,22 +188,22 @@ async def migrate(
     if len(members_migration_successful) > 0:
         perform_migration(collection, members_migration_successful)
     else:
-        print("No members to migrate.")
+        print("Aucun membre à migrer.")
 
     if len(members_migration_missed) > 0:
         notify_non_migrated_members(server_members, members_migration_missed)
         response = input(
-            "Automatically contact them ? Use: true, 1, yes, y, oui or o -> "
+            "Utiliser un message automatisé pour les contacter ? Utilisez: true, 1, yes, y, oui or o -> "
         )
         can_contact = Utility.str_to_bool(response)
         if can_contact:
             await send_dm_non_migrated_members(members_migration_missed)
         else:
-            print("You chose to not contact these members")
+            print("Vous avez choisi de ne pas contacter ces membres.")
     else:
-        print("No miss migrated members.")
+        print("Aucun membre mal migré.")
 
-    print("Migration done.")
+    print("Migration terminée.")
     exit(0)
 
 

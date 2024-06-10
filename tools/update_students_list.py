@@ -39,10 +39,10 @@ STUDENTS_LIST_RENAMING_MAPPING = {
 
 
 def read_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Read CSV file and keep certain columns"
+    parser = argparse.ArgumentParser(description="Lire le fichier CSV.")
+    parser.add_argument(
+        ARGUMENT_FILENAME_KEY, type=str, help="Chemin vers le fichier CSV."
     )
-    parser.add_argument(ARGUMENT_FILENAME_KEY, type=str, help="Path to the CSV file")
     add_configuration_argument(parser)
 
     return parser.parse_args()
@@ -139,8 +139,8 @@ def main():
 
     client.close()
 
-    print(f"{len(students_to_insert)} new students inserted")
-    print("Students table has been updated!")
+    print(f"{len(students_to_insert)} nouveaux étudiants insérés.")
+    print("La table des étudiants a été mise à jour !")
 
 
 if __name__ == "__main__":

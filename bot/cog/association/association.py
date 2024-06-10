@@ -19,8 +19,8 @@ class AssociationCog(commands.Cog, name="Association"):
 
     @commands.command(
         name="asetin",
-        help="Info about ASETIN association.",
-        brief="Info about ASETIN association.",
+        help="Informations sur l'ASETIN.",
+        brief="Informations sur l'ASETIN.",
     )
     @commands.dm_only()
     async def asetin(self, context: Context):
@@ -36,8 +36,8 @@ class AssociationCog(commands.Cog, name="Association"):
 
     @commands.command(
         name="aeglo",
-        help="Info about AEGLO association.",
-        brief="Info about AEGLO association.",
+        help="Informations sur l'AEGLO.",
+        brief="Informations sur l'AEGLO.",
     )
     @commands.dm_only()
     async def aeglo(self, context: Context):
