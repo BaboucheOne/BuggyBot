@@ -1,4 +1,3 @@
-import logging
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
@@ -11,11 +10,10 @@ from bot.application.student.student_service import StudentService
 from bot.cog.association.association import AssociationCog
 from bot.cog.registration.register_member import RegisterMemberCog
 from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
-
-logger = logging.getLogger(__name__)
 
 
 class ApplicationContext(ABC):
@@ -23,14 +21,11 @@ class ApplicationContext(ABC):
         self._configuration = DotEnvConfiguration(configuration_filename)
 
     async def start_application(self):
-        logger.info("start_application - Starting application")
         await ServiceLocator.get_dependency(DiscordClient).start(
             self._configuration.discord_token
         )
 
     async def build_application(self):
-        logger.info("build_application - Building application")
-
         mongo_client = self._instantiate_mongo_client()
         student_collection = self.__instantiate_student_collection(mongo_client)
         student_repository = self._instantiate_student_repository(student_collection)
@@ -49,6 +44,7 @@ class ApplicationContext(ABC):
             (StudentRepository, student_repository),
             (StudentService, student_service),
             (DiscordService, discord_service),
+            (Logger, self._instantiate_logger()),
         ]
         self.__assemble_dependencies(dependencies)
 
@@ -59,14 +55,11 @@ class ApplicationContext(ABC):
 
         await self.__register_cogs(discord_client, cogs)
 
-        logger.info("build_application - Building completed")
-
     async def __register_cogs(
         self, discord_client: DiscordClient, cogs: List[commands.Cog]
     ):
         for cog in cogs:
             await discord_client.add_cog(cog)
-            logger.debug(f"__register_cogs - cog registered: {cog.__cog_name__}")
 
     def __assemble_dependencies(self, dependencies: List[Tuple]):
         ServiceLocator.clear()
@@ -76,6 +69,10 @@ class ApplicationContext(ABC):
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]
         return database[self._configuration.student_collection_name]
+
+    @abstractmethod
+    def _instantiate_logger(self) -> Logger:
+        pass
 
     @abstractmethod
     def _instantiate_association_cog(self) -> AssociationCog:

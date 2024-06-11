@@ -1,4 +1,3 @@
-import logging
 import os
 import argparse
 import pandas as pd
@@ -7,6 +6,7 @@ from pymongo import MongoClient
 
 from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.config.logger.logger import Logger
 from bot.domain.constants import UniProgram
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.infra.constants import StudentMongoDbKey
@@ -17,7 +17,7 @@ from tools.configuration_common import (
     setup_logger,
 )
 
-logger = logging.getLogger(__name__)
+logger: Logger = None
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
@@ -124,9 +124,9 @@ def get_dot_env_filepath():
 
 
 def main():
-    setup_logger()
     arguments = read_arguments()
     configuration: DotEnvConfiguration = get_configuration(arguments)
+    logger = setup_logger(configuration.logger_filename)
 
     client = connect_to_mongo_db(configuration.mongodb_connection_string)
     database = client[configuration.mongodb_database_name]

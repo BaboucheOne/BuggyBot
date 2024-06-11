@@ -1,12 +1,11 @@
 import asyncio
 import argparse
-import logging.config
 
+from bot.config.logger.logger import Logger
 from bot.config.application_context import ApplicationContext
 from bot.config.development_context import DevelopmentContext
 from bot.config.production_context import ProductionContext
-
-logger = logging.getLogger(__name__)
+from bot.config.service_locator import ServiceLocator
 
 
 def read_arguments() -> argparse.Namespace:
@@ -34,23 +33,16 @@ def get_application_context(args: argparse.Namespace) -> ApplicationContext:
     return ProductionContext()
 
 
-def setup_logger():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[logging.FileHandler("buggy.log"), logging.StreamHandler()],
-    )
-
-
 async def main():
-    setup_logger()
-
     args = read_arguments()
     application_context = get_application_context(args)
     try:
         await application_context.build_application()
+        ServiceLocator.get_dependency(Logger).info(f"main - Application build.")
     except ConnectionError as e:
-        logger.fatal(f"main - Unable to connect to the MongoDB. Exiting the app. {e}")
+        ServiceLocator.get_dependency(Logger).fatal(
+            f"main - Unable to connect to the MongoDB. Exiting the app. {e}"
+        )
         exit(-1)
 
     await application_context.start_application()

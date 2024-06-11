@@ -3,6 +3,7 @@ import logging
 
 from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.config.logger.logger import Logger
 
 
 def get_configuration(args: argparse.Namespace) -> DotEnvConfiguration:
@@ -25,9 +26,5 @@ def add_configuration_argument(parser: argparse.ArgumentParser):
     )
 
 
-def setup_logger():
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[logging.FileHandler("../buggy.log"), logging.StreamHandler()],
-    )
+def setup_logger(filename: str) -> Logger:
+    return Logger(f"../{filename}", logging.DEBUG)

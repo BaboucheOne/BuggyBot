@@ -1,6 +1,5 @@
 import argparse
 import asyncio
-import logging
 import threading
 import time
 
@@ -28,7 +27,7 @@ from tools.configuration_common import (
     setup_logger,
 )
 
-logger = logging.getLogger(__name__)
+global logger
 
 STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
 
@@ -131,7 +130,7 @@ def check_migration_rules(
 
 async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
     logger.info(
-        "Début du contact avec les personnes. Cela peut prendre du temps.\n"
+        "Début du contact avec les personnes. Cela peut prendre du temps. "
         f"Temps pour contacter les membres.: {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC} secs"
     )
     for member in members_migration_missed:
@@ -153,8 +152,8 @@ def notify_non_migrated_members(
         [member.nick for member in members_migration_missed]
     )
     logger.info(
-        f"{len(members_migration_missed)} étudiants n'ont pas été migrés en raison d'erreurs.\n"
-        f"Cela représente {len(members_migration_missed)/len(server_members) * 100}% des membres.\n"
+        f"{len(members_migration_missed)} étudiants n'ont pas été migrés en raison d'erreurs. "
+        f"Cela représente {len(members_migration_missed)/len(server_members) * 100}% des membres. "
         f"Solution : Les contacter et leur demander de s'inscrire eux-mêmes.\nVoici la liste des personnes à "
         f"contacter: {members_to_contacts}"
     )
@@ -164,7 +163,7 @@ def perform_migration(
     collection: Collection, members_migration_successful: List[Student]
 ):
     logger.info(
-        "La migration démarre...\n"
+        "La migration démarre... "
         f"Temps estimé pour migrer les membres: {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs."
     )
     for member in members_migration_successful:
@@ -216,9 +215,11 @@ def start_bot(discord_client: DiscordClient, configuration: DotEnvConfiguration)
 
 
 async def main():
-    setup_logger()
+    global logger
+
     arguments = read_arguments()
     configuration: DotEnvConfiguration = get_configuration(arguments)
+    logger = setup_logger(configuration.logger_filename)
 
     intents = discord.Intents.all()
     discord_client: DiscordClient = DiscordClient(

@@ -10,19 +10,17 @@ from bot.cog.association.association import AssociationCog
 from bot.cog.registration.register_member import RegisterMemberCog
 from bot.config.application_context import ApplicationContext
 from bot.config.constants import ConfigurationFilename
+from bot.config.logger.logger import Logger
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.student.cached_student_repository import CachedStudentRepository
 from bot.infra.student.mongodb_student_repository import MongoDbStudentRepository
-
-logger = logging.getLogger(__name__)
 
 
 class DevelopmentContext(ApplicationContext):
 
     def __init__(self):
         super().__init__(ConfigurationFilename.DEVELOPMENT)
-        logger.info("DevelopmentContext - __init__ - Using development context")
 
     def _instantiate_mongo_client(self) -> MongoClient:
         return MongoClient(self._configuration.mongodb_connection_string)
@@ -32,6 +30,9 @@ class DevelopmentContext(ApplicationContext):
         return DiscordClient(
             command_prefix="!", intents=intents, server_id=self._configuration.server_id
         )
+
+    def _instantiate_logger(self) -> Logger:
+        return Logger(self._configuration.logger_filename, logging.DEBUG)
 
     def _instantiate_association_cog(self) -> AssociationCog:
         return AssociationCog()
