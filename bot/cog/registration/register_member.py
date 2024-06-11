@@ -1,5 +1,3 @@
-import logging
-
 from discord import Message
 from discord.ext import commands
 from discord.ext.commands import Context
@@ -28,18 +26,18 @@ from bot.cog.registration.factory.register_student_request_factory import (
 from bot.cog.registration.factory.unregister_student_request_factory import (
     UnregisterStudentRequestFactory,
 )
+from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.constants import DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.utility import Utility
 
-logger = logging.getLogger(__name__)
-
 
 class RegisterMemberCog(commands.Cog, name="Registration"):
 
     def __init__(self):
-        self.__bot = ServiceLocator.get_dependency(DiscordClient)
+        self.__logger: Logger = ServiceLocator.get_dependency(Logger)
+        self.__bot: DiscordClient = ServiceLocator.get_dependency(DiscordClient)
         self.__student_service: StudentService = ServiceLocator.get_dependency(
             StudentService
         )
@@ -78,7 +76,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     @commands.dm_only()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def add_student(self, context: Context):
-        logging.info(f"Executing ADD_STUDENT command by {context.message.author}")
+        self.__logger.info(f"Executing ADD_STUDENT command by {context.message.author}")
 
         message = context.message
         if self.__is_self(message):
@@ -96,7 +94,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         except MissingArgumentsException:
             await message.channel.send(ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND)
         except Exception as e:
-            logging.error(f"Error while executing ADD_STUDENT command {e}")
+            self.__logger.error(f"Error while executing ADD_STUDENT command {e}")
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
 
     @commands.command(
@@ -106,7 +104,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     )
     @commands.dm_only()
     async def register(self, context: Context):
-        logging.info(f"Executing REGISTER command by {context.message.author}")
+        self.__logger.info(f"Executing REGISTER command by {context.message.author}")
 
         message = context.message
         if self.__is_self(message):
@@ -124,7 +122,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         except StudentAlreadyRegisteredException:
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception as e:
-            logging.error(f"Error while executing REGISTER command {e}")
+            self.__logger.error(f"Error while executing REGISTER command {e}")
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
 
     @commands.command(
@@ -135,7 +133,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     @commands.dm_only()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def unregister(self, context: Context):
-        logging.info(f"Executing UNREGISTER command by {context.message.author}")
+        self.__logger.info(f"Executing UNREGISTER command by {context.message.author}")
 
         message = context.message
         if self.__is_self(message):
@@ -150,5 +148,5 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__student_service.unregister_student(unregister_student_request)
             await message.channel.send(ReplyMessage.SUCCESSFUL_UNREGISTER)
         except Exception as e:
-            logging.error(f"Error while executing UNREGISTER command {e}")
+            self.__logger.error(f"Error while executing UNREGISTER command {e}")
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
