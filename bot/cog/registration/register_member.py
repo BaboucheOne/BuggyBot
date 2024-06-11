@@ -68,8 +68,8 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.command(
         name="add_student",
-        help="Arguments needed in order:\n !add_student ni firstname lastname program_code new_admitted",
-        brief="Add a user to the student list. ONLY ADMIN",
+        help="Arguments nécessaires dans l'ordre: !add_student ni prénom nom code_programme nouvel_admis",
+        brief="Ajouter un utilisateur à la liste des étudiants. Admin SEULEMENT",
     )
     @commands.dm_only()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
@@ -95,8 +95,8 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.command(
         name="register",
-        help="Required your NI. Example !register 123456789",
-        brief="Register you to access the discord.",
+        help="Votre NI est requis. Exemple : !register 123456789",
+        brief="Enregistrez-vous pour accéder au Discord.",
     )
     @commands.dm_only()
     async def register(self, context: Context):
@@ -120,8 +120,8 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.command(
         name="unregister",
-        help="Arguments needed in order:\n !unregister ni",
-        brief="Delete a user from the student list. ONLY ADMIN",
+        help="Arguments nécessaires dans l'ordre: !unregister ni",
+        brief="Supprimer un utilisateur de la liste des étudiants. Admin SEULEMENT",
     )
     @commands.dm_only()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
