@@ -1,7 +1,9 @@
+from typing import List
+
 from pymongo.collection import Collection
 
-from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.ni import NI
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
+from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.constants import StudentMongoDbKey
@@ -20,6 +22,14 @@ class MongoDbStudentRepository(StudentRepository):
         self.__student_collection: Collection = student_collection
         self.__student_assembler: StudentAssembler = StudentAssembler()
 
+    def find_students_by_discord_user_id(
+        self, discord_user_id: DiscordUserId
+    ) -> List[Student]:
+        students = self.__student_collection.find(
+            {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
+        )
+        return [self.__student_assembler.from_dict(student) for student in students]
+
     def find_student_by_ni(self, ni: NI) -> Student:
         query = {StudentMongoDbKey.NI: ni.value}
         student_response = self.__student_collection.find_one(query)
@@ -28,6 +38,10 @@ class MongoDbStudentRepository(StudentRepository):
             raise StudentNotFoundException()
 
         return self.__student_assembler.from_json(student_response)
+
+    def add_student(self, student: Student):
+        student_dict = self.__student_assembler.to_dict(student)
+        self.__student_collection.insert_one(student_dict)
 
     def update_student(self, student: Student):
         student_dict = self.__student_assembler.to_dict(student)
@@ -45,3 +59,10 @@ class MongoDbStudentRepository(StudentRepository):
 
         if result.modified_count == 0:
             raise StudentNotRegisteredException()
+
+    def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
+        filter_query = {StudentMongoDbKey.NI: ni.value}
+        update_query = {
+            "$set": {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
+        }
+        self.__student_collection.update_one(filter_query, update_query)

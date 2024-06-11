@@ -120,7 +120,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env.dev
+.env.prod
 .venv
 env/
 venv/
@@ -162,3 +163,5 @@ cython_debug/
 # Custom one for buggybot
 *.csv
 *.xlsx
+.env.*
+

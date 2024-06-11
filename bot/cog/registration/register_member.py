@@ -1,7 +1,10 @@
-import discord
 from discord import Message
 from discord.ext import commands
+from discord.ext.commands import Context
 
+from bot.application.student.exceptions.student_already_exist import (
+    StudentAlreadyExistsException,
+)
 from bot.application.student.student_service import (
     StudentService,
     StudentAlreadyRegisteredException,
@@ -12,13 +15,30 @@ from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
 from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
 from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
 from bot.cog.constants import ReplyMessage
+from bot.cog.decorator.role_check import role_check
+from bot.cog.exception.missing_arguments_exception import MissingArgumentsException
+from bot.cog.registration.factory.add_student_request_factory import (
+    AddStudentRequestFactory,
+)
+from bot.cog.registration.factory.register_student_request_factory import (
+    RegisterStudentRequestFactory,
+)
+from bot.cog.registration.factory.unregister_student_request_factory import (
+    UnregisterStudentRequestFactory,
+)
+from bot.config.service_locator import ServiceLocator
+from bot.domain.constants import DiscordRole
+from bot.domain.discord_client.discord_client import DiscordClient
+from bot.domain.utility import Utility
 
 
-class RegisterMemberCog(commands.Cog):
+class RegisterMemberCog(commands.Cog, name="Registration"):
 
-    def __init__(self, bot: commands.Bot, student_service: StudentService):
-        self.__bot = bot
-        self.__student_service = student_service
+    def __init__(self):
+        self.__bot = ServiceLocator.get_dependency(DiscordClient)
+        self.__student_service: StudentService = ServiceLocator.get_dependency(
+            StudentService
+        )
         self.__ni_sanitizer = (
             ResponsibilityBuilder()
             .with_handler(StripHandler())
@@ -26,28 +46,98 @@ class RegisterMemberCog(commands.Cog):
             .build()
         )
 
+        self.__add_student_request_factory = AddStudentRequestFactory(
+            self.__ni_sanitizer
+        )
+
+        self.__register_student_request_factory = RegisterStudentRequestFactory(
+            self.__ni_sanitizer
+        )
+
+        self.__unregister_student_request_factory = UnregisterStudentRequestFactory(
+            self.__ni_sanitizer
+        )
+
     def __is_self(self, message: Message) -> bool:
         return message.author == self.__bot.user
-
-    def __is_dm_message(self, message: Message) -> bool:
-        return isinstance(message.channel, discord.channel.DMChannel)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await member.create_dm()
         await member.dm_channel.send(ReplyMessage.WELCOME)
 
-    @commands.Cog.listener("on_message")
-    async def retrieve_ni(self, message: Message):
-        if self.__is_self(message) or not self.__is_dm_message(message):
+    @commands.command(
+        name="add_student",
+        help="Arguments nécessaires dans l'ordre: !add_student ni prénom nom code_programme nouvel_admis",
+        brief="Ajouter un utilisateur à la liste des étudiants. Admin SEULEMENT",
+    )
+    @commands.dm_only()
+    @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
+    async def add_student(self, context: Context):
+        message = context.message
+        if self.__is_self(message):
             return
 
         try:
-            ni = self.__ni_sanitizer.handle(message.content)
-            self.__student_service.register_student(ni, message.author.id)
+            content = Utility.get_content_without_command(message.content)
+            add_student_request = self.__add_student_request_factory.create(content)
+
+            self.__student_service.add_student(add_student_request)
+
+            await message.channel.send(ReplyMessage.SUCCESSFUL_STUDENT_ADDED)
+        except StudentAlreadyExistsException:
+            await message.channel.send(ReplyMessage.STUDENT_ALREADY_EXISTS)
+        except MissingArgumentsException:
+            await message.channel.send(ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND)
+        except Exception as e:
+            print(f"Exception occur {e}")
+            await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
+
+    @commands.command(
+        name="register",
+        help="Votre NI est requis. Exemple : !register 123456789",
+        brief="Enregistrez-vous pour accéder au Discord.",
+    )
+    @commands.dm_only()
+    async def register(self, context: Context):
+        message = context.message
+        if self.__is_self(message):
+            return
+
+        try:
+            content = Utility.get_content_without_command(message.content)
+            register_student_request = self.__register_student_request_factory.create(
+                content, message.author.id
+            )
+
+            self.__student_service.register_student(register_student_request)
+
             await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
         except StudentAlreadyRegisteredException:
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception:
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
-            await self.__bot.process_commands(message)
+
+    @commands.command(
+        name="unregister",
+        help="Arguments nécessaires dans l'ordre: !unregister ni",
+        brief="Supprimer un utilisateur de la liste des étudiants. Admin SEULEMENT",
+    )
+    @commands.dm_only()
+    @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
+    async def unregister(self, context: Context):
+        message = context.message
+        if self.__is_self(message):
+            return
+
+        try:
+            content = Utility.get_content_without_command(message.content)
+            unregister_student_request = (
+                self.__unregister_student_request_factory.create(content)
+            )
+
+            self.__student_service.unregister_student(unregister_student_request)
+            await message.channel.send(ReplyMessage.SUCCESSFUL_UNREGISTER)
+        except Exception as e:
+            print(f"Exception occur {e}")
+            await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)

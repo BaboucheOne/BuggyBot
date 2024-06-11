@@ -1,20 +1,24 @@
 import os
 import argparse
 import pandas as pd
-from typing import Dict, Optional, List
-from dotenv import dotenv_values
+from typing import List
 from pymongo import MongoClient
 
+from bot.config.constants import ConfigurationFilename
+from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.domain.constants import UniProgram
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.infra.constants import StudentMongoDbKey
-from constants import StudentListKey, UniProgram, Filename
+from constants import StudentCsvKey
+from tools.configuration_common import get_configuration, add_configuration_argument
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
-    StudentListKey.NI,
-    StudentListKey.PROGRAM_CODE,
-    StudentListKey.LASTNAME,
-    StudentListKey.FIRSTNAME,
-    StudentListKey.NEW,
+    StudentCsvKey.NI,
+    StudentCsvKey.PROGRAM_CODE,
+    StudentCsvKey.LASTNAME,
+    StudentCsvKey.FIRSTNAME,
+    StudentCsvKey.NEW,
 ]
 
 STUDENT_ALLOWED_PROGRAM = [
@@ -26,31 +30,26 @@ STUDENT_ALLOWED_PROGRAM = [
 
 STUDENT_NOUVEAU_COLUMN_MAPPING = {"Oui": True, "Non": False}
 STUDENTS_LIST_RENAMING_MAPPING = {
-    StudentListKey.NI: StudentMongoDbKey.NI,
-    StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
-    StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
-    StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-    StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+    StudentCsvKey.NI: StudentMongoDbKey.NI,
+    StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+    StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+    StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+    StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
 }
-
-MISSING_DISCORD_USER_ID = -1
 
 
 def read_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Read CSV file and keep certain columns"
+    parser = argparse.ArgumentParser(description="Lire le fichier CSV.")
+    parser.add_argument(
+        ARGUMENT_FILENAME_KEY, type=str, help="Chemin vers le fichier CSV."
     )
-    parser.add_argument(ARGUMENT_FILENAME_KEY, type=str, help="Path to the CSV file")
+    add_configuration_argument(parser)
+
     return parser.parse_args()
 
 
-def read_configurations() -> Dict[str, Optional[str]]:
-    try:
-        dot_env_filepath = get_dot_env_filepath()
-        return dotenv_values(dot_env_filepath)
-    except FileNotFoundError as e:
-        print(f".env file is not found. {e}")
-        exit(-1)
+def read_configurations(filename: str) -> DotEnvConfiguration:
+    return DotEnvConfiguration(filename)
 
 
 def connect_to_mongo_db(connection_url: str) -> MongoClient:
@@ -68,11 +67,11 @@ def read_students_csv(file_path: str) -> pd.DataFrame:
 def rename_student_list_to_mongodb_schema(students_df: pd.DataFrame):
     students_df.rename(
         columns={
-            StudentListKey.NI: StudentMongoDbKey.NI,
-            StudentListKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
-            StudentListKey.LASTNAME: StudentMongoDbKey.LASTNAME,
-            StudentListKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-            StudentListKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
+            StudentCsvKey.NI: StudentMongoDbKey.NI,
+            StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
+            StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
+            StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
+            StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
         },
         inplace=True,
     )
@@ -114,18 +113,16 @@ def insert_students_into_collection(collection, students_to_insert):
 def get_dot_env_filepath():
     current_directory = os.path.dirname(os.path.abspath(__file__))
     root_directory = os.path.dirname(current_directory)
-    return os.path.join(root_directory, Filename.ENV)
+    return os.path.join(root_directory, ConfigurationFilename.DEVELOPMENT)
 
 
 def main():
     arguments = read_arguments()
-    configurations = read_configurations()
+    configuration: DotEnvConfiguration = get_configuration(arguments)
 
-    client = connect_to_mongo_db(
-        configurations["MONGODB_LOCALHOST_SERVER_CONNECTION_STRING"]
-    )
-    database = client[configurations["MONGODB_DB_NAME"]]
-    students_collection = database["students"]
+    client = connect_to_mongo_db(configuration.mongodb_connection_string)
+    database = client[configuration.mongodb_database_name]
+    students_collection = database[configuration.student_collection_name]
 
     students_df = read_students_csv(arguments.csv_filename)
     rename_student_list_to_mongodb_schema(students_df)
@@ -136,12 +133,14 @@ def main():
     students_to_insert = get_students_to_insert(filtered_students_df, existing_nis)
 
     for student in students_to_insert:
-        student[StudentMongoDbKey.DISCORD_USER_ID] = MISSING_DISCORD_USER_ID
+        student[StudentMongoDbKey.DISCORD_USER_ID] = DiscordUserId.INVALID_DISCORD_ID
 
     insert_students_into_collection(students_collection, students_to_insert)
 
-    print(f"{len(students_to_insert)} new students inserted")
-    print("Students table has been updated!")
+    client.close()
+
+    print(f"{len(students_to_insert)} nouveaux étudiants insérés.")
+    print("La table des étudiants a été mise à jour !")
 
 
 if __name__ == "__main__":

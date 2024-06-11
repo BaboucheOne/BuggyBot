@@ -1,11 +1,11 @@
 from typing import Dict
 
-from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.firstname import Firstname
-from bot.domain.student.attributs.lastname import Lastname
-from bot.domain.student.attributs.new_admitted import NewAdmitted
-from bot.domain.student.attributs.ni import NI
-from bot.domain.student.attributs.program_code import ProgramCode
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
+from bot.domain.student.attribut.firstname import Firstname
+from bot.domain.student.attribut.lastname import Lastname
+from bot.domain.student.attribut.new_admitted import NewAdmitted
+from bot.domain.student.attribut.ni import NI
+from bot.domain.student.attribut.program_code import ProgramCode
 from bot.domain.student.student import Student
 from bot.infra.constants import StudentMongoDbKey
 
@@ -22,6 +22,16 @@ class StudentAssembler:
             discord_user_id=DiscordUserId(
                 student_json[StudentMongoDbKey.DISCORD_USER_ID]
             ),
+        )
+
+    def from_dict(self, entry: dict) -> Student:
+        return Student(
+            ni=NI(entry[StudentMongoDbKey.NI]),
+            firstname=Firstname(entry[StudentMongoDbKey.FIRSTNAME]),
+            lastname=Lastname(entry[StudentMongoDbKey.LASTNAME]),
+            program_code=ProgramCode(entry[StudentMongoDbKey.PROGRAM_CODE]),
+            new_admitted=NewAdmitted(entry[StudentMongoDbKey.NEW_ADMITTED]),
+            discord_user_id=DiscordUserId(entry[StudentMongoDbKey.DISCORD_USER_ID]),
         )
 
     def to_dict(self, student: Student) -> Dict:

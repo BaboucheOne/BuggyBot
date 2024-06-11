@@ -1,5 +1,7 @@
-from bot.domain.student.attributs.discord_user_id import DiscordUserId
-from bot.domain.student.attributs.ni import NI
+from typing import List
+
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
+from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.cache.cache_repository import CacheRepository
@@ -11,9 +13,21 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         super().__init__()
         self.__repository = repository
 
+    def find_students_by_discord_user_id(
+        self, discord_user_id: DiscordUserId
+    ) -> List[Student]:
+        return self.__repository.find_students_by_discord_user_id(discord_user_id)
+
     def register_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._set_dirty(ni)
         self.__repository.register_student(ni, discord_user_id)
+
+    def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
+        self._set_dirty(ni)
+        self.__repository.unregister_student(ni, discord_user_id)
+
+    def add_student(self, student: Student):
+        self.__repository.add_student(student)
 
     def update_student(self, student: Student):
         self._set_dirty(student.ni)
