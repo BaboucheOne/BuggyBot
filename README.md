@@ -37,6 +37,7 @@ python ./tools/migrate_discord_students.py
 It can happen that certain members cannot be migrated du to their name being too long or that we found duplicates.
 If this happens, script will ask you if you want to contact them by hand or automatically by sending them a message asking them to register.
 
+:information_source: Note: Most of the tools commands uses `dev` by default. If you when to use the tool in production, simply add `--env prod` at the end of the command.
 # Contribution
 - Download Python 3.8.10 via https://www.python.org/downloads/release/python-3810/
 - Download MongoDB Community Server via https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.9-signed.msi
@@ -57,11 +58,12 @@ MONGODB_CONNECTION_STRING = "YOUR MONGODB CONNECTION STRING"
 MONGODB_DATABASE_NAME = "YOUR MONGODB NAME"
 STUDENT_COLLECTION_NAME = "YOUR STUDENT COLLECTION NAME"
 DISCORD_TOKEN = "YOUR DISCORD BOT TOKEN"
-SERVER_ID = "YOUR SERVER ID (RIGHT CLICK ON SERVER ICON AND COPY ID)"
+SERVER_ID = YOUR SERVER ID (RIGHT CLICK ON SERVER ICON AND COPY ID)
+LOGGER_FILENAME = "YOUR LOG FILENAME"
 ```
 
 Note: One file is dedicated for dev purposes (like having a local server) and the other to production (like giving the real connection string for the bd)
-
+Note: If the log file is not present, it will be created automatically.
 ## Commands
 To fix linter et format error run theses two commands
 ```commandline

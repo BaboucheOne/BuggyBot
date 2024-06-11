@@ -29,3 +29,7 @@ class DotEnvConfiguration:
     @property
     def server_id(self) -> int:
         return int(os.getenv(DotenvConfigurationKey.SERVER_ID))
+
+    @property
+    def logger_filename(self) -> str:
+        return os.getenv(DotenvConfigurationKey.LOGGER_FILENAME)

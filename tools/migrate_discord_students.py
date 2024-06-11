@@ -21,7 +21,13 @@ from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
 from constants import StudentCsvKey
-from tools.configuration_common import add_configuration_argument, get_configuration
+from tools.configuration_common import (
+    add_configuration_argument,
+    get_configuration,
+    setup_logger,
+)
+
+global logger
 
 STUDENT_ASSEMBLER: StudentAssembler = StudentAssembler()
 
@@ -43,7 +49,7 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
     try:
         return MongoClient(connection_url)
     except ConnectionError as e:
-        print(f"Unable to connect to the MongoDB. {e}")
+        logger.fatal(f"Unable to connect to the MongoDB. {e}")
         exit(-1)
 
 
@@ -123,8 +129,8 @@ def check_migration_rules(
 
 
 async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
-    print("Début du contact avec les personnes. Cela peut prendre du temps.")
-    print(
+    logger.info(
+        "Début du contact avec les personnes. Cela peut prendre du temps. "
         f"Temps pour contacter les membres.: {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC} secs"
     )
     for member in members_migration_missed:
@@ -136,37 +142,34 @@ async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
             "Si vous avez besoin d'aide, contactez un administrateur."
         )
         time.sleep(MIGRATION_SENDING_MESSAGE_SEC)
-    print("Tous les utilisateurs non migrés ont été contactés.")
+    logger.info("Tous les utilisateurs non migrés ont été contactés.")
 
 
 def notify_non_migrated_members(
     server_members: List[Member], members_migration_missed: List[Member]
 ):
-    print(
-        f"{len(members_migration_missed)} étudiants n'ont pas été migrés en raison d'erreurs."
+    members_to_contacts = ", ".join(
+        [member.nick for member in members_migration_missed]
     )
-    print(
-        f"Cela représente {len(members_migration_missed)/len(server_members) * 100}% des membres."
+    logger.info(
+        f"{len(members_migration_missed)} étudiants n'ont pas été migrés en raison d'erreurs. "
+        f"Cela représente {len(members_migration_missed)/len(server_members) * 100}% des membres. "
+        f"Solution : Les contacter et leur demander de s'inscrire eux-mêmes.\nVoici la liste des personnes à "
+        f"contacter: {members_to_contacts}"
     )
-    print(
-        "Solution : Les contacter et leur demander de s'inscrire eux-mêmes.\nVoici la liste des personnes à "
-        "contacter:"
-    )
-    for member in members_migration_missed:
-        print(member.nick)
 
 
 def perform_migration(
     collection: Collection, members_migration_successful: List[Student]
 ):
-    print("La migration démarre...")
-    print(
+    logger.info(
+        "La migration démarre... "
         f"Temps estimé pour migrer les membres: {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs."
     )
     for member in members_migration_successful:
         migrate_student(collection, member)
         time.sleep(MIGRATION_SENDING_REQUEST_SEC)
-    print(f"Migration réussie pour {len(members_migration_successful)} membres.")
+    logger.info(f"Migration réussie pour {len(members_migration_successful)} membres.")
 
 
 async def migrate(
@@ -188,7 +191,7 @@ async def migrate(
     if len(members_migration_successful) > 0:
         perform_migration(collection, members_migration_successful)
     else:
-        print("Aucun membre à migrer.")
+        logger.info("Aucun membre à migrer.")
 
     if len(members_migration_missed) > 0:
         notify_non_migrated_members(server_members, members_migration_missed)
@@ -199,11 +202,11 @@ async def migrate(
         if can_contact:
             await send_dm_non_migrated_members(members_migration_missed)
         else:
-            print("Vous avez choisi de ne pas contacter ces membres.")
+            logger.info("Vous avez choisi de ne pas contacter ces membres.")
     else:
-        print("Aucun membre mal migré.")
+        logger.info("Aucun membre mal migré.")
 
-    print("Migration terminée.")
+    logger.info("Migration terminée.")
     exit(0)
 
 
@@ -212,8 +215,11 @@ def start_bot(discord_client: DiscordClient, configuration: DotEnvConfiguration)
 
 
 async def main():
+    global logger
+
     arguments = read_arguments()
     configuration: DotEnvConfiguration = get_configuration(arguments)
+    logger = setup_logger(configuration.logger_filename)
 
     intents = discord.Intents.all()
     discord_client: DiscordClient = DiscordClient(

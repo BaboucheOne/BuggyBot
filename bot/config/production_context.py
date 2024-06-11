@@ -1,3 +1,5 @@
+import logging
+
 import discord
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -8,6 +10,7 @@ from bot.cog.association.association import AssociationCog
 from bot.cog.registration.register_member import RegisterMemberCog
 from bot.config.application_context import ApplicationContext
 from bot.config.constants import ConfigurationFilename
+from bot.config.logger.logger import Logger
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.student.cached_student_repository import CachedStudentRepository
@@ -27,6 +30,9 @@ class ProductionContext(ApplicationContext):
         return DiscordClient(
             command_prefix="!", intents=intents, server_id=self._configuration.server_id
         )
+
+    def _instantiate_logger(self) -> Logger:
+        return Logger(self._configuration.logger_filename, logging.INFO)
 
     def _instantiate_association_cog(self) -> AssociationCog:
         return AssociationCog()

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
+from discord.ext import commands
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
@@ -9,6 +10,7 @@ from bot.application.student.student_service import StudentService
 from bot.cog.association.association import AssociationCog
 from bot.cog.registration.register_member import RegisterMemberCog
 from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
@@ -42,6 +44,7 @@ class ApplicationContext(ABC):
             (StudentRepository, student_repository),
             (StudentService, student_service),
             (DiscordService, discord_service),
+            (Logger, self._instantiate_logger()),
         ]
         self.__assemble_dependencies(dependencies)
 
@@ -49,9 +52,12 @@ class ApplicationContext(ABC):
             self._instantiate_register_member_cog(),
             self._instantiate_association_cog(),
         ]
+
         await self.__register_cogs(discord_client, cogs)
 
-    async def __register_cogs(self, discord_client: DiscordClient, cogs: List):
+    async def __register_cogs(
+        self, discord_client: DiscordClient, cogs: List[commands.Cog]
+    ):
         for cog in cogs:
             await discord_client.add_cog(cog)
 
@@ -63,6 +69,10 @@ class ApplicationContext(ABC):
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]
         return database[self._configuration.student_collection_name]
+
+    @abstractmethod
+    def _instantiate_logger(self) -> Logger:
+        pass
 
     @abstractmethod
     def _instantiate_association_cog(self) -> AssociationCog:

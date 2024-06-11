@@ -1,7 +1,9 @@
 import argparse
+import logging
 
 from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.config.logger.logger import Logger
 
 
 def get_configuration(args: argparse.Namespace) -> DotEnvConfiguration:
@@ -22,3 +24,7 @@ def add_configuration_argument(parser: argparse.ArgumentParser):
         default="dev",
         help="Spécifier si le bot doit fonctionner en mode développement (dev) ou production (prod).",
     )
+
+
+def setup_logger(filename: str) -> Logger:
+    return Logger(f"../{filename}", logging.DEBUG)

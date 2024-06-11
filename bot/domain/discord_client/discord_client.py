@@ -4,6 +4,9 @@ import discord
 from discord import Guild
 from discord.ext.commands import Bot
 
+from bot.config.logger.logger import Logger
+from bot.config.service_locator import ServiceLocator
+
 
 class DiscordClient(Bot):
     def __init__(
@@ -17,9 +20,11 @@ class DiscordClient(Bot):
         super().__init__(command_prefix, intents=intents, **options)
         self.__server = None
         self.__server_id = server_id
+        self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
     async def on_ready(self):
         self.__server = self.get_guild(self.__server_id)
+        self.__logger.info("on_ready - DiscordClient ready to operate.")
 
     @property
     def ready(self) -> bool:

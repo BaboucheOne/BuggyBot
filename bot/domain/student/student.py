@@ -20,6 +20,18 @@ class Student:
     def is_registered(self) -> bool:
         return self.discord_user_id.is_valid()
 
+    def __str__(self):
+        return (
+            f"{self.ni}, {self.firstname}, {self.lastname}, {self.program_code}, {self.new_admitted}, "
+            f"{self.discord_user_id}"
+        )
+
+    def __repr__(self):
+        return (
+            f"Student({self.ni}, {self.firstname}, {self.lastname}, {self.program_code}, {self.new_admitted}, "
+            f"{self.discord_user_id})"
+        )
+
     def __eq__(self, other):
         if isinstance(other, Student):
             return self.ni == other.ni
