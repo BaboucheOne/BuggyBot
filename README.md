@@ -37,7 +37,7 @@ python ./tools/migrate_discord_students.py
 It can happen that certain members cannot be migrated du to their name being too long or that we found duplicates.
 If this happens, script will ask you if you want to contact them by hand or automatically by sending them a message asking them to register.
 
-:information: Note: Most of the tools commands uses `dev` by default. If you when to use the tool in production, simply add `--env prod` at the end of the command.
+:information_source: Note: Most of the tools commands uses `dev` by default. If you when to use the tool in production, simply add `--env prod` at the end of the command.
 # Contribution
 - Download Python 3.8.10 via https://www.python.org/downloads/release/python-3810/
 - Download MongoDB Community Server via https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.9-signed.msi
