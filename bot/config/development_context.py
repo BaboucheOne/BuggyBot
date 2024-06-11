@@ -22,7 +22,7 @@ class DevelopmentContext(ApplicationContext):
 
     def __init__(self):
         super().__init__(ConfigurationFilename.DEVELOPMENT)
-        logger.info("Using development context")
+        logger.info("DevelopmentContext - __init__ - Using development context")
 
     def _instantiate_mongo_client(self) -> MongoClient:
         return MongoClient(self._configuration.mongodb_connection_string)

@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 from bot.config.constants import ConfigurationFilename
 from bot.config.dotenv_configuration import DotEnvConfiguration
@@ -21,4 +22,12 @@ def add_configuration_argument(parser: argparse.ArgumentParser):
         choices=["dev", "prod"],
         default="dev",
         help="Spécifier si le bot doit fonctionner en mode développement (dev) ou production (prod).",
+    )
+
+
+def setup_logger():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler("../buggy.log"), logging.StreamHandler()],
     )

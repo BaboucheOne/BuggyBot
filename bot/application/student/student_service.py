@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from bot.application.discord.event.student_registered.student_registered_observable import (
@@ -34,6 +35,8 @@ from bot.domain.utility import Utility
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class StudentService(StudentRegisteredObservable):
@@ -91,6 +94,9 @@ class StudentService(StudentRegisteredObservable):
         ) or self.__does_discord_user_id_already_registered_an_account(
             student.discord_user_id
         ):
+            logger.info(
+                f"add_student - StudentAlreadyExistsException with {repr(student.ni)}, {repr(student.discord_user_id)}"
+            )
             raise StudentAlreadyExistsException()
 
         self.__student_repository.add_student(student)
@@ -105,6 +111,9 @@ class StudentService(StudentRegisteredObservable):
         if self.__does_student_registered(
             student_ni
         ) or self.__does_discord_user_id_already_registered_an_account(discord_user_id):
+            logger.info(
+                f"register_student - StudentAlreadyRegisteredException with {repr(student_ni)}, {repr(discord_user_id)}"
+            )
             raise StudentAlreadyRegisteredException()
 
         self.__student_repository.register_student(student_ni, discord_user_id)

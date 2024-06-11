@@ -22,7 +22,7 @@ class ProductionContext(ApplicationContext):
 
     def __init__(self):
         super().__init__(ConfigurationFilename.PRODUCTION)
-        logger.info("Using production context")
+        logger.info("ProductionContext - __init__ - Using production context")
 
     def _instantiate_mongo_client(self) -> MongoClient:
         return MongoClient(self._configuration.mongodb_connection_string)

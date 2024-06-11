@@ -29,4 +29,4 @@ class ServiceLocator:
     @classmethod
     def clear(cls):
         cls.__dependencies.clear()
-        logger.info(f"clear - Dependencies cleared")
+        logger.info("clear - Dependencies cleared")

@@ -1,3 +1,4 @@
+import logging
 import os
 import argparse
 import pandas as pd
@@ -10,7 +11,13 @@ from bot.domain.constants import UniProgram
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.infra.constants import StudentMongoDbKey
 from constants import StudentCsvKey
-from tools.configuration_common import get_configuration, add_configuration_argument
+from tools.configuration_common import (
+    get_configuration,
+    add_configuration_argument,
+    setup_logger,
+)
+
+logger = logging.getLogger(__name__)
 
 ARGUMENT_FILENAME_KEY = "csv_filename"
 STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
@@ -56,7 +63,7 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
     try:
         return MongoClient(connection_url)
     except ConnectionError as e:
-        print(f"Unable to connect to the MongoDB. {e}")
+        logger.fatal(f"connect_to_mongo_db - Unable to connect to the MongoDB. {e}")
         exit(-1)
 
 
@@ -117,6 +124,7 @@ def get_dot_env_filepath():
 
 
 def main():
+    setup_logger()
     arguments = read_arguments()
     configuration: DotEnvConfiguration = get_configuration(arguments)
 
@@ -139,8 +147,8 @@ def main():
 
     client.close()
 
-    print(f"{len(students_to_insert)} nouveaux étudiants insérés.")
-    print("La table des étudiants a été mise à jour !")
+    logger.info(f"{len(students_to_insert)} nouveaux étudiants insérés.")
+    logger.info("La table des étudiants a été mise à jour !")
 
 
 if __name__ == "__main__":

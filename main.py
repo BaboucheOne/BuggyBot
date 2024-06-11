@@ -50,7 +50,7 @@ async def main():
     try:
         await application_context.build_application()
     except ConnectionError as e:
-        logger.fatal(f"Unable to connect to the MongoDB. Exiting the app. {e}")
+        logger.fatal(f"main - Unable to connect to the MongoDB. Exiting the app. {e}")
         exit(-1)
 
     await application_context.start_application()
