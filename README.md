@@ -32,7 +32,8 @@ Simply a customs agent
     LOGGER_FILENAME = "YOUR LOG FILENAME"
     ```
 
-:information_source: One file is dedicated for dev purposes (like having a local server) and the other to production (like giving the real connection string for the bd)
+:information_source: One file is dedicated for dev purposes (like having a local server) and the other to production (like giving the real connection string for the bd).
+
 :information_source: If the log file is not present, it will be created automatically.
 
 # Launching :rocket:
@@ -54,7 +55,7 @@ This directory contains tools to help development. Add all python files that wil
 :arrow_right: You can use constants from the Bot directory if needed.
 
 ### Commands
-To upload a new list of students provided by the department, run :
+To upload a new list of students provided by the department, run:
 ```commandline
 python ./tools/update_students_list.py FILENAME.xlsx
 ```
@@ -70,7 +71,7 @@ If this happens, script will ask you if you want to contact them by hand or auto
 :information_source: Note: Most of the tools commands uses `dev` by default. If you when to use the tool in production, simply add `--env prod` at the end of the command.
 
 ## Commands
-To fix linter et format error run theses two commands
+To fix linter et format errors run theses two commands:
 ```commandline
 ruff check . --fix
 ```
