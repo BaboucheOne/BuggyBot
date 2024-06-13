@@ -3,11 +3,12 @@ Simply a customs agent
 
 # Building
 ## :ship: Docker
-1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/)
+1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/).
 2. Run the following command `docker build --tag buggybot .`
 3. Launch the image.
 
 :warning: Make sure to modify `.env.dev` or `.env.prod`.
+
 :warning: Default dockerfile launch Buggybot in **production**.
 
 ## :computer: On machine
@@ -16,22 +17,23 @@ Simply a customs agent
 3. Download [Mongo MongoDB Compass](https://downloads.mongodb.com/compass/mongodb-compass-1.43.0-win32-x64.exe)
 
 :warning: Create two files `.env.dev` and `.env.prod` in the project root in order to interact with mongoDB. See section `.env setup` for more.
+
 :warning: Do not forget to [sync your requirements.txt with PyCharm](https://www.jetbrains.com/help/pycharm/managing-dependencies.html).
 
 ## :gear: .env configuration
-- At the root of the project `./BuggyBot` create two files and name them `.env.dev` and `env.prod`.
-- Add the following lines:
-```md
-MONGODB_CONNECTION_STRING = "YOUR MONGODB CONNECTION STRING"
-MONGODB_DATABASE_NAME = "YOUR MONGODB NAME"
-STUDENT_COLLECTION_NAME = "YOUR STUDENT COLLECTION NAME"
-DISCORD_TOKEN = "YOUR DISCORD BOT TOKEN"
-SERVER_ID = YOUR SERVER ID (RIGHT CLICK ON SERVER ICON AND COPY ID)
-LOGGER_FILENAME = "YOUR LOG FILENAME"
-```
+1. At the root of the project `./BuggyBot` create two files and name them `.env.dev` and `env.prod`.
+2. Add the following lines for both configuration:
+    ```md
+    MONGODB_CONNECTION_STRING = "YOUR MONGODB CONNECTION STRING"
+    MONGODB_DATABASE_NAME = "YOUR MONGODB NAME"
+    STUDENT_COLLECTION_NAME = "YOUR STUDENT COLLECTION NAME"
+    DISCORD_TOKEN = "YOUR DISCORD BOT TOKEN"
+    SERVER_ID = YOUR SERVER ID (RIGHT CLICK ON SERVER ICON AND COPY ID)
+    LOGGER_FILENAME = "YOUR LOG FILENAME"
+    ```
 
-Note: One file is dedicated for dev purposes (like having a local server) and the other to production (like giving the real connection string for the bd)
-Note: If the log file is not present, it will be created automatically.
+:information_source: One file is dedicated for dev purposes (like having a local server) and the other to production (like giving the real connection string for the bd)
+:information_source: If the log file is not present, it will be created automatically.
 
 # Launching :rocket:
 In production:
