@@ -9,21 +9,23 @@ from bot.application.student.student_service import (
     StudentService,
     StudentAlreadyRegisteredException,
 )
-from bot.cog.chain_of_responsibility.handlers.keep_digits_handler import (
+from bot.resource.chain_of_responsibility.handlers.keep_digits_handler import (
     KeepDigitsHandler,
 )
-from bot.cog.chain_of_responsibility.handlers.strip_handler import StripHandler
-from bot.cog.chain_of_responsibility.responsibility_builder import ResponsibilityBuilder
-from bot.cog.constants import ReplyMessage
-from bot.cog.decorator.role_check import role_check
-from bot.cog.exception.missing_arguments_exception import MissingArgumentsException
-from bot.cog.registration.factory.add_student_request_factory import (
+from bot.resource.chain_of_responsibility.handlers.strip_handler import StripHandler
+from bot.resource.chain_of_responsibility.responsibility_builder import (
+    ResponsibilityBuilder,
+)
+from bot.resource.constants import ReplyMessage
+from bot.resource.decorator.role_check import role_check
+from bot.resource.exception.missing_arguments_exception import MissingArgumentsException
+from bot.resource.cog.registration.factory.add_student_request_factory import (
     AddStudentRequestFactory,
 )
-from bot.cog.registration.factory.register_student_request_factory import (
+from bot.resource.cog.registration.factory.register_student_request_factory import (
     RegisterStudentRequestFactory,
 )
-from bot.cog.registration.factory.unregister_student_request_factory import (
+from bot.resource.cog.registration.factory.unregister_student_request_factory import (
     UnregisterStudentRequestFactory,
 )
 from bot.config.logger.logger import Logger

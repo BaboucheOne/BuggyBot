@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from bot.config.constants import ConfigurationFilename
-from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.config.context.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
 
 

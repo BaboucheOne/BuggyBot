@@ -7,9 +7,9 @@ from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
-from bot.cog.association.association import AssociationCog
-from bot.cog.registration.register_member import RegisterMemberCog
-from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.resource.cog.association.association import AssociationCog
+from bot.resource.cog.registration.register_member import RegisterMemberCog
+from bot.config.context.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient

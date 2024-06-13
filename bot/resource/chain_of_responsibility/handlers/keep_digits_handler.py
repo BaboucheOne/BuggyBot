@@ -1,6 +1,8 @@
 import re
 
-from bot.cog.chain_of_responsibility.responsibility_handler import ResponsibilityHandler
+from bot.resource.chain_of_responsibility.responsibility_handler import (
+    ResponsibilityHandler,
+)
 
 
 class KeepDigitsHandler(ResponsibilityHandler):

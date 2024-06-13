@@ -5,7 +5,7 @@ from typing import List
 from pymongo import MongoClient
 
 from bot.config.constants import ConfigurationFilename
-from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.config.context.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
 from bot.domain.constants import UniProgram
 from bot.domain.student.attribut.discord_user_id import DiscordUserId

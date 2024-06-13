@@ -10,7 +10,7 @@ from bot.application.discord.event.student_registered.student_registered_observe
 from bot.application.discord.exception.role_not_found_exception import (
     RoleNotFoundException,
 )
-from bot.cog.constants import ReplyMessage
+from bot.resource.constants import ReplyMessage
 from bot.domain.constants import UniProgram, DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
