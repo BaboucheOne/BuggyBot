@@ -4,6 +4,7 @@ from typing import List, Tuple
 from discord.ext import commands
 from pymongo import MongoClient
 from pymongo.collection import Collection
+from pymongo.errors import PyMongoError
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
@@ -56,6 +57,13 @@ class ApplicationContext(ABC):
         ]
 
         await self.__register_cogs(discord_client, cogs)
+
+    def is_database_available(self) -> bool:
+        try:
+            client.admin.command("ismaster")
+            return True
+        except PyMongoError:
+            return False
 
     async def __register_cogs(
         self, discord_client: DiscordClient, cogs: List[commands.Cog]
