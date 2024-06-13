@@ -31,6 +31,8 @@ class ApplicationContext(ABC):
         ServiceLocator.register_dependency(Logger, self._instantiate_logger())
 
         mongo_client = self._instantiate_mongo_client()
+        self.__is_database_available(mongo_client)
+
         student_collection = self.__instantiate_student_collection(mongo_client)
         student_repository = self._instantiate_student_repository(student_collection)
 
@@ -58,12 +60,8 @@ class ApplicationContext(ABC):
 
         await self.__register_cogs(discord_client, cogs)
 
-    def is_database_available(self) -> bool:
-        try:
-            client.admin.command("ismaster")
-            return True
-        except PyMongoError:
-            return False
+    def __is_database_available(self, client: MongoClient):
+        client.admin.command("ismaster")
 
     async def __register_cogs(
         self, discord_client: DiscordClient, cogs: List[commands.Cog]
