@@ -1,0 +1,15 @@
+.ruff_cache
+__pycache__
+
+.gitignore
+./tools
+.github
+.git
+
+dockerfile
+.idea
+
+README.md
+
+*.csv
+
