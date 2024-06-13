@@ -27,7 +27,7 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         self.__logger.debug(f"register_student - {repr(ni)} {repr(discord_user_id)}")
 
     def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
-        self._set_dirty(ni)
+        self._remove_cached_item(ni)
         self.__repository.unregister_student(ni, discord_user_id)
         self.__logger.debug(f"unregister_student - {repr(ni)} {repr(discord_user_id)}")
 

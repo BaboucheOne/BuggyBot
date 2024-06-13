@@ -15,6 +15,10 @@ class CacheRepository:
         oldest_key = min(self.__cache, key=lambda k: self.__cache[k].admitted_timestamp)
         self.__cache.pop(oldest_key)
 
+    def _remove_cached_item(self, cache_id):
+        if self._is_cached(cache_id):
+            del self.__cache[cache_id]
+
     def _is_cached(self, cache_id) -> bool:
         return cache_id in self.__cache
 
