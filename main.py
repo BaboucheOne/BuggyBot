@@ -1,6 +1,8 @@
 import asyncio
 import argparse
 
+from pymongo.errors import PyMongoError
+
 from bot.config.logger.logger import Logger
 from bot.config.context.application_context import ApplicationContext
 from bot.config.context.development_context import DevelopmentContext
@@ -39,12 +41,18 @@ async def main():
     try:
         await application_context.build_application()
         ServiceLocator.get_dependency(Logger).info(f"main - Application build.")
-    except ConnectionError as e:
+    except PyMongoError as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - Unable to connect to the MongoDB. Exiting the app. {e}"
+            f"main - Unable to connect to mongo database. Exiting the app. {e}"
+        )
+        exit(-1)
+    except Exception as e:
+        ServiceLocator.get_dependency(Logger).fatal(
+            f"main - Exception occurs while building the app. Exiting the app. {e}"
         )
         exit(-1)
 
+    ServiceLocator.get_dependency(Logger).info(f"main - Launching application.")
     await application_context.start_application()
 
 

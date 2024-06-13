@@ -23,7 +23,11 @@ class ProductionContext(ApplicationContext):
         super().__init__(ConfigurationFilename.PRODUCTION)
 
     def _instantiate_mongo_client(self) -> MongoClient:
-        return MongoClient(self._configuration.mongodb_connection_string)
+        return MongoClient(
+            self._configuration.mongodb_connection_string,
+            connectTimeoutMS=self._configuration.mongodb_connection_timeout_ms,
+            timeoutMS=self._configuration.mongodb_connection_timeout_ms,
+        )
 
     def _instantiate_discord_client(self) -> DiscordClient:
         intents = discord.Intents.all()

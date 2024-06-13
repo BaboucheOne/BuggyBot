@@ -15,6 +15,10 @@ class DotEnvConfiguration:
         return os.getenv(DotenvConfigurationKey.MONGODB_CONNECTION_STRING)
 
     @property
+    def mongodb_connection_timeout_ms(self) -> int:
+        return int(os.getenv(DotenvConfigurationKey.MONGODB_CONNECTION_TIMEOUT_MS))
+
+    @property
     def mongodb_database_name(self) -> str:
         return os.getenv(DotenvConfigurationKey.MONGODB_DATABASE_NAME)
 
