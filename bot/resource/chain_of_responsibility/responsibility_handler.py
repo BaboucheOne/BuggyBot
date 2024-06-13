@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from bot.cog.chain_of_responsibility.responsibility import Responsibility
+from bot.resource.chain_of_responsibility.responsibility import Responsibility
 
 
 class ResponsibilityHandler(Responsibility):

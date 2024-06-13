@@ -2,9 +2,9 @@ import asyncio
 import argparse
 
 from bot.config.logger.logger import Logger
-from bot.config.application_context import ApplicationContext
-from bot.config.development_context import DevelopmentContext
-from bot.config.production_context import ProductionContext
+from bot.config.context.application_context import ApplicationContext
+from bot.config.context.development_context import DevelopmentContext
+from bot.config.context.production_context import ProductionContext
 from bot.config.service_locator import ServiceLocator
 
 

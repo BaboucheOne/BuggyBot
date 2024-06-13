@@ -7,9 +7,9 @@ from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
-from bot.cog.association.association import AssociationCog
-from bot.cog.registration.register_member import RegisterMemberCog
-from bot.config.dotenv_configuration import DotEnvConfiguration
+from bot.resource.cog.association.association import AssociationCog
+from bot.resource.cog.registration.register_member import RegisterMemberCog
+from bot.config.context.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
@@ -26,6 +26,9 @@ class ApplicationContext(ABC):
         )
 
     async def build_application(self):
+        ServiceLocator.clear()
+        ServiceLocator.register_dependency(Logger, self._instantiate_logger())
+
         mongo_client = self._instantiate_mongo_client()
         student_collection = self.__instantiate_student_collection(mongo_client)
         student_repository = self._instantiate_student_repository(student_collection)
@@ -44,7 +47,6 @@ class ApplicationContext(ABC):
             (StudentRepository, student_repository),
             (StudentService, student_service),
             (DiscordService, discord_service),
-            (Logger, self._instantiate_logger()),
         ]
         self.__assemble_dependencies(dependencies)
 
@@ -62,7 +64,6 @@ class ApplicationContext(ABC):
             await discord_client.add_cog(cog)
 
     def __assemble_dependencies(self, dependencies: List[Tuple]):
-        ServiceLocator.clear()
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
 

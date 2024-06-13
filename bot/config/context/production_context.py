@@ -6,9 +6,9 @@ from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
-from bot.cog.association.association import AssociationCog
-from bot.cog.registration.register_member import RegisterMemberCog
-from bot.config.application_context import ApplicationContext
+from bot.resource.cog.association.association import AssociationCog
+from bot.resource.cog.registration.register_member import RegisterMemberCog
+from bot.config.context.application_context import ApplicationContext
 from bot.config.constants import ConfigurationFilename
 from bot.config.logger.logger import Logger
 from bot.domain.discord_client.discord_client import DiscordClient
