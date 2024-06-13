@@ -19,11 +19,11 @@ from bot.application.student.validators.ni_validator import NIValidator
 from bot.application.student.validators.program_code_validator import (
     ProgramCodeValidator,
 )
-from bot.resource.cog.registration.request import AddStudentRequest
+from bot.resource.cog.registration.request.add_student_request import AddStudentRequest
 from bot.resource.cog.registration.request.register_student_request import (
     RegisterStudentRequest,
 )
-from bot.resource.cog.registration.request import (
+from bot.resource.cog.registration.request.unregister_student_request import (
     UnregisterStudentRequest,
 )
 from bot.config.logger.logger import Logger

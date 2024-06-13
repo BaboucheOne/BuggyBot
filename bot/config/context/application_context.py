@@ -26,6 +26,9 @@ class ApplicationContext(ABC):
         )
 
     async def build_application(self):
+        ServiceLocator.clear()
+        ServiceLocator.register_dependency(Logger, self._instantiate_logger())
+
         mongo_client = self._instantiate_mongo_client()
         student_collection = self.__instantiate_student_collection(mongo_client)
         student_repository = self._instantiate_student_repository(student_collection)
@@ -44,7 +47,6 @@ class ApplicationContext(ABC):
             (StudentRepository, student_repository),
             (StudentService, student_service),
             (DiscordService, discord_service),
-            (Logger, self._instantiate_logger()),
         ]
         self.__assemble_dependencies(dependencies)
 
@@ -62,7 +64,6 @@ class ApplicationContext(ABC):
             await discord_client.add_cog(cog)
 
     def __assemble_dependencies(self, dependencies: List[Tuple]):
-        ServiceLocator.clear()
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
 
