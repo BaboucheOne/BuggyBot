@@ -136,7 +136,7 @@ async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
     for member in members_migration_missed:
         await member.send(
             "Bonjour, je suis BuggyBot du Discord d'ASETIN !\n"
-            "Une migration a été effectuée."
+            "Une migration a été effectuée.\n"
             "Malheureusement, nous n'avons pas pu migrer votre profil Discord vers notre nouvelle base de données.\n"
             "Utilisez !register [NI] pour effectuer cette migration.\n"
             "Si vous avez besoin d'aide, contactez un administrateur."
@@ -196,7 +196,7 @@ async def migrate(
     if len(members_migration_missed) > 0:
         notify_non_migrated_members(server_members, members_migration_missed)
         response = input(
-            "Utiliser un message automatisé pour les contacter ? Utilisez: true, 1, yes, y, oui or o -> "
+            "Utiliser un message automatisé pour les contacter ? Utilisez: true, 1, yes, y, oui ou o -> "
         )
         can_contact = Utility.str_to_bool(response)
         if can_contact:

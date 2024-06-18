@@ -6,7 +6,7 @@ from bot.resource.chain_of_responsibility.responsibility import Responsibility
 class ResponsibilityHandler(Responsibility):
 
     def __init__(self):
-        self.__next_handler: ResponsibilityHandler or None = None
+        self.__next_handler: ResponsibilityHandler | None = None
 
     def set_next(self, handler: Responsibility):
         self.__next_handler = handler
