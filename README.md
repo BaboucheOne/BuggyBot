@@ -12,7 +12,7 @@ Simply a customs agent
 :warning: Default dockerfile launch Buggybot in **production**.
 
 ## :computer: On machine
-1. Download [Python 3.8.10](https://www.python.org/downloads/release/python-3810/)
+1. Download [Python 3.10](https://www.python.org/downloads/release/python-3120/)
 2. Download [MongoDB Community Server](https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-7.0.9-signed.msi)
 3. Download [Mongo MongoDB Compass](https://downloads.mongodb.com/compass/mongodb-compass-1.43.0-win32-x64.exe)
 
