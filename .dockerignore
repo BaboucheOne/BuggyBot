@@ -6,7 +6,9 @@ __pycache__
 .github
 .git
 
-dockerfile
+./venv
+
+.dockerfile
 .idea
 
 README.md
