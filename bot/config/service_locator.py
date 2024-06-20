@@ -12,7 +12,7 @@ class ServiceLocator:
     @classmethod
     def get_dependency(cls, dependency_class):
         if dependency_class not in cls.__dependencies:
-            raise Exception(f"Dependency {dependency_class.__name__} not registered.")
+            raise Exception(f"Dependency {dependency_class.__name__} is not registered.")
         return cls.__dependencies[dependency_class]
 
     @classmethod
