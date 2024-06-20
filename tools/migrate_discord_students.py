@@ -196,7 +196,7 @@ async def migrate(
     if len(members_migration_missed) > 0:
         notify_non_migrated_members(server_members, members_migration_missed)
         response = input(
-            "Utiliser un message automatisé pour les contacter ? Utilisez: true, 1, yes, y, oui ou o -> "
+            f"Utiliser un message automatisé pour les contacter ? Utilisez: {", ".join(Utility.TRUE_BOOL_SET)} -> "
         )
         can_contact = Utility.str_to_bool(response)
         if can_contact:
