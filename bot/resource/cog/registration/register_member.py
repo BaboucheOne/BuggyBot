@@ -1,4 +1,4 @@
-from discord import Message
+from discord import Message, Member
 from discord.ext import commands
 from discord.ext.commands import Context
 
@@ -66,9 +66,12 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         return message.author == self.__bot.user
 
     @commands.Cog.listener()
-    async def on_member_join(self, member):
+    async def on_member_join(self, member: Member):
         await member.create_dm()
         await member.dm_channel.send(ReplyMessage.WELCOME)
+        self.__logger.info(
+            f"New user named {member.name} with id {member.id} has been messaged."
+        )
 
     @commands.command(
         name="add_student",
