@@ -67,11 +67,11 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
-        self.__logger.info(
-            f"New user has joined the discord. Username:{member.name} discordId:{member.id}"
-        )
         await member.create_dm()
         await member.dm_channel.send(ReplyMessage.WELCOME)
+        self.__logger.info(
+            f"New user named {member.name} with id {member.id} has been messaged."
+        )
 
     @commands.command(
         name="add_student",
