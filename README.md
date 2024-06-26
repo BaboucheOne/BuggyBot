@@ -20,6 +20,8 @@ Simply a customs agent
 
 :warning: Do not forget to [sync your requirements.txt with PyCharm](https://www.jetbrains.com/help/pycharm/managing-dependencies.html).
 
+:information_source: `dev-requirements.txt` contains all the extra dependencies for development purposes.
+
 ## :gear: .env configuration
 1. At the root of the project `./BuggyBot` create two files and name them `.env.dev` and `env.prod`.
 2. Add the following lines for both configuration:
