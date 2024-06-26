@@ -11,6 +11,7 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.config.context.dotenv_configuration import DotEnvConfiguration
+from bot.domain.constants import DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.student import Student
@@ -61,11 +62,19 @@ def get_unregistered_students(students_collection) -> List[Student]:
     return [STUDENT_ASSEMBLER.from_dict(result) for result in results]
 
 
-def find_with_first_and_lastname(
+def find_student_with_first_and_lastname(
     students: List[Student], firstname: str, lastname: str
 ) -> Student:
     for student in students:
         if student.firstname.value == firstname and student.lastname.value == lastname:
+            return student
+    raise StudentNotFoundException()
+
+
+def find_student_with_nickname(students: List[Student], nickname: str) -> Student:
+    for student in students:
+        join_student_name = f"{student.firstname.value} {student.lastname.value}"
+        if nickname == join_student_name:
             return student
     raise StudentNotFoundException()
 
@@ -79,32 +88,13 @@ def remove_none_values(list_to_modify: List[Member]):
 def remove_duplicate_values(
     list_to_modify: List[Member], members_migration_missed: List[Member]
 ):
-    for i, member in enumerate(list_to_modify[:]):
-        member_is_removed = False
-        for j, other in enumerate(list_to_modify[:]):
-            if (
-                i == j
-                or member in members_migration_missed
-                or other in members_migration_missed
-            ):
-                continue
-
-            if member.nick == other.nick:
-                members_migration_missed.append(member)
-                members_migration_missed.append(other)
-
-                list_to_modify.remove(member)
-                list_to_modify.remove(other)
-
-                member_is_removed = True
-
-                break
-
-        if member_is_removed:
-            continue
+    for member in list_to_modify[:]:
+        if list_to_modify[:].count(member) > 1:
+            members_migration_missed.append(member)
+            list_to_modify.remove(member)
 
 
-def migrate_student(collection: Collection, student: Student):
+def update_student(collection: Collection, student: Student):
     update_filter = {StudentMongoDbKey.NI: student.ni.value}
     update_operation = {
         "$set": {StudentMongoDbKey.DISCORD_USER_ID: student.discord_user_id.value}
@@ -120,12 +110,21 @@ def check_migration_rules(
 ):
     for member in server_members:
         try:
-            split = member.nick.split(" ")
-            student = find_with_first_and_lastname(students, split[0], split[1])
+            try:
+                firstname, lastname = member.nick.split(" ")
+                student = find_student_with_first_and_lastname(
+                    students, firstname, lastname
+                )
+            except ValueError:
+                student = find_student_with_nickname(students, member.nick)
             student.discord_user_id.value = member.id
             members_migration_successful.append(student)
-        except StudentNotFoundException or IndexError:
-            members_migration_missed.append(member)
+        except StudentNotFoundException:
+            is_membre_honirifique = discord.utils.get(
+                member.roles, name=DiscordRole.HONORIFIQUE
+            )
+            if not is_membre_honirifique:
+                members_migration_missed.append(member)
 
 
 async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
@@ -154,7 +153,7 @@ def notify_non_migrated_members(
     logger.info(
         f"{len(members_migration_missed)} étudiants n'ont pas été migrés en raison d'erreurs. "
         f"Cela représente {len(members_migration_missed)/len(server_members) * 100}% des membres. "
-        f"Solution : Les contacter et leur demander de s'inscrire eux-mêmes.\nVoici la liste des personnes à "
+        f"Solution : Les contacter et leur demander de s'inscrire eux-mêmes. Voici la liste des personnes à "
         f"contacter: {members_to_contacts}"
     )
 
@@ -167,7 +166,7 @@ def perform_migration(
         f"Temps estimé pour migrer les membres: {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs."
     )
     for member in members_migration_successful:
-        migrate_student(collection, member)
+        update_student(collection, member)
         time.sleep(MIGRATION_SENDING_REQUEST_SEC)
     logger.info(f"Migration réussie pour {len(members_migration_successful)} membres.")
 
@@ -200,7 +199,8 @@ async def migrate(
         )
         can_contact = Utility.str_to_bool(response)
         if can_contact:
-            await send_dm_non_migrated_members(members_migration_missed)
+            # await send_dm_non_migrated_members(members_migration_missed)
+            logger.info("Vous avez choisi de contacter ces membres.")
         else:
             logger.info("Vous avez choisi de ne pas contacter ces membres.")
     else:

@@ -4,6 +4,7 @@ import logging
 from bot.config.constants import ConfigurationFilename
 from bot.config.context.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
+from bot.config.service_locator import ServiceLocator
 
 
 def get_configuration(args: argparse.Namespace) -> DotEnvConfiguration:
@@ -27,4 +28,6 @@ def add_configuration_argument(parser: argparse.ArgumentParser):
 
 
 def setup_logger(filename: str) -> Logger:
-    return Logger(f"../{filename}", logging.DEBUG)
+    logger = Logger(f"../{filename}", logging.DEBUG)
+    ServiceLocator.register_dependency(Logger, logger)
+    return logger
