@@ -199,8 +199,8 @@ async def migrate(
         )
         can_contact = Utility.str_to_bool(response)
         if can_contact:
-            # await send_dm_non_migrated_members(members_migration_missed)
             logger.info("Vous avez choisi de contacter ces membres.")
+            await send_dm_non_migrated_members(members_migration_missed)
         else:
             logger.info("Vous avez choisi de ne pas contacter ces membres.")
     else:
