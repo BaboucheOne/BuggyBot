@@ -7,6 +7,13 @@ from bot.domain.student.student import Student
 
 
 class StudentRepository(ABC):
+
+    @abstractmethod
+    def find_student_by_discord_user_id(
+        self, discord_user_id: DiscordUserId
+    ) -> Student:
+        pass
+
     @abstractmethod
     def find_students_by_discord_user_id(
         self, discord_user_id: DiscordUserId

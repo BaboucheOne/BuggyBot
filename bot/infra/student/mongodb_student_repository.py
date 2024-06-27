@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from pymongo.collection import Collection
 
@@ -22,6 +22,18 @@ class MongoDbStudentRepository(StudentRepository):
         self.__student_collection: Collection = student_collection
         self.__student_assembler: StudentAssembler = StudentAssembler()
 
+    def find_student_by_discord_user_id(
+        self, discord_user_id: DiscordUserId
+    ) -> Student:
+        student_response: Dict = self.__student_collection.find_one(
+            {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
+        )
+
+        if not student_response:
+            raise StudentNotFoundException()
+
+        return self.__student_assembler.from_json(student_response)
+
     def find_students_by_discord_user_id(
         self, discord_user_id: DiscordUserId
     ) -> List[Student]:
@@ -32,7 +44,7 @@ class MongoDbStudentRepository(StudentRepository):
 
     def find_student_by_ni(self, ni: NI) -> Student:
         query = {StudentMongoDbKey.NI: ni.value}
-        student_response = self.__student_collection.find_one(query)
+        student_response: Dict = self.__student_collection.find_one(query)
 
         if not student_response:
             raise StudentNotFoundException()

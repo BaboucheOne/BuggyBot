@@ -2,12 +2,16 @@ from discord import Message, Member
 from discord.ext import commands
 from discord.ext.commands import Context
 
+from bot.application.discord.discord_service import DiscordService
 from bot.application.student.exceptions.student_already_exist import (
     StudentAlreadyExistsException,
 )
 from bot.application.student.student_service import (
     StudentService,
     StudentAlreadyRegisteredException,
+)
+from bot.infra.student.exception.student_not_found_exception import (
+    StudentNotFoundException,
 )
 from bot.resource.chain_of_responsibility.handlers.keep_digits_handler import (
     KeepDigitsHandler,
@@ -43,6 +47,9 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         self.__student_service: StudentService = ServiceLocator.get_dependency(
             StudentService
         )
+        self.__discord_service: DiscordService = ServiceLocator.get_dependency(
+            DiscordService
+        )
         self.__ni_sanitizer = (
             ResponsibilityBuilder()
             .with_handler(StripHandler())
@@ -72,6 +79,16 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         self.__logger.info(
             f"New user named {member.name} with id {member.id} has been messaged."
         )
+
+    @commands.Cog.listener()
+    async def on_member_removed(self, member: Member):
+        try:
+            self.__discord_service.member_leave_server(member)
+            self.__logger.info(f"Executing ON_MEMBER_REMOVED command on {member.name}")
+        except StudentNotFoundException:
+            self.__logger.error("on_member_removed - Student not found")
+        except Exception as e:
+            self.__logger.error(f"Error while executing on_member_removed command {e}")
 
     @commands.command(
         name="add_student",
