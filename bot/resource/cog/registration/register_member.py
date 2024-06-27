@@ -78,10 +78,11 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         )
 
     @commands.Cog.listener()
-    async def on_member_removed(self, member: Member):
+    async def on_member_remove(self, member: Member):
         try:
+            self.__logger.info(f"Executing ON_MEMBER_REMOVE command on {member.name}.")
             self.__student_service.remove_member(member)
-            self.__logger.info(f"Executing ON_MEMBER_REMOVED command on {member.name}")
+            self.__logger.info("ON_MEMBER_REMOVE command was successful.")
         except StudentNotFoundException:
             self.__logger.error(
                 f"on_member_removed - {member.name} was not a registered student."
