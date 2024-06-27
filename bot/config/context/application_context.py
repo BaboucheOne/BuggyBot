@@ -7,6 +7,8 @@ from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
+from bot.domain.task.task import Task
+from bot.domain.task.task_scheduler import TaskScheduler
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
 from bot.config.context.dotenv_configuration import DotEnvConfiguration
@@ -21,6 +23,7 @@ class ApplicationContext(ABC):
         self._configuration = DotEnvConfiguration(configuration_filename)
 
     async def start_application(self):
+        ServiceLocator.get_dependency(TaskScheduler).start()
         await ServiceLocator.get_dependency(DiscordClient).start(
             self._configuration.discord_token
         )
@@ -37,6 +40,8 @@ class ApplicationContext(ABC):
 
         discord_client = self._instantiate_discord_client()
 
+        task_scheduler = TaskScheduler()
+
         student_service = self._instantiate_student_service(student_repository)
         discord_service = self._instantiate_discord_service(
             discord_client, student_repository
@@ -45,6 +50,7 @@ class ApplicationContext(ABC):
         student_service.register_to_on_student_registered(discord_service)
 
         dependencies = [
+            (TaskScheduler, task_scheduler),
             (DiscordClient, discord_client),
             (StudentRepository, student_repository),
             (StudentService, student_service),
@@ -56,8 +62,10 @@ class ApplicationContext(ABC):
             self._instantiate_register_member_cog(),
             self._instantiate_association_cog(),
         ]
-
         await self.__register_cogs(discord_client, cogs)
+
+        tasks = self._instantiate_tasks(discord_client)
+        task_scheduler.add_tasks(tasks)
 
     def __is_database_available(self, client: MongoClient):
         client.admin.command("ismaster")
@@ -112,4 +120,8 @@ class ApplicationContext(ABC):
     def _instantiate_discord_service(
         self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> DiscordService:
+        pass
+
+    @abstractmethod
+    def _instantiate_tasks(self, discord_client: DiscordClient) -> List[Task]:
         pass

@@ -1,11 +1,15 @@
 import logging
+from typing import List
 
 import discord
+import schedule
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
+from bot.application.task.kick_unregistered_user_task import KickUnregisteredUserTask
+from bot.domain.task.task import Task
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
 from bot.config.context.application_context import ApplicationContext
@@ -59,3 +63,10 @@ class ProductionContext(ApplicationContext):
         self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> DiscordService:
         return DiscordService(discord_client, student_repository)
+
+    def _instantiate_tasks(self, discord_client: DiscordClient) -> List[Task]:
+        return [
+            KickUnregisteredUserTask(
+                discord_client, schedule.every().day.at("00:00").do
+            )
+        ]
