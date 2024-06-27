@@ -1,5 +1,7 @@
 from typing import List
 
+from discord import Member
+
 from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
@@ -134,3 +136,14 @@ class StudentService(StudentRegisteredObservable):
             student_ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
         )
         self.notify_on_student_unregistered(student.discord_user_id)
+
+    def remove_member(self, member: Member):
+        student: Student = self.__student_repository.find_student_by_discord_user_id(
+            DiscordUserId(member.id)
+        )
+
+        self.__student_repository.unregister_student(
+            student.ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
+        )
+
+        self.notify_on_member_removed(member)

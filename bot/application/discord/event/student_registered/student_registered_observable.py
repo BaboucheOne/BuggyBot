@@ -1,5 +1,7 @@
 from typing import List
 
+from discord import Member
+
 from bot.application.discord.event.student_registered.student_registered_observer import (
     StudentRegisteredObserver,
 )
@@ -24,3 +26,7 @@ class StudentRegisteredObservable:
     def notify_on_student_unregistered(self, discord_user_id: DiscordUserId):
         for observer in self.__observers:
             observer.on_student_unregistered(discord_user_id)
+
+    def notify_on_member_removed(self, member: Member):
+        for observer in self.__observers:
+            observer.on_member_removed(member)

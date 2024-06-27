@@ -10,7 +10,6 @@ from bot.application.discord.event.student_registered.student_registered_observe
 from bot.application.discord.exception.role_not_found_exception import (
     RoleNotFoundException,
 )
-from bot.domain.student.student import Student
 from bot.resource.constants import ReplyMessage
 from bot.domain.constants import UniProgram, DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
@@ -85,17 +84,6 @@ class DiscordService(StudentRegisteredObserver):
 
         asyncio.ensure_future(member.send(ReplyMessage.NOTIFY_UNREGISTER))
 
-    def member_leave_server(self, member: Member):
-        if self.__has_a_role(member):
-            student: Student = (
-                self.__student_repository.find_student_by_discord_user_id(
-                    DiscordUserId(member.id)
-                )
-            )
-
-            self.__student_repository.unregister_student(
-                student.ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
-            )
-
-            uni_roles = self.__get_uni_roles(member)
-            asyncio.ensure_future(member.remove_roles(*uni_roles))
+    def on_member_removed(self, member: Member):
+        uni_roles = self.__get_uni_roles(member)
+        asyncio.ensure_future(member.remove_roles(*uni_roles))
