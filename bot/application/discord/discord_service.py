@@ -36,9 +36,6 @@ class DiscordService(StudentRegisteredObserver):
             UniProgram.HONORIFIQUE: DiscordRole.HONORIFIQUE,
         }
 
-    def __has_a_role(self, member: Member) -> bool:
-        return len(member.roles) > 1
-
     def __get_role_name(self, student_role: str) -> str:
         if student_role in self.__role_mapping:
             return self.__role_mapping[student_role]
