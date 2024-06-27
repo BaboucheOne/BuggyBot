@@ -1,6 +1,6 @@
 import asyncio
 from abc import abstractmethod, ABC
-from collections import Callable
+from typing import Callable
 
 
 class Task(ABC):
