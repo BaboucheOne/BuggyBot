@@ -23,6 +23,8 @@ from bot.infra.student.mongodb_student_repository import MongoDbStudentRepositor
 
 class DevelopmentContext(ApplicationContext):
 
+    MIDNIGHT: str = "00:00"
+
     def __init__(self):
         super().__init__(ConfigurationFilename.DEVELOPMENT)
 
@@ -67,6 +69,6 @@ class DevelopmentContext(ApplicationContext):
     def _instantiate_tasks(self, discord_client: DiscordClient) -> List[Task]:
         return [
             KickUnregisteredUserTask(
-                discord_client, schedule.every().day.at("00:00").do
+                discord_client, schedule.every().day.at(self.MIDNIGHT).do
             )
         ]
