@@ -40,7 +40,7 @@ async def main():
     application_context = get_application_context(args)
     try:
         await application_context.build_application()
-        ServiceLocator.get_dependency(Logger).info("main - Application build.")
+        ServiceLocator.get_dependency(Logger).info("main - Application built.")
     except PyMongoError as e:
         ServiceLocator.get_dependency(Logger).fatal(
             f"main - Unable to connect to mongo database. Exiting the app. {e}"
@@ -48,7 +48,7 @@ async def main():
         exit(-1)
     except Exception as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - Exception occurs while building the app. Exiting the app. {e}"
+            f"main - An exception occured while building the app. Exiting the app. {e}"
         )
         exit(-1)
 
