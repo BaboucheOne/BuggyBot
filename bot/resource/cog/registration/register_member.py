@@ -9,6 +9,9 @@ from bot.application.student.student_service import (
     StudentService,
     StudentAlreadyRegisteredException,
 )
+from bot.infra.student.exception.student_not_found_exception import (
+    StudentNotFoundException,
+)
 from bot.resource.chain_of_responsibility.handlers.keep_digits_handler import (
     KeepDigitsHandler,
 )
@@ -43,6 +46,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         self.__student_service: StudentService = ServiceLocator.get_dependency(
             StudentService
         )
+
         self.__ni_sanitizer = (
             ResponsibilityBuilder()
             .with_handler(StripHandler())
@@ -72,6 +76,19 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         self.__logger.info(
             f"New user named {member.name} with id {member.id} has been messaged."
         )
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member: Member):
+        try:
+            self.__logger.info(f"Executing ON_MEMBER_REMOVE command on {member.name}.")
+            self.__student_service.remove_member(member)
+            self.__logger.info("ON_MEMBER_REMOVE command was successful.")
+        except StudentNotFoundException:
+            self.__logger.error(
+                f"on_member_removed - {member.name} was not a registered student."
+            )
+        except Exception as e:
+            self.__logger.error(f"Error while executing on_member_removed command {e}")
 
     @commands.command(
         name="add_student",

@@ -4,6 +4,9 @@ from typing import List
 import discord
 from discord import Role, Member
 
+from bot.application.discord.event.member_removed.member_removed_observer import (
+    MemberRemovedObserver,
+)
 from bot.application.discord.event.student_registered.student_registered_observer import (
     StudentRegisteredObserver,
 )
@@ -18,7 +21,7 @@ from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student_repository import StudentRepository
 
 
-class DiscordService(StudentRegisteredObserver):
+class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
 
     MAX_NICKNAME_LENGTH = 32
 
@@ -80,3 +83,7 @@ class DiscordService(StudentRegisteredObserver):
         asyncio.ensure_future(member.remove_roles(*uni_roles))
 
         asyncio.ensure_future(member.send(ReplyMessage.NOTIFY_UNREGISTER))
+
+    def on_member_removed(self, member: Member):
+        uni_roles = self.__get_uni_roles(member)
+        asyncio.ensure_future(member.remove_roles(*uni_roles))

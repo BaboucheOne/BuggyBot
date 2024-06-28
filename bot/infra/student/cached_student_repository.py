@@ -16,6 +16,11 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         self.__repository = repository
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
+    def find_student_by_discord_user_id(
+        self, discord_user_id: DiscordUserId
+    ) -> Student:
+        return self.__repository.find_student_by_discord_user_id(discord_user_id)
+
     def find_students_by_discord_user_id(
         self, discord_user_id: DiscordUserId
     ) -> List[Student]:
