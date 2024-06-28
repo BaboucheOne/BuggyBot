@@ -4,7 +4,9 @@ from typing import List
 import discord
 from discord import Role, Member
 
-from bot.application.discord.event.member_removed.member_removed_observer import MemberRemovedObserver
+from bot.application.discord.event.member_removed.member_removed_observer import (
+    MemberRemovedObserver,
+)
 from bot.application.discord.event.student_registered.student_registered_observer import (
     StudentRegisteredObserver,
 )

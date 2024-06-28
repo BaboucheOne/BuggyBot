@@ -2,7 +2,9 @@ from typing import List
 
 from discord import Member
 
-from bot.application.discord.event.member_removed.member_removed_observable import MemberRemovedObservable
+from bot.application.discord.event.member_removed.member_removed_observable import (
+    MemberRemovedObservable,
+)
 from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )

@@ -2,7 +2,9 @@ from typing import List
 
 from discord import Member
 
-from bot.application.discord.event.member_removed.member_removed_observer import MemberRemovedObserver
+from bot.application.discord.event.member_removed.member_removed_observer import (
+    MemberRemovedObserver,
+)
 
 
 class MemberRemovedObservable:
