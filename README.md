@@ -1,6 +1,8 @@
 # BuggyBot
 Simply a customs agent
 
+![CI](https://github.com/BaboucheOne/BuggyBot/actions/workflows/PythonFormatter.yml/badge.svg)
+
 # Building :hammer_and_wrench:
 ## :ship: Docker
 1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/).
