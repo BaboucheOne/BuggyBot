@@ -2,6 +2,7 @@ from typing import List
 
 from discord import Member
 
+from bot.application.discord.event.member_removed.member_removed_observable import MemberRemovedObservable
 from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
@@ -42,7 +43,7 @@ from bot.infra.student.exception.student_not_found_exception import (
 )
 
 
-class StudentService(StudentRegisteredObservable):
+class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
     def __init__(self, student_repository: StudentRepository):
         super().__init__()
