@@ -10,7 +10,7 @@ from bot.config.logger.logger import Logger
 from bot.domain.constants import UniProgram
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.infra.constants import StudentMongoDbKey
-from constants import StudentCsvKey
+from tools.constants import StudentCsvKey
 from tools.configuration_common import (
     get_configuration,
     add_configuration_argument,

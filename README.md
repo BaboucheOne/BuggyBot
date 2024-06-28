@@ -1,6 +1,8 @@
 # BuggyBot
 Simply a customs agent
 
+![CI](https://github.com/BaboucheOne/BuggyBot/actions/workflows/PythonFormatter.yml/badge.svg)
+
 # Building :hammer_and_wrench:
 ## :ship: Docker
 1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/).
@@ -58,17 +60,17 @@ This directory contains tools to help development. Add all python files that wil
 :arrow_right: You can use constants from the `bot` directory if needed.
 
 ### Commands
+:warning: You must use your venv :warning:
+
 To upload a new list of students provided by the department, run:
 ```commandline
-cd ./tools
-python update_students_list.py FILENAME.xlsx
+python -m tools.update_students_list.py tools/FILENAME.xlsx
 ```
 
 To migrate non-registered members :
 This command enables you to migrate members to the new bot. It will automatically register members present on the discord.
 ```commandline
-cd ./tools
-python migrate_discord_students.py
+python -m tools.migrate_discord_students.py
 ```
 It can happen that certain members cannot be migrated du to their name being too long or that we found duplicates.
 If this happens, script will ask you if you want to contact them by hand or automatically by sending them a message asking them to register.
