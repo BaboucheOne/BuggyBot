@@ -9,6 +9,7 @@ from pymongo.collection import Collection
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
 from bot.application.task.kick_unregistered_user_task import KickUnregisteredUserTask
+from bot.application.task.sentence_of_the_day_task import SentenceOfTheDayTask
 from bot.domain.task.task import Task
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
@@ -70,5 +71,8 @@ class DevelopmentContext(ApplicationContext):
         return [
             KickUnregisteredUserTask(
                 discord_client, schedule.every().day.at(self.MIDNIGHT).do
-            )
+            ),
+            SentenceOfTheDayTask(
+                discord_client, schedule.every().day.at(self.MIDNIGHT).do
+            ),
         ]
