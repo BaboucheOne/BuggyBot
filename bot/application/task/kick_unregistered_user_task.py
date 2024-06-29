@@ -24,10 +24,10 @@ class KickUnregisteredUserTask(Task):
         self.__discord_client: DiscordClient = discord_client
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
-    def has_no_role(self, member: Member) -> bool:
+    def __has_no_role(self, member: Member) -> bool:
         return len(member.roles) == 1
 
-    def has_joined_one_week_ago(self, member: Member):
+    def __has_joined_one_week_ago(self, member: Member):
         one_week_ago = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(
             weeks=1
         )
@@ -37,10 +37,10 @@ class KickUnregisteredUserTask(Task):
         self.__logger.info("KickUnregisteredUserTask - Start of task.")
 
         no_role_members: List[Member] = list(
-            filter(self.has_no_role, self.__discord_client.server.members)
+            filter(self.__has_no_role, self.__discord_client.server.members)
         )
         verification_expired_members: List[Member] = list(
-            filter(self.has_joined_one_week_ago, no_role_members)
+            filter(self.__has_joined_one_week_ago, no_role_members)
         )
 
         self.__logger.info(
