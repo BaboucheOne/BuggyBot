@@ -4,7 +4,7 @@ class ReplyMessage:
         "Afin de confirmer que vous êtes bel et bien un(e) étudiant(e) inscrit(e) à l'association, entrez votre numéro d'identification personnel (NI) via la commande !register [NI].\n"
         "Au plaisir de vous rencontrer!\n"
         "PS: Si vous ne savez pas où trouver votre NI, cliquez [ici](https://monportail.ulaval.ca/portail/carte-identite/apercus-carte).\n"
-        "En tout temps, écrivez !help pour connaître les options qui s'offrent à vous."
+        "En tout temps, écrivez !help [NOM DE LA COMMANDE] pour connaître les options qui s'offrent à vous."
     )
 
     UNSUCCESSFUL_GENERIC: str = "Oh oh... quelque chose s'est mal passé."
