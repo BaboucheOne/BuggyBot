@@ -39,7 +39,6 @@ class SentenceOfTheDayTask(Task):
                 "SentenceOfTheDayTask - Sentence of the day has been applied."
             )
         except requests.exceptions.RequestException as e:
-            print("Error fetching data:", e)
             self.__logger.warning(
                 f"SentenceOfTheDayTask - Unable to fetch sentence of the day due to {e}."
             )
