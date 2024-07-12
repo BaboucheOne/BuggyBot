@@ -21,5 +21,5 @@ def read_arguments() -> argparse.Namespace:
 args = read_arguments()
 if args.migration_or_update == "migration":
     asyncio.run(migrate_discord_students.main(arguments=sys.argv[2:]))
-else:
+elif args.migration_or_update == "update":
     asyncio.run(update_students_list.main(arguments=sys.argv[2:]))
