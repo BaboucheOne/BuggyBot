@@ -64,7 +64,8 @@ This directory contains tools to help development. Add all python files that wil
 
 To upload a new list of students provided by the department, run:
 ```commandline
-python -m tools.update_students_list.py tools/FILENAME.xlsx
+python tools update_students_list tools/FILENAME.xlsx
+python tools migration
 ```
 
 To migrate non-registered members :
