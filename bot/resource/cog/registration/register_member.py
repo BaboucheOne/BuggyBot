@@ -126,7 +126,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     )
     @commands.dm_only()
     async def register(self, context: Context):
-        self.__logger.info(f"Executing REGISTER command by {context.message.author}")
+        self.__logger.info(f"Executing REGISTER command by {context.message.author}.")
 
         message = context.message
         if self.__is_self(message):
@@ -144,7 +144,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         except StudentAlreadyRegisteredException:
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception as e:
-            self.__logger.error(f"Error while executing REGISTER command {e}")
+            self.__logger.error(f"Error while executing REGISTER command: '{e}'.")
             await message.channel.send(ReplyMessage.UNABLE_TO_REGISTER)
 
     @commands.command(

@@ -3,6 +3,7 @@ import argparse
 import pandas as pd
 from typing import List
 from pymongo import MongoClient
+import sys
 
 from bot.config.constants import ConfigurationFilename
 from bot.config.context.dotenv_configuration import DotEnvConfiguration
@@ -45,14 +46,14 @@ STUDENTS_LIST_RENAMING_MAPPING = {
 }
 
 
-def read_arguments() -> argparse.Namespace:
+def read_arguments(arguments: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Lire le fichier CSV.")
     parser.add_argument(
         ARGUMENT_FILENAME_KEY, type=str, help="Chemin vers le fichier CSV."
     )
     add_configuration_argument(parser)
 
-    return parser.parse_args()
+    return parser.parse_args(arguments)
 
 
 def read_configurations(filename: str) -> DotEnvConfiguration:
@@ -123,8 +124,8 @@ def get_dot_env_filepath():
     return os.path.join(root_directory, ConfigurationFilename.DEVELOPMENT)
 
 
-def main():
-    arguments = read_arguments()
+def main(arguments: List[str]):
+    arguments = read_arguments(arguments)
     configuration: DotEnvConfiguration = get_configuration(arguments)
     logger = setup_logger(configuration.logger_filename)
 
@@ -152,4 +153,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(arguments=sys.argv[1:])
