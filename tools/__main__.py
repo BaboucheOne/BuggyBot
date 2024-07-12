@@ -6,8 +6,8 @@ import os
 current_script_path = os.path.dirname(os.path.realpath(__file__))
 bot_directory_path = os.path.join(current_script_path, '..')
 sys.path.append(bot_directory_path)
-import migrate_discord_students
-import update_students_list
+import migrate_discord_students # noqa: E402
+import update_students_list # noqa: E402
 
 # write an argument parser with only one argument choosing whether to run the migration or the update
 def read_arguments() -> argparse.Namespace:
