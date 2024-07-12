@@ -65,13 +65,12 @@ This directory contains tools to help development. Add all python files that wil
 To upload a new list of students provided by the department, run:
 ```commandline
 python tools update_students_list tools/FILENAME.xlsx
-python tools migration
 ```
 
 To migrate non-registered members :
 This command enables you to migrate members to the new bot. It will automatically register members present on the discord.
 ```commandline
-python -m tools.migrate_discord_students.py
+python tools migrate_students
 ```
 It can happen that certain members cannot be migrated du to their name being too long or that we found duplicates.
 If this happens, script will ask you if you want to contact them by hand or automatically by sending them a message asking them to register.
