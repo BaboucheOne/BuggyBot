@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import threading
 import time
+import sys
 
 import discord
 from typing import List
@@ -37,13 +38,13 @@ MIGRATION_SENDING_MESSAGE_SEC = 0.5
 WAIT_FOR_THREAD_INITIALIZATION = 1.0
 
 
-def read_arguments() -> argparse.Namespace:
+def read_arguments(arguments: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Migrer les étudiants de Discord vers la base de données."
     )
     add_configuration_argument(parser)
 
-    return parser.parse_args()
+    return parser.parse_args(arguments)
 
 
 def connect_to_mongo_db(connection_url: str) -> MongoClient:
@@ -213,10 +214,10 @@ def start_bot(discord_client: DiscordClient, configuration: DotEnvConfiguration)
     discord_client.run(configuration.discord_token)
 
 
-async def main():
+async def main(arguments: List[str] = None):
     global logger
 
-    arguments = read_arguments()
+    arguments = read_arguments(arguments)
     configuration: DotEnvConfiguration = get_configuration(arguments)
     logger = setup_logger(configuration.logger_filename)
 
@@ -246,4 +247,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main(sys.argv))
