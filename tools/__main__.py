@@ -9,7 +9,6 @@ sys.path.append(bot_directory_path)
 import migrate_discord_students # noqa: E402
 import update_students_list # noqa: E402
 
-# write an argument parser with only one argument choosing whether to run the migration or the update
 def read_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Lire le fichier CSV.")
     parser.add_argument(
