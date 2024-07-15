@@ -6,8 +6,8 @@ Simply a customs agent
 # Building :hammer_and_wrench:
 ## :ship: Docker
 1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/).
-2. Run the following command `docker build --tag buggybot .`
-3. Launch the image.
+2. Run the following command `docker build -t <username>/<repository>:latest .`
+3. Launch the image using `docker run -d --restart=always <username>/<repository>:latest`
 
 :warning: Make sure to modify `.env.dev` or `.env.prod`.
 
@@ -40,6 +40,21 @@ Simply a customs agent
 :information_source: One file is dedicated to dev purposes (like having a local server) and the other to production (like giving the real connection string for the database).
 
 :information_source: If the log file is not present, it will be created automatically.
+
+# Deployment :inbox_tray:
+## Push
+Once your image is built, push it to your Docker repository.
+```commandline
+docker push <username>/<repository>:latest
+```
+
+## Pull & run
+Once logged into your server, pull and run the image using the following commands:
+```commandline
+docker login -u <username> -p <access_token>
+docker pull <username>/<repository>:latest
+docker run -d --restart=always <username>/<repository>:latest
+```
 
 # Launching :rocket:
 In production:
