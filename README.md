@@ -49,7 +49,6 @@ docker push <username>/<repository>:latest
 ```
 
 ## Pull & run
-Once logged into your server, pull and run the image using the following commands:
 ```commandline
 docker login -u <username> -p <access_token>
 docker pull <username>/<repository>:latest
