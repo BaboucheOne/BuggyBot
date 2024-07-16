@@ -6,4 +6,4 @@ services:
       - .env.prod
     ports:
       - "27017"
-    restart: always-on-reboot
+    restart: always
