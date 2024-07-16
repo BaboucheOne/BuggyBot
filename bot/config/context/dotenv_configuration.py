@@ -6,7 +6,10 @@ from bot.config.constants import DotenvConfigurationKey
 
 
 class DotEnvConfiguration:
-    def __init__(self, filename: str):
+    def __init__(self):
+        pass
+
+    def from_file(self, filename: str):
         dotenv_path = find_dotenv(filename=filename)
         load_dotenv(dotenv_path=dotenv_path)
 

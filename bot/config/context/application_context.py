@@ -19,8 +19,11 @@ from bot.domain.student.student_repository import StudentRepository
 
 
 class ApplicationContext(ABC):
-    def __init__(self, configuration_filename: str):
-        self._configuration = DotEnvConfiguration(configuration_filename)
+    def __init__(self):
+        self._configuration: DotEnvConfiguration = DotEnvConfiguration()
+
+    def _load_configuration_from_file(self, filename: str):
+        self._configuration.from_file(filename)
 
     async def start_application(self):
         ServiceLocator.get_dependency(TaskScheduler).start()
