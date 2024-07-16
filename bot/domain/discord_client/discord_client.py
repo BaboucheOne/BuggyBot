@@ -24,7 +24,7 @@ class DiscordClient(Bot):
 
     async def on_ready(self):
         self.__server = self.get_guild(self.__server_id)
-        self.__logger.info("on_ready - DiscordClient ready to operate.")
+        self.__logger.info("on_ready - DiscordClient prêt à fonctionner.")
 
     @property
     def ready(self) -> bool:

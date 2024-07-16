@@ -27,7 +27,7 @@ class SentenceOfTheDayTask(Task):
         return response.json()[self.RESPONSE_CITATION_KEY]
 
     async def do(self):
-        self.__logger.info("SentenceOfTheDayTask - Start of task.")
+        self.__logger.info("SentenceOfTheDayTask - Début de la tâche.")
 
         try:
             citation = self.__get_sentence_of_the_day()
@@ -36,13 +36,15 @@ class SentenceOfTheDayTask(Task):
             )
 
             self.__logger.info(
-                "SentenceOfTheDayTask - Sentence of the day has been applied."
+                "SentenceOfTheDayTask - La phrase du jour a été appliquée."
             )
         except requests.exceptions.RequestException as e:
             self.__logger.warning(
-                f"SentenceOfTheDayTask - Unable to fetch sentence of the day due to {e}."
+                f"SentenceOfTheDayTask - Impossible de récupérer la phrase du jour en raison de {e}."
             )
         except Exception as e:
-            self.__logger.warning(f"SentenceOfTheDayTask - An error occurs {e}.")
+            self.__logger.warning(
+                f"SentenceOfTheDayTask - Une erreur s'est produite {e}."
+            )
 
-        self.__logger.info("SentenceOfTheDayTask - End of task.")
+        self.__logger.info("SentenceOfTheDayTask - Fin de la tâche.")

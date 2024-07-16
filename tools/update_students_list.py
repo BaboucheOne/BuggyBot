@@ -64,7 +64,7 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
     try:
         return MongoClient(connection_url)
     except ConnectionError as e:
-        logger.fatal(f"connect_to_mongo_db - Unable to connect to the MongoDB. {e}")
+        logger.fatal(f"connect_to_mongo_db - Impossible de se connecter à MongoDB. {e}")
         exit(-1)
 
 

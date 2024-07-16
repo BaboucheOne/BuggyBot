@@ -34,7 +34,7 @@ class KickUnregisteredUserTask(Task):
         return member.joined_at <= one_week_ago
 
     async def do(self):
-        self.__logger.info("KickUnregisteredUserTask - Start of task.")
+        self.__logger.info("KickUnregisteredUserTask - Début de la tâche.")
 
         no_role_members: List[Member] = list(
             filter(self.__has_no_role, self.__discord_client.server.members)
@@ -44,26 +44,26 @@ class KickUnregisteredUserTask(Task):
         )
 
         self.__logger.info(
-            f"KickUnregisteredUserTask - {len(verification_expired_members)} are going to be kicked."
+            f"KickUnregisteredUserTask - {len(verification_expired_members)} utilisateur(s) vont être expulsé(s)."
         )
 
         for member in verification_expired_members:
             try:
                 await member.kick(reason=self.KICK_REASON)
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - {member.name} has been kicked."
+                    f"KickUnregisteredUserTask - {member.name} a été expulsé."
                 )
             except discord.Forbidden:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - Unable to kick {member.nick}, permission denied."
+                    f"KickUnregisteredUserTask - mpossible d'expulser {member.nick}, permission refusée."
                 )
             except discord.NotFound:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - Unable to kick {member.nick}, not found."
+                    f"KickUnregisteredUserTask - mpossible d'expulser {member.nick}, non trouvé."
                 )
             except discord.HTTPException as e:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - Unable to kick {member.nick}, http exception {e}."
+                    f"KickUnregisteredUserTask - mpossible d'expulser {member.nick}, erreur http {e}."
                 )
 
-        self.__logger.info("KickUnregisteredUserTask - End of task.")
+        self.__logger.info("KickUnregisteredUserTask - Fin de la tâche.")

@@ -13,7 +13,7 @@ from bot.config.service_locator import ServiceLocator
 def read_arguments() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(
-        description="Discord bot which is basically a customs agent for the server"
+        description="Bot Discord qui est essentiellement un agent des douanes pour le serveur."
     )
 
     parser.add_argument(
@@ -23,7 +23,7 @@ def read_arguments() -> argparse.Namespace:
         dest="env",
         choices=["dev", "prod"],
         default="dev",
-        help="Specify if the bot should run in development (dev) or production (prod) mode",
+        help="Spécifiez si le bot doit fonctionner en mode développement (dev) ou production (prod)",
     )
 
     return parser.parse_args()
@@ -40,19 +40,19 @@ async def main():
     application_context = get_application_context(args)
     try:
         await application_context.build_application()
-        ServiceLocator.get_dependency(Logger).info("main - Application built.")
+        ServiceLocator.get_dependency(Logger).info("main - Application construite.")
     except PyMongoError as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - Unable to connect to mongo database. Exiting the app. {e}"
+            f"main - Impossible de se connecter à la base de données Mongo. Fermeture de l'application. {e}"
         )
         exit(-1)
     except Exception as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - An exception occured while building the app. Exiting the app. {e}"
+            f"main - Une exception s'est produite lors de la construction de l'application. Fermeture de l'application. {e}"
         )
         exit(-1)
 
-    ServiceLocator.get_dependency(Logger).info("main - Launching application.")
+    ServiceLocator.get_dependency(Logger).info("main - Lancement de l'application.")
     await application_context.start_application()
 
 

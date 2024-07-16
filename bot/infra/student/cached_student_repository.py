@@ -49,13 +49,15 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         if self._is_cached(ni) and not self._is_dirty(ni):
             cache_student = self._get_cached_item(ni).data
             self.__logger.info(
-                f"find_student_by_ni - get cached student {repr(cache_student)}"
+                f"find_student_by_ni - Obtention de l'étudiant en cache {repr(cache_student)}"
             )
             return cache_student
 
         student = self.__repository.find_student_by_ni(ni)
         self._set_cached_item(ni, student)
 
-        self.__logger.info(f"find_student_by_ni - add student to cache {repr(student)}")
+        self.__logger.info(
+            f"find_student_by_ni - Ajout de l'étudiant à la cache {repr(student)}"
+        )
 
         return student
