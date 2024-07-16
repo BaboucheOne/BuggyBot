@@ -33,7 +33,7 @@ def read_arguments() -> argparse.Namespace:
         ],
         default=LAUNCH_DEVELOPMENT_CONTEXT_NAME,
         help=(
-            f"SSpécifiez si le bot doit fonctionner en mode développement ({LAUNCH_DEVELOPMENT_CONTEXT_NAME}), "
+            f"Spécifiez si le bot doit fonctionner en mode développement ({LAUNCH_DEVELOPMENT_CONTEXT_NAME}), "
             f"production ({LAUNCH_PRODUCTION_CONTEXT_NAME}) ou docker ({LAUNCH_DOCKER_CONTEXT_NAME}) mode"
         ),
     )
