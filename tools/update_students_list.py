@@ -56,10 +56,6 @@ def read_arguments(arguments: List[str]) -> argparse.Namespace:
     return parser.parse_args(arguments)
 
 
-def read_configurations(filename: str) -> DotEnvConfiguration:
-    return DotEnvConfiguration(filename)
-
-
 def connect_to_mongo_db(connection_url: str) -> MongoClient:
     try:
         return MongoClient(connection_url)
