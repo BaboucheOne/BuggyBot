@@ -27,7 +27,8 @@ class DevelopmentContext(ApplicationContext):
     MIDNIGHT: str = "00:00"
 
     def __init__(self):
-        super().__init__(ConfigurationFilename.DEVELOPMENT)
+        super().__init__()
+        self._load_configuration_from_file(ConfigurationFilename.DEVELOPMENT)
 
     def _instantiate_mongo_client(self) -> MongoClient:
         return MongoClient(
