@@ -11,7 +11,7 @@ Simply a customs agent
 
 :warning: Make sure to create/modify `.env.dev` or `.env.prod`.
 
-:warning: Default dockerfile launches Buggybot in **production** __and__ **docker** mode.
+:warning: Default dockerfile launches Buggybot in **production**.
 
 ## :computer: On machine
 1. Download [Python 3.10](https://www.python.org/downloads/release/python-3100/)
