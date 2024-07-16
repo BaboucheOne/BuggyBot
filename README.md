@@ -2,6 +2,8 @@
 Simply a customs agent
 
 ![CI](https://github.com/BaboucheOne/BuggyBot/actions/workflows/PythonFormatter.yml/badge.svg)
+![DockerBuild](https://github.com/BaboucheOne/BuggyBot/actions/workflows/docker-build.yml/badge.svg)
+![DockerDeployment](https://github.com/BaboucheOne/BuggyBot/actions/workflows/build-deploy-docker-image.yml/badge.svg)
 
 # Building :hammer_and_wrench:
 ## :ship: Docker
@@ -37,7 +39,7 @@ Simply a customs agent
     LOGGER_FILENAME = "YOUR LOG FILENAME"
     ```
 
-:information_source: One file is dedicated to dev purposes (like having a local server) and the other to production (like giving the real connection string for the database).
+:information_source: One file is dedicated to dev purposes (like having a local server), and the other to production (like giving the real connection string for the database).
 
 :information_source: If the log file is not present, it will be created automatically.
 
