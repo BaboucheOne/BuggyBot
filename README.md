@@ -54,6 +54,8 @@ python main.py --env dev
 
 In Docker:
 
+:arrow_right: Create a docker-compose.yml (See repository for the model).
+
 For a production context:
 ```commandline
 docker-compose --env-file .env.prod up --build
