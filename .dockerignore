@@ -9,6 +9,7 @@ __pycache__
 ./venv
 
 .dockerfile
+.dockerignore
 .idea
 
 .env.dev
