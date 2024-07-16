@@ -14,19 +14,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      env:
-        DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }}
-        DOCKER_TAG: ${{ vars.DOCKER_TAG }}
-
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Login to Docker Hub
-        run: echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-
       - name: Build and push Docker image
+        env:
+          DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }}
+          DOCKER_TAG: ${{ vars.DOCKER_TAG }}
+
         run: |
+          echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
           docker build -t "${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG}" .
           docker push "${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG}"
