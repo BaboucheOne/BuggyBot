@@ -11,6 +11,9 @@ __pycache__
 .dockerfile
 .idea
 
+.env.dev
+.env.prod
+
 README.md
 
 *.csv

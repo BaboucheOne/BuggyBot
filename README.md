@@ -7,11 +7,11 @@ Simply a customs agent
 ## :ship: Docker
 1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/).
 2. Run the following command `docker build -t <username>/<repository>:latest .`
-3. Launch the image using `docker run -d --restart=always <username>/<repository>:latest`
+3. Launch the image using `docker run -d --restart=always --env-file .env.prod <username>/<repository>:latest`
 
-:warning: Make sure to modify `.env.dev` or `.env.prod`.
+:warning: Make sure to create/modify `.env.dev` or `.env.prod`.
 
-:warning: Default dockerfile launches Buggybot in **production**.
+:warning: Default dockerfile launches Buggybot in **production** __and__ **docker** mode.
 
 ## :computer: On machine
 1. Download [Python 3.10](https://www.python.org/downloads/release/python-3100/)
@@ -41,20 +41,6 @@ Simply a customs agent
 
 :information_source: If the log file is not present, it will be created automatically.
 
-# Deployment :inbox_tray:
-## Push
-Once your image is built, push it to your Docker repository.
-```commandline
-docker push <username>/<repository>:latest
-```
-
-## Pull & run
-```commandline
-docker login -u <username> -p <access_token>
-docker pull <username>/<repository>:latest
-docker run -d --restart=always <username>/<repository>:latest
-```
-
 # Launching :rocket:
 In production:
 ```commandline
@@ -64,6 +50,18 @@ python main.py --env prod
 In development:
 ```commandline
 python main.py --env dev
+```
+
+In Docker:
+
+For a production context:
+```commandline
+docker-compose --env-file .env.prod up --build
+```
+
+For a development context:
+```commandline
+docker-compose --env-file .env.dev up --build
 ```
 
 ## Tools
