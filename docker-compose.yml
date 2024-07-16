@@ -1,0 +1,7 @@
+services:
+  buggybot:
+    image: baboucheone/buggybot:latest
+    container_name: buggybot
+    ports:
+      - "27017"
+    restart: always

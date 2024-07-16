@@ -11,4 +11,4 @@ COPY . /buggybot
 
 EXPOSE 27017
 
-CMD ["python3", "main.py", "--env", "prod"]
+CMD ["python3", "main.py", "--env", "docker"]
