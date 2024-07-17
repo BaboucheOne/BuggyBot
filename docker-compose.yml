@@ -4,6 +4,6 @@ services:
     container_name: buggybot
     ports:
       - "27017"
-    volune:
+    volumes:
       - /etc/localtime:/etc/localtime:ro
     restart: always
