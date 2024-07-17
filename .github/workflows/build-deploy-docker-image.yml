@@ -26,5 +26,5 @@ jobs:
 
         run: |
           echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-          docker build -t "${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG}" .
+          docker build -t "${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG}" -f .docker/dockerfile .
           docker push "${DOCKER_USERNAME}/${DOCKER_REPOSITORY}:${DOCKER_TAG}"
