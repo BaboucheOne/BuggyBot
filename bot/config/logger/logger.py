@@ -1,4 +1,5 @@
 import logging
+import os
 
 from bot.config.logger.log import Log
 
@@ -8,12 +9,16 @@ class Logger:
     VERSION: int = 1
     LOGGER_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     NAME: str = "BuggyBotLogger"
+    DIRECTORY: str = "log"
 
     def __init__(self, log_file: str, level=logging.DEBUG):
+        self.__create_log_directory()
+        logger_file_path = f"{self.DIRECTORY}/{log_file}"
+
         self.logger = logging.getLogger(self.NAME)
         self.logger.setLevel(level)
 
-        file_handler = logging.FileHandler(log_file, encoding="utf-8")
+        file_handler = logging.FileHandler(logger_file_path, encoding="utf-8")
         console_handler = logging.StreamHandler()
 
         file_handler.setLevel(level)
@@ -26,6 +31,9 @@ class Logger:
 
         self.logger.addHandler(file_handler)
         self.logger.addHandler(console_handler)
+
+    def __create_log_directory(self):
+        os.makedirs(self.DIRECTORY, exist_ok=True)
 
     def __create_log(self, message: str) -> str:
         return Log(self.VERSION, message).to_json()
