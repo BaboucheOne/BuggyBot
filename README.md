@@ -46,6 +46,9 @@ Simply a customs agent
 :information_source: If the log file is not present, it will be created automatically.
 
 # Launching :rocket:
+
+## :computer: On machine
+
 In production:
 ```commandline
 python main.py --env prod
@@ -56,12 +59,12 @@ In development:
 python main.py --env dev
 ```
 
-In Docker:
+## :ship: Docker
 
 :arrow_right: Create a directory to store docker-compose.yml and .env.prod (See repository for the model).
 
-:heavy_plus_sign: Add `updater.sh` from `./docker/script`. Once executed, it automatically updates the container.
-You will need to give permission to execute the updater.
+:heavy_plus_sign: To update the container automatically, use the updater.sh script located in ./docker/script.
+You may need to grant execute permissions to the script with the following command (optional):
 ```commandline
 sudo chmod +x update_buggybot.sh
 ```
