@@ -63,6 +63,8 @@ python main.py --env dev
 
 :arrow_right: Create a directory to store docker-compose.yml and .env.prod (See repository for the model).
 
+:arrow_right: Create inside your directory another that directory named `log`.
+
 :heavy_plus_sign: To update the container automatically, use the updater.sh script located in ./docker/script.
 You may need to grant execute permissions to the script with the following command (optional):
 ```commandline
