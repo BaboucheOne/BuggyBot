@@ -2,6 +2,8 @@ services:
   buggybot:
     image: baboucheone/buggybot:latest
     container_name: buggybot
+    env_file:
+      - .env.prod
     ports:
       - "27017"
     volumes:

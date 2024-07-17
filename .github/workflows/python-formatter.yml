@@ -1,4 +1,4 @@
-name: PythonFormatter
+name: Python Formatter
 
 on:
   push:

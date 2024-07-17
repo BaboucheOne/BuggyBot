@@ -30,14 +30,16 @@ Simply a customs agent
 1. At the root of the project `./BuggyBot` create two files and name them `.env.dev` and `env.prod`.
 2. Add the following lines for both configuration:
     ```md
-    MONGODB_CONNECTION_STRING = "YOUR MONGODB CONNECTION STRING"
-    MONGODB_CONNECTION_TIMEOUT_MS = YOUR TIMEOUT TIME IN MS
-    MONGODB_DATABASE_NAME = "YOUR MONGODB NAME"
-    STUDENT_COLLECTION_NAME = "YOUR STUDENT COLLECTION NAME"
-    DISCORD_TOKEN = "YOUR DISCORD BOT TOKEN"
-    SERVER_ID = YOUR SERVER ID (RIGHT CLICK ON SERVER ICON AND COPY ID)
-    LOGGER_FILENAME = "YOUR LOG FILENAME"
+    MONGODB_CONNECTION_STRING=YOUR MONGODB CONNECTION STRING
+    MONGODB_CONNECTION_TIMEOUT_MS=YOUR TIMEOUT TIME IN MS
+    MONGODB_DATABASE_NAME=YOUR MONGODB NAME
+    STUDENT_COLLECTION_NAME=YOUR STUDENT COLLECTION NAME
+    DISCORD_TOKEN=YOUR DISCORD BOT TOKEN
+    SERVER_ID=YOUR SERVER ID (RIGHT CLICK ON SERVER ICON AND COPY ID)
+    LOGGER_FILENAME=YOUR LOG FILENAME
     ```
+
+:warning: Do not add space between `=`. Even for string, **do not** add `"`.
 
 :information_source: One file is dedicated to dev purposes (like having a local server), and the other to production (like giving the real connection string for the database).
 
@@ -56,9 +58,9 @@ python main.py --env dev
 
 In Docker:
 
-:arrow_right: Create a docker-compose.yml (See repository for the model).
+:arrow_right: Create a docker-compose.yml and .env.prod (See repository for the model).
 ```commandline
-docker-compose --env-file .env.prod up --build
+docker-compose up -d
 ```
 
 ## Tools
