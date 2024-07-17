@@ -2,6 +2,8 @@ from typing import List, Dict
 
 from pymongo.collection import Collection
 
+from bot.config.logger.logger import Logger
+from bot.config.service_locator import ServiceLocator
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student import Student
@@ -22,6 +24,8 @@ class MongoDbStudentRepository(StudentRepository):
         self.__student_collection: Collection = student_collection
         self.__student_assembler: StudentAssembler = StudentAssembler()
 
+        self.__logger: Logger = ServiceLocator.get_dependency(Logger)
+
     def find_student_by_discord_user_id(
         self, discord_user_id: DiscordUserId
     ) -> Student:
@@ -30,6 +34,10 @@ class MongoDbStudentRepository(StudentRepository):
         )
 
         if not student_response:
+            self.__logger.info(
+                f"find_student_by_discord_user_id - "
+                f"L'étudiant avec {repr(discord_user_id)} n'a pas été trouvé."
+            )
             raise StudentNotFoundException()
 
         return self.__student_assembler.from_json(student_response)
@@ -47,6 +55,10 @@ class MongoDbStudentRepository(StudentRepository):
         student_response: Dict = self.__student_collection.find_one(query)
 
         if not student_response:
+            self.__logger.info(
+                f"find_student_by_ni - "
+                f"L'étudiant avec {repr(ni)} n'a pas été trouvé."
+            )
             raise StudentNotFoundException()
 
         return self.__student_assembler.from_json(student_response)
@@ -70,6 +82,11 @@ class MongoDbStudentRepository(StudentRepository):
         result = self.__student_collection.update_one(filter_query, update_query)
 
         if result.modified_count == 0:
+            self.__logger.info(
+                f"register_student - "
+                f"L'utilisateur avec {repr(ni)}, {repr(discord_user_id)} "
+                f"n'a pas pu être enregistré dans la base de données."
+            )
             raise StudentNotRegisteredException()
 
     def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):

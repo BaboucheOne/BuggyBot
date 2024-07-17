@@ -13,6 +13,8 @@ from bot.application.discord.event.student_registered.student_registered_observe
 from bot.application.discord.exception.role_not_found_exception import (
     RoleNotFoundException,
 )
+from bot.config.logger.logger import Logger
+from bot.config.service_locator import ServiceLocator
 from bot.resource.constants import ReplyMessage
 from bot.domain.constants import UniProgram, DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
@@ -39,10 +41,17 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
             UniProgram.HONORIFIQUE: DiscordRole.HONORIFIQUE,
         }
 
-    def __get_role_name(self, student_role: str) -> str:
-        if student_role in self.__role_mapping:
-            return self.__role_mapping[student_role]
-        raise RoleNotFoundException(student_role)
+        self.__logger: Logger = ServiceLocator.get_dependency(Logger)
+
+    def __get_role_name(self, program_name: str) -> str:
+        if program_name in self.__role_mapping:
+            return self.__role_mapping[program_name]
+
+        self.__logger.error(
+            f"__get_role_name - Le programme {program_name} n'a pas d'équivalent pour un rôle Discord. "
+            f"Il sera donc impossible d'ajouter le rôle à la personne."
+        )
+        raise RoleNotFoundException(program_name)
 
     def __get_uni_roles(self, member: Member) -> List[Role]:
         role_names = {
@@ -53,12 +62,16 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
         }
         return list(filter(lambda role: role.name in role_names, member.roles))
 
-    def __get_name(self, student_firstname, student_lastname) -> str:
-
+    def __get_name(self, student_firstname: str, student_lastname: str) -> str:
         student_name = f"{student_firstname} {student_lastname}"
 
         if len(student_name) > self.MAX_NICKNAME_LENGTH:
             student_name = f"{student_firstname} {student_lastname[0]}."
+            self.__logger.info(
+                f"__get_name - L'étudiant {student_firstname} {student_lastname} "
+                f"a un nom plus long que {self.MAX_NICKNAME_LENGTH} caractères. "
+                f"Il a donc été renommé en {student_name}"
+            )
 
         return student_name
 
