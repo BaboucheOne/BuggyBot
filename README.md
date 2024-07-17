@@ -58,6 +58,14 @@ python main.py --env dev
 
 In Docker:
 
+:arrow_right: Create a directory to store docker-compose.yml and .env.prod (See repository for the model).
+
+:heavy_plus_sign: Add `updater.sh` from `./docker/script`. Once executed, it automatically updates the container.
+You will need to give permission to execute the updater.
+```commandline
+sudo chmod +x update_buggybot.sh
+```
+
 :arrow_right: Create a docker-compose.yml and .env.prod (See repository for the model).
 ```commandline
 docker-compose up -d
