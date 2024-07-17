@@ -6,6 +6,6 @@ services:
       - .env.prod
     ports:
       - "27017"
-    volume:
+    volumes:
       - /etc/localtime:/etc/localtime:ro
     restart: always
