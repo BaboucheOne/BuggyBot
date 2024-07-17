@@ -8,7 +8,7 @@ Simply a customs agent
 # Building :hammer_and_wrench:
 ## :ship: Docker
 1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/).
-2. Run the following command `docker build -t <username>/<repository>:latest .`
+2. Run the following command `docker build -t <username>/<repository>:latest -f ./docker/dockerfile .`
 3. Launch the image using `docker run -d --restart=always --env-file .env.prod <username>/<repository>:latest`
 
 :warning: Make sure to create/modify `.env.dev` or `.env.prod`.
@@ -46,6 +46,9 @@ Simply a customs agent
 :information_source: If the log file is not present, it will be created automatically.
 
 # Launching :rocket:
+
+## :computer: On machine
+
 In production:
 ```commandline
 python main.py --env prod
@@ -56,7 +59,15 @@ In development:
 python main.py --env dev
 ```
 
-In Docker:
+## :ship: Docker
+
+:arrow_right: Create a directory to store docker-compose.yml and .env.prod (See repository for the model).
+
+:heavy_plus_sign: To update the container automatically, use the updater.sh script located in ./docker/script.
+You may need to grant execute permissions to the script with the following command (optional):
+```commandline
+sudo chmod +x update_buggybot.sh
+```
 
 :arrow_right: Create a docker-compose.yml and .env.prod (See repository for the model).
 ```commandline

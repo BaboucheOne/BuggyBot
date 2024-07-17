@@ -8,8 +8,7 @@ __pycache__
 
 ./venv
 
-.dockerfile
-.dockerignore
+./docker
 .idea
 
 .env.dev
@@ -18,4 +17,4 @@ __pycache__
 README.md
 
 *.csv
-
+*.log
