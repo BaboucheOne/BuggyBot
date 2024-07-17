@@ -8,7 +8,7 @@ Simply a customs agent
 # Building :hammer_and_wrench:
 ## :ship: Docker
 1. Install docker for [windows](https://docs.docker.com/desktop/install/windows-install/), [macos](https://docs.docker.com/desktop/install/mac-install/) or [linux](https://docs.docker.com/desktop/install/linux-install/).
-2. Run the following command `docker build -t <username>/<repository>:latest .`
+2. Run the following command `docker build -t <username>/<repository>:latest -f ./docker/dockerfile .`
 3. Launch the image using `docker run -d --restart=always --env-file .env.prod <username>/<repository>:latest`
 
 :warning: Make sure to create/modify `.env.dev` or `.env.prod`.
