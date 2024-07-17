@@ -55,15 +55,15 @@ class KickUnregisteredUserTask(Task):
                 )
             except discord.Forbidden:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - mpossible d'expulser {member.nick}, permission refusée."
+                    f"KickUnregisteredUserTask - Impossible d'expulser {member.nick}, permission refusée."
                 )
             except discord.NotFound:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - mpossible d'expulser {member.nick}, non trouvé."
+                    f"KickUnregisteredUserTask - Impossible d'expulser {member.nick}, non trouvé."
                 )
             except discord.HTTPException as e:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - mpossible d'expulser {member.nick}, erreur http {e}."
+                    f"KickUnregisteredUserTask - Impossible d'expulser {member.nick}, erreur http {e}."
                 )
 
         self.__logger.info("KickUnregisteredUserTask - Fin de la tâche.")

@@ -26,13 +26,8 @@ def read_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main():
-    args = read_arguments()
-    if args.migration_or_update == TOOL_NAME_MIGRATE_STUDENT:
-        asyncio.run(migrate_discord_students.main(arguments=sys.argv[2:]))
-    elif args.migration_or_update == TOOL_NAME_UPDATE_STUDENTS_LIST:
-        asyncio.run(update_students_list.main(arguments=sys.argv[2:]))
-
-
-if __name__ == "__main__":
-    main()
+args = read_arguments()
+if args.migration_or_update == TOOL_NAME_MIGRATE_STUDENT:
+    asyncio.run(migrate_discord_students.main(arguments=sys.argv[2:]))
+elif args.migration_or_update == TOOL_NAME_UPDATE_STUDENTS_LIST:
+    asyncio.run(update_students_list.main(arguments=sys.argv[2:]))

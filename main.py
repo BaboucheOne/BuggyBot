@@ -18,7 +18,7 @@ LAUNCH_DOCKER_CONTEXT_NAME = "docker"
 def read_arguments() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(
-        description="Bot Discord qui est essentiellement un agent des douanes pour le serveur."
+        description="Essentiellement un agent des services frontaliers."
     )
 
     parser.add_argument(
