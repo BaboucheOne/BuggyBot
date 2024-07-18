@@ -103,7 +103,8 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             student.discord_user_id
         ):
             self.__logger.info(
-                f"add_student - {StudentAlreadyExistsException.__name__} avec {repr(student.ni)}, {repr(student.discord_user_id)}"
+                f"add_student - {StudentAlreadyExistsException.__name__} avec {repr(student.ni)}, "
+                f"{repr(student.discord_user_id)}"
             )
             raise StudentAlreadyExistsException()
 
@@ -120,7 +121,8 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             student_ni
         ) or self.__does_discord_user_id_already_registered_an_account(discord_user_id):
             self.__logger.info(
-                f"register_student - {StudentAlreadyRegisteredException.__name__} avec {repr(student_ni)}, {repr(discord_user_id)}"
+                f"register_student - {StudentAlreadyRegisteredException.__name__} avec {repr(student_ni)}, "
+                f"{repr(discord_user_id)}"
             )
             raise StudentAlreadyRegisteredException()
 
