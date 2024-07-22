@@ -1,4 +1,4 @@
-class MissingArgumentsException(Exception):
+class MissingArgumentsException(RuntimeError):
 
     MESSAGE = (
         "Arguments manquants dans la commande. Cette commande nécessite %s arguments."

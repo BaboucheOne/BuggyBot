@@ -3,7 +3,7 @@ from typing import Union
 from bot.domain.student.attribut.ni import NI
 
 
-class CannotRegisterStudentException(Exception):
+class CannotRegisterStudentException(RuntimeError):
 
     NI_UNION = Union[NI, int]
 

@@ -3,7 +3,7 @@ from typing import Union
 from bot.domain.student.attribut.program_code import ProgramCode
 
 
-class MissingProgramCodeException(Exception):
+class MissingProgramCodeException(RuntimeError):
     PROGRAM_UNION = Union[ProgramCode, str]
 
     MESSAGE = "Le code programme fourni %s n'existe pas."

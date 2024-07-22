@@ -3,7 +3,7 @@ from typing import Union
 from bot.domain.student.attribut.ni import NI
 
 
-class InvalidNIFormatException(Exception):
+class InvalidNIFormatException(RuntimeError):
     NI_UNION = Union[NI, int]
 
     MESSAGE = "%s does not match the format."

@@ -1,4 +1,4 @@
-class RoleNotFoundException(Exception):
+class RoleNotFoundException(RuntimeError):
 
     MESSAGE = (
         "Le programme %s n'a pas d'équivalent pour un rôle Discord. "
