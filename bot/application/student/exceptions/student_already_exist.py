@@ -22,5 +22,5 @@ class StudentAlreadyExistsException(RuntimeError):
     def __generate_message(self) -> str:
         for attribute in [self.ni, self.discord_id, self.name]:
             if attribute is not None:
-                return f"L'etudiant {repr(attribute)} existe deja."
-        return "L'etudiant existe deja."
+                return f"L'étudiant {repr(attribute)} existe deja."
+        return "L'étudiant existe deja."

@@ -23,5 +23,5 @@ class StudentNotFoundException(RuntimeError):
     def __generate_message(self) -> str:
         for attribute in [self.ni, self.discord_id, self.name]:
             if attribute is not None:
-                return f"L'etudiant {repr(attribute)} n'existe pas."
+                return f"L'étudiant {repr(attribute)} n'existe pas."
         return "L'étudiant n'existe pas."
