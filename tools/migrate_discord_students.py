@@ -69,7 +69,7 @@ def find_student_with_first_and_lastname(
     for student in students:
         if student.firstname.value == firstname and student.lastname.value == lastname:
             return student
-    raise StudentNotFoundException()
+    raise StudentNotFoundException(name=f"{firstname} {lastname}")
 
 
 def find_student_with_nickname(students: List[Student], nickname: str) -> Student:
@@ -77,7 +77,7 @@ def find_student_with_nickname(students: List[Student], nickname: str) -> Studen
         join_student_name = f"{student.firstname.value} {student.lastname.value}"
         if nickname == join_student_name:
             return student
-    raise StudentNotFoundException()
+    raise StudentNotFoundException(name=nickname)
 
 
 def remove_none_values(list_to_modify: List[Member]):

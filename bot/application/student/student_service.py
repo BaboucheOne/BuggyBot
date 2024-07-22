@@ -83,10 +83,10 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
     def add_student(self, add_student_request: AddStudentRequest):
         if not self.__ni_validator.validate(add_student_request.ni):
-            raise InvalidNIFormatException()
+            raise InvalidNIFormatException(add_student_request.ni)
 
         if not self.__program_code_validator.validate(add_student_request.program_code):
-            raise MissingProgramCodeException()
+            raise MissingProgramCodeException(add_student_request.program_code)
 
         new_admitted = Utility.str_to_bool(add_student_request.new_admitted)
         student = self.__student_factory.create(
@@ -102,17 +102,13 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         ) or self.__does_discord_user_id_already_registered_an_account(
             student.discord_user_id
         ):
-            self.__logger.info(
-                f"add_student - {StudentAlreadyExistsException.__name__} avec {repr(student.ni)}, "
-                f"{repr(student.discord_user_id)}"
-            )
-            raise StudentAlreadyExistsException()
+            raise StudentAlreadyExistsException(ni=student.ni)
 
         self.__student_repository.add_student(student)
 
     def register_student(self, register_student_request: RegisterStudentRequest):
         if not self.__ni_validator.validate(register_student_request.ni):
-            raise InvalidNIFormatException()
+            raise InvalidNIFormatException(register_student_request.ni)
 
         student_ni = self.__ni_factory.create(register_student_request.ni)
         discord_user_id = DiscordUserId(register_student_request.discord_id)
@@ -120,18 +116,14 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         if self.__does_student_registered(
             student_ni
         ) or self.__does_discord_user_id_already_registered_an_account(discord_user_id):
-            self.__logger.info(
-                f"register_student - {StudentAlreadyRegisteredException.__name__} avec {repr(student_ni)}, "
-                f"{repr(discord_user_id)}"
-            )
-            raise StudentAlreadyRegisteredException()
+            raise StudentAlreadyRegisteredException(ni=student_ni)
 
         self.__student_repository.register_student(student_ni, discord_user_id)
         self.notify_on_student_registered(student_ni)
 
     def unregister_student(self, unregister_student_request: UnregisterStudentRequest):
         if not self.__ni_validator.validate(unregister_student_request.ni):
-            raise InvalidNIFormatException()
+            raise InvalidNIFormatException(unregister_student_request.ni)
 
         student_ni = self.__ni_factory.create(unregister_student_request.ni)
 

@@ -13,8 +13,8 @@ from bot.infra.student.assembler.student_assembler import StudentAssembler
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
-from bot.infra.student.exception.student_not_registered_exception import (
-    StudentNotRegisteredException,
+from bot.infra.student.exception.cannot_register_student_exception import (
+    CannotRegisterStudentException,
 )
 
 
@@ -34,11 +34,7 @@ class MongoDbStudentRepository(StudentRepository):
         )
 
         if not student_response:
-            self.__logger.info(
-                f"find_student_by_discord_user_id - "
-                f"L'étudiant avec {repr(discord_user_id)} n'a pas été trouvé."
-            )
-            raise StudentNotFoundException()
+            raise StudentNotFoundException(discord_id=discord_user_id)
 
         return self.__student_assembler.from_json(student_response)
 
@@ -55,11 +51,7 @@ class MongoDbStudentRepository(StudentRepository):
         student_response: Dict = self.__student_collection.find_one(query)
 
         if not student_response:
-            self.__logger.info(
-                f"find_student_by_ni - "
-                f"L'étudiant avec {repr(ni)} n'a pas été trouvé."
-            )
-            raise StudentNotFoundException()
+            raise StudentNotFoundException(ni=ni)
 
         return self.__student_assembler.from_json(student_response)
 
@@ -82,12 +74,7 @@ class MongoDbStudentRepository(StudentRepository):
         result = self.__student_collection.update_one(filter_query, update_query)
 
         if result.modified_count == 0:
-            self.__logger.info(
-                f"register_student - "
-                f"L'utilisateur avec {repr(ni)}, {repr(discord_user_id)} "
-                f"n'a pas pu être enregistré dans la base de données."
-            )
-            raise StudentNotRegisteredException()
+            raise CannotRegisterStudentException(ni)
 
     def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
         filter_query = {StudentMongoDbKey.NI: ni.value}
