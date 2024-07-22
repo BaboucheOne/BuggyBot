@@ -13,3 +13,9 @@ class AddStudentRequest:
         self.lastname = lastname
         self.program_code = program_code
         self.new_admitted = new_admitted
+
+    def __repr__(self) -> str:
+        return (
+            f"AddStudentRequest({self.ni}, {self.firstname}, {self.lastname}, "
+            f"{self.program_code}, {self.new_admitted})"
+        )

@@ -24,6 +24,8 @@ from bot.application.student.validators.ni_validator import NIValidator
 from bot.application.student.validators.program_code_validator import (
     ProgramCodeValidator,
 )
+from bot.config.logger.logger import Logger
+from bot.config.service_locator import ServiceLocator
 from bot.resource.cog.registration.request.add_student_request import AddStudentRequest
 from bot.resource.cog.registration.request.register_student_request import (
     RegisterStudentRequest,
@@ -48,6 +50,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
     def __init__(self, student_repository: StudentRepository):
         super().__init__()
 
+        self.__logger: Logger = ServiceLocator.get_dependency(Logger)
         self.__student_repository = student_repository
 
         self.__ni_validator = NIValidator()
@@ -78,6 +81,10 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         return len(students) >= 1
 
     def add_student(self, add_student_request: AddStudentRequest):
+        self.__logger.info(
+            f"Réception de la requête {repr(add_student_request)}", method="add_student"
+        )
+
         if not self.__ni_validator.validate(add_student_request.ni):
             raise InvalidNIFormatException(add_student_request.ni)
 
@@ -103,6 +110,11 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.add_student(student)
 
     def register_student(self, register_student_request: RegisterStudentRequest):
+        self.__logger.info(
+            f"Réception de la requête {repr(register_student_request)}",
+            method="register_student",
+        )
+
         if not self.__ni_validator.validate(register_student_request.ni):
             raise InvalidNIFormatException(register_student_request.ni)
 
@@ -118,6 +130,11 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.notify_on_student_registered(student_ni)
 
     def unregister_student(self, unregister_student_request: UnregisterStudentRequest):
+        self.__logger.info(
+            f"Réception de la requête {repr(unregister_student_request)}",
+            method="unregister_student",
+        )
+
         if not self.__ni_validator.validate(unregister_student_request.ni):
             raise InvalidNIFormatException(unregister_student_request.ni)
 
