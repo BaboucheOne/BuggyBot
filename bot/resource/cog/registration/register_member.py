@@ -82,19 +82,18 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     async def on_member_remove(self, member: Member):
         try:
             self.__logger.info(
-                f"Exécution de la commande ON_MEMBER_REMOVE sur {member.name}.",
+                f"Exécution de la commande par {member.name}.",
                 method="on_member_remove",
             )
             self.__student_service.remove_member(member)
             self.__logger.info(
-                "La commande ON_MEMBER_REMOVE a été exécutée avec succès.",
-                method="on_member_remove",
+                "La commande a été exécutée avec succès.", method="on_member_remove"
             )
         except StudentNotFoundException as e:
             self.__logger.error(f"{e}", method="on_member_removed", exception=e)
         except Exception as e:
             self.__logger.error(
-                f"Erreur lors de l'exécution de la commande on_member_removed : {e}",
+                f"Erreur lors de l'exécution de la commande exécutée par {member.name} : {e}",
                 method="on_member_remove",
                 exception=e,
             )
@@ -108,7 +107,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def add_student(self, context: Context):
         self.__logger.info(
-            f"Exécution de la commande ADD_STUDENT par {context.message.author}",
+            f"Exécution de la commande par {context.message.author}",
             method="add_student",
         )
 
@@ -123,6 +122,10 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__student_service.add_student(add_student_request)
 
             await message.channel.send(ReplyMessage.SUCCESSFUL_STUDENT_ADDED)
+
+            self.__logger.info(
+                "La commande a été exécutée avec succès.", method="add_student"
+            )
         except StudentAlreadyExistsException as e:
             self.__logger.error(f"{e}", method="add_student", exception=e)
             await message.channel.send(ReplyMessage.STUDENT_ALREADY_EXISTS)
@@ -130,7 +133,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             await message.channel.send(ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND)
         except Exception as e:
             self.__logger.error(
-                f"Erreur lors de l'exécution de la commande ADD_STUDENT exécutée par {context.message.author}. {e}",
+                f"Erreur lors de l'exécution de la commande exécutée par {context.message.author}. {e}",
                 method="add_student",
                 exception=e,
             )
@@ -144,8 +147,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     @commands.dm_only()
     async def register(self, context: Context):
         self.__logger.info(
-            f"Exécution de la commande REGISTER par {context.message.author}",
-            method="register",
+            f"Exécution de la commande par {context.message.author}", method="register"
         )
 
         message = context.message
@@ -161,12 +163,16 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__student_service.register_student(register_student_request)
 
             await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
+
+            self.__logger.info(
+                "La commande a été exécutée avec succès.", method="register"
+            )
         except StudentAlreadyRegisteredException as e:
             self.__logger.error(f"{e}", method="register", exception=e)
             await message.channel.send(ReplyMessage.ALREADY_REGISTERED)
         except Exception as e:
             self.__logger.error(
-                f"Erreur lors de l'exécution de la commande REGISTER exécutée par {context.message.author}. {e}",
+                f"Erreur lors de l'exécution de la commande exécutée par {context.message.author}. {e}",
                 method="register",
                 exception=e,
             )
@@ -181,7 +187,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def unregister(self, context: Context):
         self.__logger.info(
-            f"Exécution de la commande UNREGISTER par {context.message.author}",
+            f"Exécution de la commande par {context.message.author}",
             method="unregister",
         )
 
@@ -197,9 +203,13 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
             self.__student_service.unregister_student(unregister_student_request)
             await message.channel.send(ReplyMessage.SUCCESSFUL_UNREGISTER)
+
+            self.__logger.info(
+                "La commande a été exécutée avec succès.", method="unregister"
+            )
         except Exception as e:
             self.__logger.error(
-                f"Erreur lors de l'exécution de la commande UNREGISTER exécutée par {context.message.author}. {e}",
+                f"Erreur lors de l'exécution de la commande exécutée par {context.message.author}. {e}",
                 method="unregister",
                 exception=e,
             )
