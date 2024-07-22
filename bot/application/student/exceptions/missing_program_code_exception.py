@@ -1,6 +1,12 @@
-class MissingProgramCodeException(Exception):
+from typing import Union
 
-    MESSAGE = "The provided program code is missing.\nMake sure that the format is corresponding to B-GLO, B-IFT, B-IIG, C-IFT."
+from bot.domain.student.attribut.program_code import ProgramCode
 
-    def __init__(self):
-        super().__init__(self.MESSAGE)
+
+class MissingProgramCodeException(RuntimeError):
+    PROGRAM_UNION = Union[ProgramCode, str]
+
+    MESSAGE = "Le code programme fourni %s n'existe pas."
+
+    def __init__(self, program_code: PROGRAM_UNION):
+        super().__init__(self.MESSAGE % repr(program_code))

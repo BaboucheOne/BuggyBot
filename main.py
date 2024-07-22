@@ -3,11 +3,11 @@ import argparse
 
 from pymongo.errors import PyMongoError
 
-from bot.config.context.docker_context import DockerContext
+from bot.config.environment.context.docker_context import DockerContext
 from bot.config.logger.logger import Logger
-from bot.config.context.application_context import ApplicationContext
-from bot.config.context.development_context import DevelopmentContext
-from bot.config.context.production_context import ProductionContext
+from bot.config.environment.context.application_context import ApplicationContext
+from bot.config.environment.context.development_context import DevelopmentContext
+from bot.config.environment.context.production_context import ProductionContext
 from bot.config.service_locator import ServiceLocator
 
 LAUNCH_DEVELOPMENT_CONTEXT_NAME = "dev"
@@ -54,19 +54,27 @@ async def main():
     application_context = get_application_context(args)
     try:
         await application_context.build_application()
-        ServiceLocator.get_dependency(Logger).info("main - Application construite.")
+        ServiceLocator.get_dependency(Logger).info(
+            "Application construite.", method="main"
+        )
     except PyMongoError as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - Impossible de se connecter à la base de données Mongo. Fermeture de l'application. {e}"
+            f"Impossible de se connecter à la base de données Mongo. {e}",
+            method="main",
+            exception=e,
         )
         exit(-1)
     except Exception as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - Une exception s'est produite lors de la construction de l'application. Fermeture de l'application. {e}"
+            f"Une exception s'est produite lors de la construction de l'application. {e}",
+            method="main",
+            exception=e,
         )
         exit(-1)
 
-    ServiceLocator.get_dependency(Logger).info("main - Lancement de l'application.")
+    ServiceLocator.get_dependency(Logger).info(
+        "Lancement de l'application.", method="main"
+    )
     await application_context.start_application()
 
 

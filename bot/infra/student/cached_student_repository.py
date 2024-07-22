@@ -29,16 +29,25 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
     def register_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._set_dirty(ni)
         self.__repository.register_student(ni, discord_user_id)
-        self.__logger.debug(f"register_student - {repr(ni)} {repr(discord_user_id)}")
+        self.__logger.debug(
+            f"L'étudiant {repr(ni)} {repr(discord_user_id)} en cache a bien été enregistré.",
+            method="register_student",
+        )
 
     def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._remove_cached_item(ni)
         self.__repository.unregister_student(ni, discord_user_id)
-        self.__logger.debug(f"unregister_student - {repr(ni)} {repr(discord_user_id)}")
+        self.__logger.debug(
+            f"L'étudiant {repr(ni)} {repr(discord_user_id)} en cache a bien été désenregistré.",
+            method="unregister_student",
+        )
 
     def add_student(self, student: Student):
         self.__repository.add_student(student)
-        self.__logger.debug(f"update_student - {repr(student)}")
+        self.__logger.debug(
+            f"L'étudiant {repr(student)} a bien été ajouté à la base de données.",
+            method="update_student",
+        )
 
     def update_student(self, student: Student):
         self._set_dirty(student.ni)
@@ -49,7 +58,8 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         if self._is_cached(ni) and not self._is_dirty(ni):
             cache_student = self._get_cached_item(ni).data
             self.__logger.info(
-                f"find_student_by_ni - Obtention de l'étudiant en cache {repr(cache_student)}"
+                f"Obtention de l'étudiant en cache {repr(cache_student)}",
+                method="find_student_by_ni",
             )
             return cache_student
 
@@ -57,7 +67,8 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         self._set_cached_item(ni, student)
 
         self.__logger.info(
-            f"find_student_by_ni - Ajout de l'étudiant à la cache {repr(student)}"
+            f"Ajout de l'étudiant à la cache {repr(student)}",
+            method="find_student_by_ni",
         )
 
         return student

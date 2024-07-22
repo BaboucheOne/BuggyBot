@@ -27,7 +27,7 @@ class SentenceOfTheDayTask(Task):
         return response.json()[self.RESPONSE_CITATION_KEY]
 
     async def do(self):
-        self.__logger.info("SentenceOfTheDayTask - Début de la tâche.")
+        self.__logger.info("Début de la tâche.", method="do")
 
         try:
             citation = self.__get_sentence_of_the_day()
@@ -35,16 +35,16 @@ class SentenceOfTheDayTask(Task):
                 activity=discord.Game(name=citation[: self.MAX_PRESENCE_CHARS])
             )
 
-            self.__logger.info(
-                "SentenceOfTheDayTask - La phrase du jour a été appliquée."
-            )
+            self.__logger.info("La phrase du jour a été appliquée.", method="do")
         except requests.exceptions.RequestException as e:
             self.__logger.warning(
-                f"SentenceOfTheDayTask - Impossible de récupérer la phrase du jour en raison de {e}."
+                f"Impossible de récupérer la phrase du jour en raison de {e}.",
+                method="do",
+                exception=e,
             )
         except Exception as e:
             self.__logger.warning(
-                f"SentenceOfTheDayTask - Une erreur s'est produite {e}."
+                f"Une erreur s'est produite {e}.", method="do", exception=e
             )
 
         self.__logger.info("SentenceOfTheDayTask - Fin de la tâche.")

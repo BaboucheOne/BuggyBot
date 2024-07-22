@@ -11,7 +11,7 @@ from bot.domain.task.task import Task
 from bot.domain.task.task_scheduler import TaskScheduler
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
-from bot.config.context.dotenv_configuration import DotEnvConfiguration
+from bot.config.environment.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient

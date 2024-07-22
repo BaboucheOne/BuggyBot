@@ -2,7 +2,7 @@ import argparse
 import logging
 
 from bot.config.constants import ConfigurationFilename
-from bot.config.context.dotenv_configuration import DotEnvConfiguration
+from bot.config.environment.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 
@@ -10,9 +10,9 @@ from bot.config.service_locator import ServiceLocator
 def get_configuration(args: argparse.Namespace) -> DotEnvConfiguration:
     if args.env == "dev":
         print("La configuration de développement est en cours d'utilisation.")
-        return DotEnvConfiguration(ConfigurationFilename.DEVELOPMENT)
+        return DotEnvConfiguration().from_file(ConfigurationFilename.DEVELOPMENT)
     print("La configuration de production est en cours d'utilisation.")
-    return DotEnvConfiguration(ConfigurationFilename.PRODUCTION)
+    return DotEnvConfiguration().from_file(ConfigurationFilename.PRODUCTION)
 
 
 def add_configuration_argument(parser: argparse.ArgumentParser):

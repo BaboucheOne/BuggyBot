@@ -46,14 +46,9 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
     def __get_role_name(self, program_name: str) -> str:
         if program_name in self.__role_mapping:
             return self.__role_mapping[program_name]
-
-        self.__logger.error(
-            f"__get_role_name - Le programme {program_name} n'a pas d'équivalent pour un rôle Discord. "
-            f"Il sera donc impossible d'ajouter le rôle à la personne."
-        )
         raise RoleNotFoundException(program_name)
 
-    def __get_uni_roles(self, member: Member) -> List[Role]:
+    def __get_member_uni_roles(self, member: Member) -> List[Role]:
         role_names = {
             DiscordRole.IFT,
             DiscordRole.GLO,
@@ -68,9 +63,10 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
         if len(student_name) > self.MAX_NICKNAME_LENGTH:
             student_name = f"{student_firstname} {student_lastname[0]}."
             self.__logger.info(
-                f"__get_name - L'étudiant {student_firstname} {student_lastname} "
+                f"L'étudiant {student_firstname} {student_lastname} "
                 f"a un nom plus long que {self.MAX_NICKNAME_LENGTH} caractères. "
-                f"Il a donc été renommé en {student_name}"
+                f"Il a donc été renommé en {student_name}",
+                method="__get_name",
             )
 
         return student_name
@@ -81,22 +77,52 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
         role_name = self.__get_role_name(student.program_code.value)
 
         role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
-        asyncio.ensure_future(member.add_roles(role))
+        asyncio.ensure_future(self.__add_member_roles(member, role))
 
         if member != self.__discord_client.server.owner:
             student_name = self.__get_name(
                 student.firstname.value, student.lastname.value
             )
-            asyncio.ensure_future(member.edit(nick=student_name))
+            asyncio.ensure_future(self.__set_member_nick_name(member, student_name))
 
     def on_student_unregistered(self, discord_user_id: DiscordUserId):
         member = self.__discord_client.server.get_member(discord_user_id.value)
 
-        uni_roles = self.__get_uni_roles(member)
-        asyncio.ensure_future(member.remove_roles(*uni_roles))
+        uni_roles = self.__get_member_uni_roles(member)
+        asyncio.ensure_future(self.__remove_member_roles(member, uni_roles))
 
         asyncio.ensure_future(member.send(ReplyMessage.NOTIFY_UNREGISTER))
 
     def on_member_removed(self, member: Member):
-        uni_roles = self.__get_uni_roles(member)
-        asyncio.ensure_future(member.remove_roles(*uni_roles))
+        uni_roles = self.__get_member_uni_roles(member)
+        asyncio.ensure_future(self.__remove_member_roles(member, uni_roles))
+
+    async def __set_member_nick_name(self, member: Member, nickname: str):
+        try:
+            await member.edit(nick=nickname)
+        except (discord.Forbidden, discord.HTTPException) as e:
+            self.__logger.error(
+                f"Impossible d'ajouter le surnom {nickname} à {member.name}, {member.id} dû à {e}",
+                method="__set_member_nick_name",
+                exception=e,
+            )
+
+    async def __remove_member_roles(self, member: Member, roles: List[Role]):
+        try:
+            await member.remove_roles(*roles)
+        except (discord.Forbidden, discord.HTTPException) as e:
+            self.__logger.error(
+                f"Impossible d'enlever les roles {roles} à {member.name}, {member.id} dû à {e}",
+                method="__remove_member_roles",
+                exception=e,
+            )
+
+    async def __add_member_roles(self, member: Member, role):
+        try:
+            await member.add_roles(role)
+        except (discord.Forbidden, discord.HTTPException) as e:
+            self.__logger.error(
+                f"Impossible d'ajouter le role {role} à {member.name}, {member.id} dû à {e}",
+                method="__add_member_roles",
+                exception=e,
+            )

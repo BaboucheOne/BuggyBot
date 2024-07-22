@@ -26,7 +26,10 @@ class AssociationCog(commands.Cog, name="Association"):
     )
     @commands.dm_only()
     async def asetin(self, context: Context):
-        self.__logger.info(f"Executing ASETIN command by {context.message.author}")
+        self.__logger.info(
+            f"Exécution de la commande par {context.message.author}.",
+            method="asetin",
+        )
 
         message = context.message
         if self.__is_self(message):
@@ -34,8 +37,15 @@ class AssociationCog(commands.Cog, name="Association"):
 
         try:
             await message.channel.send(embed=AsetinEmbed().embed)
+            self.__logger.info(
+                "La commande a été exécutée avec succès.", method="asetin"
+            )
         except Exception as e:
-            self.__logger.error(f"Error while executing ASETIN command {e}")
+            self.__logger.error(
+                f"Erreur lors de l'exécution de la commande exécutée par {context.message.author}. {e}",
+                method="asetin",
+                exception=e,
+            )
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
 
     @commands.command(
@@ -45,7 +55,10 @@ class AssociationCog(commands.Cog, name="Association"):
     )
     @commands.dm_only()
     async def aeglo(self, context: Context):
-        self.__logger.info(f"Executing AEGLO command by {context.message.author}")
+        self.__logger.info(
+            f"Exécution de la commande exécutée par {context.message.author}",
+            method="aeglo",
+        )
 
         message = context.message
         if self.__is_self(message):
@@ -53,6 +66,13 @@ class AssociationCog(commands.Cog, name="Association"):
 
         try:
             await message.channel.send(embed=AegloEmbed().embed)
+            self.__logger.info(
+                "La commande a été exécutée avec succès.", method="aeglo"
+            )
         except Exception as e:
-            self.__logger.error(f"Error while executing AEGLO command {e}")
+            self.__logger.error(
+                f"Erreur lors de l'exécution de la commande exécutée par {context.message.author}. {e}",
+                method="aeglo",
+                exception=e,
+            )
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
