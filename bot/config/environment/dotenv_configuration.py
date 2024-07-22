@@ -43,9 +43,7 @@ class DotEnvConfiguration:
 
     @property
     def mongodb_connection_timeout_ms(self) -> int:
-        return self.__get_int(
-            os.getenv(DotenvConfigurationKey.MONGODB_CONNECTION_TIMEOUT_MS)
-        )
+        return self.__get_int(DotenvConfigurationKey.MONGODB_CONNECTION_TIMEOUT_MS)
 
     @property
     def mongodb_database_name(self) -> str:
@@ -61,7 +59,7 @@ class DotEnvConfiguration:
 
     @property
     def server_id(self) -> int:
-        return self.__get_int(os.getenv(DotenvConfigurationKey.SERVER_ID))
+        return self.__get_int(DotenvConfigurationKey.SERVER_ID)
 
     @property
     def logger_filename(self) -> str:

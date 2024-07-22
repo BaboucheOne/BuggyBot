@@ -59,14 +59,14 @@ async def main():
         )
     except PyMongoError as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"Impossible de se connecter à la base de données Mongo. Fermeture de l'application. {e}",
+            f"Impossible de se connecter à la base de données Mongo. {e}",
             method="main",
             exception=e,
         )
         exit(-1)
     except Exception as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"Une exception s'est produite lors de la construction de l'application. Fermeture de l'application. {e}",
+            f"Une exception s'est produite lors de la construction de l'application. {e}",
             method="main",
             exception=e,
         )
