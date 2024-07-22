@@ -1,6 +1,6 @@
 class BadEnvironmentVariableTypeException(RuntimeError):
 
-    MESSAGE: str = "La variable d'environnement %s devrait être un %s"
+    MESSAGE: str = "La variable d'environnement %s devrait être de type %s."
 
     def __init__(self, environment_variable_name: str, environment_variable_type: type):
         super().__init__(
