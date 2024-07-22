@@ -6,7 +6,7 @@ from bot.config.logger.log import Log
 
 class Logger:
 
-    VERSION: int = 1
+    VERSION: int = 2
     LOGGER_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     NAME: str = "BuggyBotLogger"
     DIRECTORY: str = "log"
@@ -15,8 +15,8 @@ class Logger:
         self.__create_log_directory()
         logger_file_path = f"{self.DIRECTORY}/{log_file}"
 
-        self.logger = logging.getLogger(self.NAME)
-        self.logger.setLevel(level)
+        self.__logger = logging.getLogger(self.NAME)
+        self.__logger.setLevel(level)
 
         file_handler = logging.FileHandler(logger_file_path, encoding="utf-8")
         console_handler = logging.StreamHandler()
@@ -29,35 +29,32 @@ class Logger:
         file_handler.setFormatter(file_format)
         console_handler.setFormatter(console_format)
 
-        self.logger.addHandler(file_handler)
-        self.logger.addHandler(console_handler)
+        self.__logger.addHandler(file_handler)
+        self.__logger.addHandler(console_handler)
 
     def __create_log_directory(self):
         os.makedirs(self.DIRECTORY, exist_ok=True)
 
-    def __create_log(self, message: str) -> str:
-        return Log(self.VERSION, message).to_json()
+    def __log(
+        self, level: int, message: str, method: str = None, exception: str = None
+    ):
+        log: str = Log(self.VERSION, message, method, exception).to_json()
+        self.__logger.log(level, log)
 
-    def debug(self, message):
-        log_message = self.__create_log(message)
-        self.logger.debug(log_message)
+    def debug(self, message: str, method: str = None, exception: str = None):
+        self.__log(logging.INFO, message, method, exception)
 
-    def info(self, message):
-        log_message = self.__create_log(message)
-        self.logger.info(log_message)
+    def info(self, message: str, method: str = None, exception: str = None):
+        self.__log(logging.INFO, message, method, exception)
 
-    def warning(self, message):
-        log_message = self.__create_log(message)
-        self.logger.warning(log_message)
+    def warning(self, message: str, method: str = None, exception: str = None):
+        self.__log(logging.WARNING, message, method, exception)
 
-    def error(self, message):
-        log_message = self.__create_log(message)
-        self.logger.error(log_message)
+    def error(self, message: str, method: str = None, exception: str = None):
+        self.__log(logging.ERROR, message, method, exception)
 
-    def critical(self, message):
-        log_message = self.__create_log(message)
-        self.logger.critical(log_message)
+    def critical(self, message: str, method: str = None, exception: str = None):
+        self.__log(logging.CRITICAL, message, method, exception)
 
-    def fatal(self, message):
-        log_message = self.__create_log(message)
-        self.logger.fatal(log_message)
+    def fatal(self, message: str, method: str = None, exception: str = None):
+        self.__log(logging.FATAL, message, method, exception)
