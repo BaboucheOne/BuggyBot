@@ -21,10 +21,7 @@ class StudentAlreadyRegisteredException(RuntimeError):
         super().__init__(self.__generate_message())
 
     def __generate_message(self) -> str:
-        if self.ni is not None:
-            return f"L'étudiant {repr(self.ni)} est déjà enregistré."
-        if self.discord_id is not None:
-            return f"L'étudiant {repr(self.discord_id)} est déjà enregistré."
-        if self.name is not None:
-            return f"L'étudiant {repr(self.name)} est déjà enregistré."
+        for attribute in [self.ni, self.discord_id, self.name]:
+            if attribute is not None:
+                return f"L'etudiant {repr(attribute)} est déjà enregistré."
         return "L'étudiant est déjà enregistré."

@@ -91,7 +91,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
                 method="on_member_remove",
             )
         except StudentNotFoundException as e:
-            self.__logger.error(f"on_member_removed - {type(e).__name__}, {e}")
+            self.__logger.error(f"{e}", method="on_member_removed", exception=e)
         except Exception as e:
             self.__logger.error(
                 f"Erreur lors de l'exécution de la commande on_member_removed : {e}",

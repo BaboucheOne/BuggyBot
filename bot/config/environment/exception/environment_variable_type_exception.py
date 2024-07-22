@@ -1,4 +1,4 @@
-class BadEnvironmentVariableTypeException(RuntimeError):
+class EnvironmentVariableTypeException(RuntimeError):
 
     MESSAGE: str = "La variable d'environnement %s devrait être de type %s."
 

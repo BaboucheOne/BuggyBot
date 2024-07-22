@@ -3,8 +3,8 @@ import os
 from dotenv import load_dotenv, find_dotenv
 
 from bot.config.constants import DotenvConfigurationKey
-from bot.config.environment.exception.bad_envionment_variable_type_exception import (
-    BadEnvironmentVariableTypeException,
+from bot.config.environment.exception.environment_variable_type_exception import (
+    EnvironmentVariableTypeException,
 )
 from bot.config.environment.exception.missing_environment_variable_exception import (
     MissingEnvironmentVariableException,
@@ -29,13 +29,13 @@ class DotEnvConfiguration:
         try:
             return str(self.__get_variable(environment_variable_key))
         except (ValueError, TypeError):
-            raise BadEnvironmentVariableTypeException(environment_variable_key, str)
+            raise EnvironmentVariableTypeException(environment_variable_key, str)
 
     def __get_int(self, environment_variable_key: str):
         try:
             return int(self.__get_variable(environment_variable_key))
         except (ValueError, TypeError):
-            raise BadEnvironmentVariableTypeException(environment_variable_key, int)
+            raise EnvironmentVariableTypeException(environment_variable_key, int)
 
     @property
     def mongodb_connection_string(self) -> str:

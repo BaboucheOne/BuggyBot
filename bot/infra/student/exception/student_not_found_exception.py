@@ -21,10 +21,7 @@ class StudentNotFoundException(RuntimeError):
         super().__init__(self.__generate_message())
 
     def __generate_message(self) -> str:
-        if self.ni is not None:
-            return f"L'étudiant {repr(self.ni)} n'existe pas."
-        if self.discord_id is not None:
-            return f"L'étudiant {repr(self.discord_id)} n'existe pas."
-        if self.name is not None:
-            return f"L'étudiant {repr(self.name)} n'existe pas."
-        return "L'étudiant est déjà enregistré."
+        for attribute in [self.ni, self.discord_id, self.name]:
+            if attribute is not None:
+                return f"L'etudiant {repr(attribute)} n'existe pas."
+        return "L'étudiant n'existe pas."
