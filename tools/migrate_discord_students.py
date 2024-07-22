@@ -51,7 +51,9 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
     try:
         return MongoClient(connection_url)
     except ConnectionError as e:
-        logger.fatal(f"connect_to_mongo_db - Impossible de se connecter à MongoDB. {e}")
+        logger.fatal(
+            f"Impossible de se connecter à MongoDB. {e}", method="connect_to_mongo_db"
+        )
         exit(-1)
 
 
@@ -131,7 +133,8 @@ def check_migration_rules(
 async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
     logger.info(
         "Début du contact avec les personnes. Cela peut prendre du temps. "
-        f"Temps pour contacter les membres.: {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC} secs"
+        f"Temps pour contacter les membres.: {len(members_migration_missed) * MIGRATION_SENDING_MESSAGE_SEC} secs",
+        method="send_dm_non_migrated_members",
     )
     for member in members_migration_missed:
         await member.send(
@@ -142,7 +145,10 @@ async def send_dm_non_migrated_members(members_migration_missed: List[Member]):
             "Si vous avez besoin d'aide, contactez un administrateur."
         )
         time.sleep(MIGRATION_SENDING_MESSAGE_SEC)
-    logger.info("Tous les utilisateurs non migrés ont été contactés.")
+    logger.info(
+        "Tous les utilisateurs non migrés ont été contactés.",
+        method="send_dm_non_migrated_members",
+    )
 
 
 def notify_non_migrated_members(
@@ -155,7 +161,8 @@ def notify_non_migrated_members(
         f"{len(members_migration_missed)} étudiants n'ont pas été migrés en raison d'erreurs. "
         f"Cela représente {len(members_migration_missed)/len(server_members) * 100}% des membres. "
         f"Solution : Les contacter et leur demander de s'inscrire eux-mêmes. Voici la liste des personnes à "
-        f"contacter: {members_to_contacts}"
+        f"contacter: {members_to_contacts}",
+        method="notify_non_migrated_members",
     )
 
 
@@ -164,12 +171,16 @@ def perform_migration(
 ):
     logger.info(
         "La migration démarre... "
-        f"Temps estimé pour migrer les membres: {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs."
+        f"Temps estimé pour migrer les membres: {len(members_migration_successful) * MIGRATION_SENDING_REQUEST_SEC} secs.",
+        method="perform_migration",
     )
     for member in members_migration_successful:
         update_student(collection, member)
         time.sleep(MIGRATION_SENDING_REQUEST_SEC)
-    logger.info(f"Migration réussie pour {len(members_migration_successful)} membres.")
+    logger.info(
+        f"Migration réussie pour {len(members_migration_successful)} membres.",
+        method="perform_migration",
+    )
 
 
 async def migrate(
@@ -191,7 +202,7 @@ async def migrate(
     if len(members_migration_successful) > 0:
         perform_migration(collection, members_migration_successful)
     else:
-        logger.info("Aucun membre à migrer.")
+        logger.info("Aucun membre à migrer.", method="migrate")
 
     if len(members_migration_missed) > 0:
         notify_non_migrated_members(server_members, members_migration_missed)
@@ -202,11 +213,13 @@ async def migrate(
         if can_contact:
             await send_dm_non_migrated_members(members_migration_missed)
         else:
-            logger.info("Vous avez choisi de ne pas contacter ces membres.")
+            logger.info(
+                "Vous avez choisi de ne pas contacter ces membres.", method="migrate"
+            )
     else:
-        logger.info("Aucun membre mal migré.")
+        logger.info("Aucun membre mal migré.", method="migrate")
 
-    logger.info("Migration terminée.")
+    logger.info("Migration terminée.", method="migrate")
     exit(0)
 
 

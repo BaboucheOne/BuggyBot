@@ -35,26 +35,24 @@ class Logger:
     def __create_log_directory(self):
         os.makedirs(self.DIRECTORY, exist_ok=True)
 
-    def __log(
-        self, level: int, message: str, method: str = None, exception: str = None
-    ):
-        log: str = Log(self.VERSION, message, method, exception).to_json()
+    def __log(self, level: int, method: str, message: str, exception: Exception = None):
+        log: str = Log(self.VERSION, method, message, exception).to_json()
         self.__logger.log(level, log)
 
-    def debug(self, message: str, method: str = None, exception: str = None):
+    def debug(self, method: str, message: str, exception: Exception = None):
         self.__log(logging.INFO, message, method, exception)
 
-    def info(self, message: str, method: str = None, exception: str = None):
+    def info(self, method: str, message: str, exception: Exception = None):
         self.__log(logging.INFO, message, method, exception)
 
-    def warning(self, message: str, method: str = None, exception: str = None):
+    def warning(self, method: str, message: str, exception: Exception = None):
         self.__log(logging.WARNING, message, method, exception)
 
-    def error(self, message: str, method: str = None, exception: str = None):
+    def error(self, method: str, message: str, exception: Exception = None):
         self.__log(logging.ERROR, message, method, exception)
 
-    def critical(self, message: str, method: str = None, exception: str = None):
+    def critical(self, method: str, message: str, exception: Exception = None):
         self.__log(logging.CRITICAL, message, method, exception)
 
-    def fatal(self, message: str, method: str = None, exception: str = None):
+    def fatal(self, method: str, message: str, exception: Exception = None):
         self.__log(logging.FATAL, message, method, exception)

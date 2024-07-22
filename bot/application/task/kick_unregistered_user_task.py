@@ -34,7 +34,7 @@ class KickUnregisteredUserTask(Task):
         return member.joined_at <= one_week_ago
 
     async def do(self):
-        self.__logger.info("KickUnregisteredUserTask - Début de la tâche.")
+        self.__logger.info("Début de la tâche.", method="do")
 
         no_role_members: List[Member] = list(
             filter(self.__has_no_role, self.__discord_client.server.members)
@@ -44,26 +44,31 @@ class KickUnregisteredUserTask(Task):
         )
 
         self.__logger.info(
-            f"KickUnregisteredUserTask - {len(verification_expired_members)} utilisateur(s) vont être expulsé(s)."
+            f"{len(verification_expired_members)} utilisateur(s) vont être expulsé(s).",
+            method="do",
         )
 
         for member in verification_expired_members:
             try:
                 await member.kick(reason=self.KICK_REASON)
+                self.__logger.info(f"{member.name} a été expulsé.", method="do")
+            except discord.Forbidden as e:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - {member.name} a été expulsé."
+                    f"Impossible d'expulser {member.nick}, permission refusée.",
+                    method="do",
+                    exception=e,
                 )
-            except discord.Forbidden:
+            except discord.NotFound as e:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - Impossible d'expulser {member.nick}, permission refusée."
-                )
-            except discord.NotFound:
-                self.__logger.info(
-                    f"KickUnregisteredUserTask - Impossible d'expulser {member.nick}, non trouvé."
+                    f"Impossible d'expulser {member.nick}, non trouvé.",
+                    method="do",
+                    exception=e,
                 )
             except discord.HTTPException as e:
                 self.__logger.info(
-                    f"KickUnregisteredUserTask - Impossible d'expulser {member.nick}, erreur http {e}."
+                    f"Impossible d'expulser {member.nick}, erreur http {e}.",
+                    method="do",
+                    exception=e,
                 )
 
-        self.__logger.info("KickUnregisteredUserTask - Fin de la tâche.")
+        self.__logger.info("Fin de la tâche.", method="do")

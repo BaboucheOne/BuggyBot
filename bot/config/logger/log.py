@@ -16,9 +16,9 @@ class Log:
     def __init__(
         self,
         version: int,
+        method: str,
         message: str,
-        method: Optional[str] = None,
-        exception: Optional[str] = None,
+        exception: Optional[Exception] = None,
     ):
         self.version = version
         self.message = message
@@ -26,11 +26,13 @@ class Log:
         self.exception = exception
 
     def to_dict(self) -> dict:
-        log = {LogJsonKey.VERSION: self.version, LogJsonKey.MESSAGE: self.message}
-        if self.method:
-            log[LogJsonKey.METHOD] = self.method
+        log = {
+            LogJsonKey.VERSION: self.version,
+            LogJsonKey.METHOD: self.method,
+            LogJsonKey.MESSAGE: self.message,
+        }
         if self.exception:
-            log[LogJsonKey.EXCEPTION] = self.exception
+            log[LogJsonKey.EXCEPTION] = type(self.exception).__name__
         return log
 
     def to_json(self) -> str:

@@ -60,7 +60,9 @@ def connect_to_mongo_db(connection_url: str) -> MongoClient:
     try:
         return MongoClient(connection_url)
     except ConnectionError as e:
-        logger.fatal(f"connect_to_mongo_db - Impossible de se connecter à MongoDB. {e}")
+        logger.fatal(
+            f"Impossible de se connecter à MongoDB. {e}", method="connect_to_mongo_db"
+        )
         exit(-1)
 
 
@@ -144,8 +146,8 @@ def main(arguments: List[str]):
 
     client.close()
 
-    logger.info(f"{len(students_to_insert)} nouveaux étudiants insérés.")
-    logger.info("La table des étudiants a été mise à jour !")
+    logger.info(f"{len(students_to_insert)} nouveaux étudiants insérés.", method="main")
+    logger.info("La table des étudiants a été mise à jour !", method="main")
 
 
 if __name__ == "__main__":

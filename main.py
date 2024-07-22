@@ -54,21 +54,27 @@ async def main():
     application_context = get_application_context(args)
     try:
         await application_context.build_application()
-        ServiceLocator.get_dependency(Logger).info("main - Application construite.")
+        ServiceLocator.get_dependency(Logger).info(
+            "Application construite.", method="main"
+        )
     except PyMongoError as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - {type(e).__name__}, "
-            f"Impossible de se connecter à la base de données Mongo. Fermeture de l'application. {e}"
+            f"Impossible de se connecter à la base de données Mongo. Fermeture de l'application. {e}",
+            method="main",
+            exception=e,
         )
         exit(-1)
     except Exception as e:
         ServiceLocator.get_dependency(Logger).fatal(
-            f"main - {type(e).__name__}, "
-            f"Une exception s'est produite lors de la construction de l'application. Fermeture de l'application. {e}"
+            f"Une exception s'est produite lors de la construction de l'application. Fermeture de l'application. {e}",
+            method="main",
+            exception=e,
         )
         exit(-1)
 
-    ServiceLocator.get_dependency(Logger).info("main - Lancement de l'application.")
+    ServiceLocator.get_dependency(Logger).info(
+        "Lancement de l'application.", method="main"
+    )
     await application_context.start_application()
 
 

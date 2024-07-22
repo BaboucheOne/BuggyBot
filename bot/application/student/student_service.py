@@ -31,8 +31,6 @@ from bot.resource.cog.registration.request.register_student_request import (
 from bot.resource.cog.registration.request.unregister_student_request import (
     UnregisterStudentRequest,
 )
-from bot.config.logger.logger import Logger
-from bot.config.service_locator import ServiceLocator
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
 from bot.domain.student.factory.ni_factory import NIFactory
@@ -49,8 +47,6 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
     def __init__(self, student_repository: StudentRepository):
         super().__init__()
-
-        self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
         self.__student_repository = student_repository
 

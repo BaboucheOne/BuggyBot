@@ -27,7 +27,8 @@ class AssociationCog(commands.Cog, name="Association"):
     @commands.dm_only()
     async def asetin(self, context: Context):
         self.__logger.info(
-            f"Exécution de la commande ASETIN par {context.message.author}."
+            f"Exécution de la commande ASETIN par {context.message.author}.",
+            method="asetin",
         )
 
         message = context.message
@@ -38,7 +39,9 @@ class AssociationCog(commands.Cog, name="Association"):
             await message.channel.send(embed=AsetinEmbed().embed)
         except Exception as e:
             self.__logger.error(
-                f"{type(e).__name__}, Erreur lors de l'exécution de la commande ASETIN : {e}"
+                f"Erreur lors de l'exécution de la commande ASETIN : {e}",
+                method="asetin",
+                exception=e,
             )
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
 
@@ -50,7 +53,8 @@ class AssociationCog(commands.Cog, name="Association"):
     @commands.dm_only()
     async def aeglo(self, context: Context):
         self.__logger.info(
-            f"Exécution de la commande ASETIN par {context.message.author}"
+            f"Exécution de la commande ASETIN par {context.message.author}",
+            method="aeglo",
         )
 
         message = context.message
@@ -61,6 +65,8 @@ class AssociationCog(commands.Cog, name="Association"):
             await message.channel.send(embed=AegloEmbed().embed)
         except Exception as e:
             self.__logger.error(
-                f"{type(e).__name__}, Erreur lors de l'exécution de la commande ASETIN : {e}"
+                f"Erreur lors de l'exécution de la commande ASETIN : {e}",
+                method="aeglo",
+                exception=e,
             )
             await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
