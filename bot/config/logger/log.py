@@ -16,8 +16,8 @@ class Log:
     def __init__(
         self,
         version: int,
-        method: str,
         message: str,
+        method: str,
         exception: Optional[Exception] = None,
     ):
         self.version = version
