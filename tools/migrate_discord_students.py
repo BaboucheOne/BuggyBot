@@ -11,7 +11,7 @@ from discord import Member
 from pymongo import MongoClient
 from pymongo.collection import Collection
 
-from bot.config.context.dotenv_configuration import DotEnvConfiguration
+from bot.config.environment.dotenv_configuration import DotEnvConfiguration
 from bot.domain.constants import DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.attribut.discord_user_id import DiscordUserId

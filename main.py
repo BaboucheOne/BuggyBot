@@ -3,11 +3,11 @@ import argparse
 
 from pymongo.errors import PyMongoError
 
-from bot.config.context.docker_context import DockerContext
+from bot.config.environment.context.docker_context import DockerContext
 from bot.config.logger.logger import Logger
-from bot.config.context.application_context import ApplicationContext
-from bot.config.context.development_context import DevelopmentContext
-from bot.config.context.production_context import ProductionContext
+from bot.config.environment.context.application_context import ApplicationContext
+from bot.config.environment.context.development_context import DevelopmentContext
+from bot.config.environment.context.production_context import ProductionContext
 from bot.config.service_locator import ServiceLocator
 
 LAUNCH_DEVELOPMENT_CONTEXT_NAME = "dev"

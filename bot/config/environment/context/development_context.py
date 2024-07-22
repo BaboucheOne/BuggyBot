@@ -13,7 +13,7 @@ from bot.application.task.sentence_of_the_day_task import SentenceOfTheDayTask
 from bot.domain.task.task import Task
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
-from bot.config.context.application_context import ApplicationContext
+from bot.config.environment.context.application_context import ApplicationContext
 from bot.config.constants import ConfigurationFilename
 from bot.config.logger.logger import Logger
 from bot.domain.discord_client.discord_client import DiscordClient
