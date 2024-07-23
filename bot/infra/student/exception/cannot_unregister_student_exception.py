@@ -6,13 +6,11 @@ from bot.infra.student.exception.mongo_fail_operation_exception import (
 )
 
 
-class CannotRegisterStudentException(MongoFailOperationException):
+class CannotUnregisterStudentException(MongoFailOperationException):
 
     NI_UNION = Union[NI, int]
 
-    MESSAGE = (
-        "L'étudiant %s ne peut pas être inscrit et inséré dans la base de données."
-    )
+    MESSAGE = "L'étudiant %s n'a pas été désenregistré."
 
     def __init__(self, ni: NI_UNION):
         super().__init__(self.MESSAGE % repr(ni))

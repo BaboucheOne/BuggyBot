@@ -2,9 +2,12 @@ from typing import Union, Optional
 
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
+from bot.infra.student.exception.mongo_fail_operation_exception import (
+    MongoFailOperationException,
+)
 
 
-class StudentNotFoundException(RuntimeError):
+class StudentNotFoundException(MongoFailOperationException):
 
     NI_UNION = Union[NI, int]
     DISCORD_USER_ID_UNION = Union[DiscordUserId, int]
