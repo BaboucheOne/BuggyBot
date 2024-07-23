@@ -1,6 +1,7 @@
 from typing import List, Dict
 
 from pymongo.collection import Collection
+from pymongo.results import UpdateResult, InsertOneResult
 
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
@@ -10,6 +11,15 @@ from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.constants import StudentMongoDbKey
 from bot.infra.student.assembler.student_assembler import StudentAssembler
+from bot.infra.student.exception.cannot_add_student_exception import (
+    CannotAddStudentException,
+)
+from bot.infra.student.exception.cannot_unregister_student_exception import (
+    CannotUnregisterStudentException,
+)
+from bot.infra.student.exception.cannot_update_student_exception import (
+    CannotUpdateStudentException,
+)
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
@@ -44,6 +54,7 @@ class MongoDbStudentRepository(StudentRepository):
         students = self.__student_collection.find(
             {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
         )
+
         return [self.__student_assembler.from_dict(student) for student in students]
 
     def find_student_by_ni(self, ni: NI) -> Student:
@@ -57,7 +68,10 @@ class MongoDbStudentRepository(StudentRepository):
 
     def add_student(self, student: Student):
         student_dict = self.__student_assembler.to_dict(student)
-        self.__student_collection.insert_one(student_dict)
+        result: InsertOneResult = self.__student_collection.insert_one(student_dict)
+
+        if result.inserted_id is None:
+            raise CannotAddStudentException(student)
 
         self.__logger.info(
             f"L'étudiant {repr(student)} a bien été ajouté à la base de données.",
@@ -69,7 +83,12 @@ class MongoDbStudentRepository(StudentRepository):
         filter_query = {StudentMongoDbKey.NI: student.ni.value}
         update_query = {"$set": student_dict}
 
-        self.__student_collection.update_one(filter_query, update_query)
+        update: UpdateResult = self.__student_collection.update_one(
+            filter_query, update_query
+        )
+
+        if update.modified_count == 0:
+            raise CannotUpdateStudentException(student)
 
         self.__logger.info(
             f"{repr(student)} a bien été mis à jour dans la base de données.",
@@ -81,7 +100,9 @@ class MongoDbStudentRepository(StudentRepository):
         update_query = {
             "$set": {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
         }
-        result = self.__student_collection.update_one(filter_query, update_query)
+        result: UpdateResult = self.__student_collection.update_one(
+            filter_query, update_query
+        )
 
         if result.modified_count == 0:
             raise CannotRegisterStudentException(ni)
@@ -96,7 +117,12 @@ class MongoDbStudentRepository(StudentRepository):
         update_query = {
             "$set": {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
         }
-        self.__student_collection.update_one(filter_query, update_query)
+        result: UpdateResult = self.__student_collection.update_one(
+            filter_query, update_query
+        )
+
+        if result.modified_count == 0:
+            raise CannotUnregisterStudentException(ni)
 
         self.__logger.info(
             f"L'étudiant {repr(ni)} {repr(discord_user_id)} en cache a bien été désenregistré.",
