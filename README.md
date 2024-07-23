@@ -3,7 +3,7 @@ Simply a customs agent
 
 ![CI](https://github.com/BaboucheOne/BuggyBot/actions/workflows/python-formatter.yml/badge.svg)
 ![DockerBuild](https://github.com/BaboucheOne/BuggyBot/actions/workflows/docker-build.yml/badge.svg)
-![DockerDeployment](https://github.com/BaboucheOne/BuggyBot/actions/workflows/build-deploy-docker-image.yml/badge.svg)
+![DockerDeployment](https://github.com/BaboucheOne/BuggyBot/actions/workflows/build-push-docker-image.yml/badge.svg)
 
 # Building :hammer_and_wrench:
 ## :ship: Docker
