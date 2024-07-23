@@ -59,12 +59,22 @@ class MongoDbStudentRepository(StudentRepository):
         student_dict = self.__student_assembler.to_dict(student)
         self.__student_collection.insert_one(student_dict)
 
+        self.__logger.info(
+            f"L'étudiant {repr(student)} a bien été ajouté à la base de données.",
+            method="add_student",
+        )
+
     def update_student(self, student: Student):
         student_dict = self.__student_assembler.to_dict(student)
         filter_query = {StudentMongoDbKey.NI: student.ni.value}
         update_query = {"$set": student_dict}
 
         self.__student_collection.update_one(filter_query, update_query)
+
+        self.__logger.info(
+            f"{repr(student)} a bien été mis à jour dans la base de données.",
+            method="update_student",
+        )
 
     def register_student(self, ni: NI, discord_user_id: DiscordUserId):
         filter_query = {StudentMongoDbKey.NI: ni.value}
@@ -76,9 +86,19 @@ class MongoDbStudentRepository(StudentRepository):
         if result.modified_count == 0:
             raise CannotRegisterStudentException(ni)
 
+        self.__logger.info(
+            f"L'étudiant {repr(ni)} {repr(discord_user_id)} a bien été enregistré.",
+            method="register_student",
+        )
+
     def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
         filter_query = {StudentMongoDbKey.NI: ni.value}
         update_query = {
             "$set": {StudentMongoDbKey.DISCORD_USER_ID: discord_user_id.value}
         }
         self.__student_collection.update_one(filter_query, update_query)
+
+        self.__logger.info(
+            f"L'étudiant {repr(ni)} {repr(discord_user_id)} en cache a bien été désenregistré.",
+            method="unregister_student",
+        )

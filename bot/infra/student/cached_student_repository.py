@@ -28,32 +28,30 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
 
     def register_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._set_dirty(ni)
-        self.__repository.register_student(ni, discord_user_id)
-        self.__logger.debug(
-            f"L'étudiant {repr(ni)} {repr(discord_user_id)} a bien été enregistré.",
-            method="register_student",
+        self.__logger.info(
+            f"{repr(ni)} a bien été marqué comme sale.", method="update_student"
         )
+
+        self.__repository.register_student(ni, discord_user_id)
 
     def unregister_student(self, ni: NI, discord_user_id: DiscordUserId):
         self._remove_cached_item(ni)
-        self.__repository.unregister_student(ni, discord_user_id)
-        self.__logger.debug(
-            f"L'étudiant {repr(ni)} {repr(discord_user_id)} en cache a bien été désenregistré.",
-            method="unregister_student",
+        self.__logger.info(
+            f"{repr(ni)} a bien été retiré de la cache.", method="unregister_student"
         )
+
+        self.__repository.unregister_student(ni, discord_user_id)
 
     def add_student(self, student: Student):
         self.__repository.add_student(student)
-        # Move all logger to mongodb if not related to cache.
-        self.__logger.debug(
-            f"L'étudiant {repr(student)} a bien été ajouté à la base de données.",
-            method="update_student",
-        )
 
     def update_student(self, student: Student):
         self._set_dirty(student.ni)
+        self.__logger.info(
+            f"{repr(student)} a bien été marqué comme sale.", method="update_student"
+        )
+
         self.__repository.update_student(student)
-        self.__logger.debug(f"{repr(student)} a bien été mis à jour dans la cache.", method="update_student")
 
     def find_student_by_ni(self, ni: NI) -> Student:
         if self._is_cached(ni) and not self._is_dirty(ni):
