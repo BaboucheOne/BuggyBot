@@ -100,10 +100,8 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             new_admitted,
         )
 
-        if self.__does_student_exists(
+        if self.__does_student_exists(student.ni) or self.__does_student_registered(
             student.ni
-        ) or self.__does_discord_user_id_already_registered_an_account(
-            student.discord_user_id
         ):
             raise StudentAlreadyExistsException(ni=student.ni)
 
