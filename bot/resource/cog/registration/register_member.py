@@ -100,7 +100,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.command(
         name="add_student",
-        help="Arguments nécessaires dans l'ordre: !add_student ni prénom nom code_programme nouvel_admis",
+        help="Arguments nécessaires dans l'ordre: !add_student ni, prénom, nom, code_programme, nouvel_admis",
         brief="Ajouter un utilisateur à la liste des étudiants. Admin SEULEMENT",
     )
     @commands.dm_only()
