@@ -30,7 +30,7 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         self._set_dirty(ni)
         self.__repository.register_student(ni, discord_user_id)
         self.__logger.debug(
-            f"L'étudiant {repr(ni)} {repr(discord_user_id)} en cache a bien été enregistré.",
+            f"L'étudiant {repr(ni)} {repr(discord_user_id)} a bien été enregistré.",
             method="register_student",
         )
 
@@ -44,6 +44,7 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
 
     def add_student(self, student: Student):
         self.__repository.add_student(student)
+        # Move all logger to mongodb if not related to cache.
         self.__logger.debug(
             f"L'étudiant {repr(student)} a bien été ajouté à la base de données.",
             method="update_student",
@@ -52,7 +53,7 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
     def update_student(self, student: Student):
         self._set_dirty(student.ni)
         self.__repository.update_student(student)
-        self.__logger.debug(f"update_student - {repr(student)}")
+        self.__logger.debug(f"{repr(student)} a bien été mis à jour dans la cache.", method="update_student")
 
     def find_student_by_ni(self, ni: NI) -> Student:
         if self._is_cached(ni) and not self._is_dirty(ni):
@@ -67,7 +68,7 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         self._set_cached_item(ni, student)
 
         self.__logger.info(
-            f"Ajout de l'étudiant à la cache {repr(student)}",
+            f"L'étudiant {repr(student)} a bien été ajouté à la cache.",
             method="find_student_by_ni",
         )
 
