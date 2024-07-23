@@ -1,3 +1,5 @@
+import re
+
 from bot.resource.chain_of_responsibility.responsibility_handler import (
     ResponsibilityHandler,
 )
@@ -13,8 +15,15 @@ class AddStudentRequestFactory(RequestFactory):
         super().__init__(self.REQUIRED_ARGUMENTS)
         self.__ni_sanitizer = ni_sanitizer
 
+    def __remove_extra_spaces(self, input_string: str) -> str:
+        return re.sub(r"\s+", " ", input_string).strip()
+
     def create(self, content: str) -> AddStudentRequest:
         ni, firstname, lastname, program, new_admitted = self._get_arguments(content)
         return AddStudentRequest(
-            self.__ni_sanitizer.handle(ni), firstname, lastname, program, new_admitted
+            self.__ni_sanitizer.handle(ni),
+            self.__remove_extra_spaces(firstname),
+            self.__remove_extra_spaces(lastname),
+            program,
+            new_admitted,
         )
