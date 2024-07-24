@@ -20,6 +20,7 @@ from bot.resource.chain_of_responsibility.responsibility_builder import (
     ResponsibilityBuilder,
 )
 from bot.resource.constants import ReplyMessage
+from bot.resource.decorator.prohibit_self_message import prohibit_self_message
 from bot.resource.decorator.role_check import role_check
 from bot.resource.exception.missing_arguments_exception import MissingArgumentsException
 from bot.resource.cog.registration.factory.add_student_request_factory import (
@@ -66,9 +67,6 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__ni_sanitizer
         )
 
-    def __is_self(self, message: Message) -> bool:
-        return message.author == self.__bot.user
-
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
         await member.create_dm()
@@ -104,6 +102,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         brief="Ajouter un utilisateur à la liste des étudiants. Admin SEULEMENT",
     )
     @commands.dm_only()
+    @prohibit_self_message()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def add_student(self, context: Context):
         self.__logger.info(
@@ -111,9 +110,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             method="add_student",
         )
 
-        message = context.message
-        if self.__is_self(message):
-            return
+        message: Message = context.message
 
         try:
             content = Utility.get_content_without_command(message.content)
@@ -145,14 +142,13 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         brief="Enregistrez-vous pour accéder au Discord.",
     )
     @commands.dm_only()
+    @prohibit_self_message()
     async def register(self, context: Context):
         self.__logger.info(
             f"Exécution de la commande par {context.message.author}", method="register"
         )
 
         message = context.message
-        if self.__is_self(message):
-            return
 
         try:
             content = Utility.get_content_without_command(message.content)
@@ -184,6 +180,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         brief="Supprimer un utilisateur de la liste des étudiants. Admin SEULEMENT",
     )
     @commands.dm_only()
+    @prohibit_self_message()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     async def unregister(self, context: Context):
         self.__logger.info(
@@ -192,8 +189,6 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         )
 
         message = context.message
-        if self.__is_self(message):
-            return
 
         try:
             content = Utility.get_content_without_command(message.content)
