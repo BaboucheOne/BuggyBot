@@ -7,6 +7,9 @@ from bot.domain.student.attribut.ni import NI
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.cache.cache_repository import CacheRepository
+from bot.infra.cache.exception.cache_find_operation_not_found_exception import (
+    CacheFindOperationNotFoundException,
+)
 
 
 class CachedStudentRepository(StudentRepository, CacheRepository):
@@ -19,7 +22,12 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
     def find_student_by_discord_user_id(
         self, discord_user_id: DiscordUserId
     ) -> Student:
-        return self.__repository.find_student_by_discord_user_id(discord_user_id)
+        try:
+            return self._find_cache_item(
+                lambda cache_item: cache_item.data.discord_user_id == discord_user_id
+            )
+        except CacheFindOperationNotFoundException:
+            return self.__repository.find_student_by_discord_user_id(discord_user_id)
 
     def find_students_by_discord_user_id(
         self, discord_user_id: DiscordUserId
@@ -50,24 +58,18 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
         self.__logger.info(
             f"{repr(student)} a bien été marqué comme sale.", method="update_student"
         )
-
         self.__repository.update_student(student)
 
     def find_student_by_ni(self, ni: NI) -> Student:
-        if self._is_cached(ni) and not self._is_dirty(ni):
-            cache_student = self._get_cached_item(ni).data
+        try:
+            return self._find_cache_item(lambda cache_item: cache_item.data.ni == ni)
+        except CacheFindOperationNotFoundException:
+            student = self.__repository.find_student_by_ni(ni)
+            self._set_cached_item(ni, student)
+
             self.__logger.info(
-                f"Obtention de l'étudiant en cache {repr(cache_student)}",
+                f"L'étudiant {repr(student)} a bien été ajouté à la cache.",
                 method="find_student_by_ni",
             )
-            return cache_student
 
-        student = self.__repository.find_student_by_ni(ni)
-        self._set_cached_item(ni, student)
-
-        self.__logger.info(
-            f"L'étudiant {repr(student)} a bien été ajouté à la cache.",
-            method="find_student_by_ni",
-        )
-
-        return student
+            return student

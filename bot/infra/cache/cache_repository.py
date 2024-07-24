@@ -1,7 +1,13 @@
 from threading import RLock
-from typing import Dict
+from typing import Dict, Callable
 
 from bot.infra.cache.cache_item import CacheItem
+from bot.infra.cache.exception.cache_find_operation_not_found_exception import (
+    CacheFindOperationNotFoundException,
+)
+from bot.infra.cache.exception.cache_item_not_found_exception import (
+    CacheItemNotFoundException,
+)
 
 
 class CacheRepository:
@@ -25,8 +31,11 @@ class CacheRepository:
     def _is_dirty(self, cache_id) -> bool:
         return self.__cache[cache_id].is_dirty()
 
-    def _get_cached_item(self, cache_id) -> CacheItem:
-        return self.__cache[cache_id]
+    def _get_cached_item(self, cache_id: any) -> CacheItem:
+        try:
+            return self.__cache[cache_id]
+        except (ValueError, KeyError):
+            raise CacheItemNotFoundException(cache_id)
 
     def _set_dirty(self, cache_id):
         with self.__lock:
@@ -38,3 +47,15 @@ class CacheRepository:
                 self.__remove_older_item()
 
             self.__cache[cache_id] = CacheItem(data)
+
+    def _find_cache_item(self, predicate: Callable[[CacheItem], bool]):
+        for cache_id, cache_object in self.__cache.items():
+            cache_id: any
+            cache_object: CacheItem
+            if (
+                self._is_cached(cache_id)
+                and not self._is_dirty(cache_id)
+                and predicate(cache_object)
+            ):
+                return self._get_cached_item(cache_id).data
+        raise CacheFindOperationNotFoundException()
