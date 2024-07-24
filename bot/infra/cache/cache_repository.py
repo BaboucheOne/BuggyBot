@@ -1,3 +1,4 @@
+import copy
 from threading import RLock
 from typing import Dict, Callable
 
@@ -33,7 +34,7 @@ class CacheRepository:
 
     def _get_cached_item(self, cache_id: any) -> CacheItem:
         try:
-            return self.__cache[cache_id]
+            return copy.deepcopy(self.__cache[cache_id])
         except (ValueError, KeyError):
             raise CacheItemNotFoundException(cache_id)
 
