@@ -33,9 +33,9 @@ class Student:
         )
 
     def __eq__(self, other):
-        if isinstance(other, Student):
-            return self.ni == other.ni
-        return False
+        if not isinstance(other, Student):
+            return False
+        return self.ni == other.ni
 
     def __hash__(self):
         return hash(self.ni)

@@ -14,9 +14,9 @@ class NI(JsonSchemaMixin):
         return f"NI({str(self.value)})"
 
     def __eq__(self, other):
-        if isinstance(other, NI):
-            return self.value == other.value
-        return False
+        if not isinstance(other, NI):
+            return False
+        return self.value == other.value
 
     def __hash__(self):
         return hash(self.value)
