@@ -47,4 +47,4 @@ class SentenceOfTheDayTask(Task):
                 f"Une erreur s'est produite {e}.", method="do", exception=e
             )
 
-        self.__logger.info("SentenceOfTheDayTask - Fin de la tâche.")
+        self.__logger.info("SentenceOfTheDayTask - Fin de la tâche.", method="do")
