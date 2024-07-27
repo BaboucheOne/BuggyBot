@@ -22,3 +22,5 @@ class ErrorHandlerCog(commands.Cog, name="ErrorHandler"):
             await ctx.send(response)
         except Exception:
             await ctx.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
+
+        self.__logger.error(str(error), method="on_command_error")
