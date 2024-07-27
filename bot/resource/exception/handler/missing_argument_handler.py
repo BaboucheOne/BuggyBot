@@ -1,6 +1,6 @@
 from bot.resource.constants import ReplyMessage
 from bot.resource.exception.missing_arguments_exception import MissingArgumentsException
-from bot.resource.exception_handler.exception_handler import ExceptionHandler
+from bot.config.exception.exception_handler import ExceptionHandler
 
 
 class MissingArgumentsHandler(ExceptionHandler):

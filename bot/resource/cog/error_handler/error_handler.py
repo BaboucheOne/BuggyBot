@@ -5,7 +5,7 @@ from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.resource.constants import ReplyMessage
-from bot.resource.exception_handler.exception_handler_locator import (
+from bot.config.exception.exception_handler_locator import (
     ExceptionHandlerLocator,
 )
 

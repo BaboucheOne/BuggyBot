@@ -1,6 +1,6 @@
 import abc
 
-from bot.resource.exception_handler.exception_handler_locator import (
+from bot.config.exception.exception_handler_locator import (
     ExceptionHandlerLocator,
 )
 
