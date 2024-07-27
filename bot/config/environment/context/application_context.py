@@ -10,6 +10,7 @@ from bot.application.student.student_service import StudentService
 from bot.domain.task.task import Task
 from bot.domain.task.task_scheduler import TaskScheduler
 from bot.resource.cog.association.association import AssociationCog
+from bot.resource.cog.error_handler.error_handler import ErrorHandlerCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
 from bot.config.environment.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
@@ -64,6 +65,7 @@ class ApplicationContext(ABC):
         cogs = [
             self._instantiate_register_member_cog(),
             self._instantiate_association_cog(),
+            self._instantiate_error_handler_cog(),
         ]
         await self.__register_cogs(discord_client, cogs)
 
@@ -97,6 +99,10 @@ class ApplicationContext(ABC):
 
     @abstractmethod
     def _instantiate_register_member_cog(self) -> RegisterMemberCog:
+        pass
+
+    @abstractmethod
+    def _instantiate_error_handler_cog(self) -> ErrorHandlerCog:
         pass
 
     @abstractmethod
