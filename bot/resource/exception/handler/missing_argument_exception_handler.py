@@ -3,7 +3,7 @@ from bot.resource.exception.missing_arguments_exception import MissingArgumentsE
 from bot.config.exception.exception_handler import ExceptionHandler
 
 
-class MissingArgumentsHandler(ExceptionHandler):
+class MissingArgumentsExceptionHandler(ExceptionHandler):
     def __init__(self):
         super().__init__(self, MissingArgumentsException)
 

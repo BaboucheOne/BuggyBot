@@ -7,6 +7,7 @@ from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
+from bot.config.exception.exception_handler_locator import ExceptionHandlerLocator
 from bot.domain.task.task import Task
 from bot.domain.task.task_scheduler import TaskScheduler
 from bot.resource.cog.association.association import AssociationCog
@@ -17,6 +18,21 @@ from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
+from bot.resource.exception.handler.generic_exception_handler import (
+    GenericExceptionHandler,
+)
+from bot.resource.exception.handler.missing_argument_exception_handler import (
+    MissingArgumentsExceptionHandler,
+)
+from bot.resource.exception.handler.student_already_exists_exception_handler import (
+    StudentAlreadyExistsExceptionHandler,
+)
+from bot.resource.exception.handler.student_already_register_exception_handler import (
+    StudentAlreadyRegisteredExceptionHandler,
+)
+from bot.resource.exception.handler.student_not_found_exception_handler import (
+    StudentNotFoundExceptionHandler,
+)
 
 
 class ApplicationContext(ABC):
@@ -35,6 +51,9 @@ class ApplicationContext(ABC):
     async def build_application(self):
         ServiceLocator.clear()
         ServiceLocator.register_dependency(Logger, self._instantiate_logger())
+
+        ExceptionHandlerLocator.clear()
+        self.__register_exception_handlers()
 
         mongo_client = self._instantiate_mongo_client()
         self.__is_database_available(mongo_client)
@@ -60,7 +79,7 @@ class ApplicationContext(ABC):
             (StudentService, student_service),
             (DiscordService, discord_service),
         ]
-        self.__assemble_dependencies(dependencies)
+        self.__register_dependencies(dependencies)
 
         cogs = [
             self._instantiate_register_member_cog(),
@@ -81,9 +100,16 @@ class ApplicationContext(ABC):
         for cog in cogs:
             await discord_client.add_cog(cog)
 
-    def __assemble_dependencies(self, dependencies: List[Tuple]):
+    def __register_dependencies(self, dependencies: List[Tuple]):
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
+
+    def __register_exception_handlers(self):
+        GenericExceptionHandler()
+        MissingArgumentsExceptionHandler()
+        StudentAlreadyExistsExceptionHandler()
+        StudentAlreadyRegisteredExceptionHandler()
+        StudentNotFoundExceptionHandler()
 
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]

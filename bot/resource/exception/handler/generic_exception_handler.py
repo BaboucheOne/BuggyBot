@@ -2,7 +2,7 @@ from bot.resource.constants import ReplyMessage
 from bot.config.exception.exception_handler import ExceptionHandler
 
 
-class GenericHandler(ExceptionHandler):
+class GenericExceptionHandler(ExceptionHandler):
     def __init__(self):
         super().__init__(self, Exception)
 

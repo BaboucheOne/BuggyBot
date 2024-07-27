@@ -5,7 +5,7 @@ from bot.resource.constants import ReplyMessage
 from bot.config.exception.exception_handler import ExceptionHandler
 
 
-class NotFoundExceptionMapper(ExceptionHandler):
+class StudentAlreadyRegisteredExceptionHandler(ExceptionHandler):
     def __init__(self):
         super().__init__(self, StudentAlreadyRegisteredException)
 

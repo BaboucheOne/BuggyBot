@@ -4,7 +4,7 @@ from bot.infra.student.exception.student_not_found_exception import (
 )
 
 
-class StudentNotFoundHandler(ExceptionHandler):
+class StudentNotFoundExceptionHandler(ExceptionHandler):
     def __init__(self):
         super().__init__(self, StudentNotFoundException)
 
