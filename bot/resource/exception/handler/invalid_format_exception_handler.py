@@ -1,4 +1,5 @@
 from bot.config.exception.exception_handler import ExceptionHandler
+from bot.resource.constants import ReplyMessage
 
 
 class InvalidFormatExceptionHandler(ExceptionHandler):
@@ -6,4 +7,4 @@ class InvalidFormatExceptionHandler(ExceptionHandler):
         super().__init__(InvalidFormatExceptionHandler)
 
     def response(self) -> str:
-        return "bad format"
+        return ReplyMessage.INVALID_FORMAT

@@ -13,7 +13,7 @@ class ExceptionHandlerLocator:
     def register_handler(cls, exception_handler: ExceptionHandler):
         if exception_handler.exception_to_handle in cls.__exception_handlers:
             raise RuntimeError(
-                f"Exception {exception_handler.exception_to_handle.__name__} already have an handler."
+                f"L'exception {exception_handler.exception_to_handle.__name__} est déjà prise en charge."
             )
         cls.__exception_handlers[exception_handler.exception_to_handle] = (
             exception_handler
