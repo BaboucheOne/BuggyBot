@@ -7,7 +7,7 @@ from bot.config.exception.exception_handler import ExceptionHandler
 
 class StudentAlreadyExistsExceptionHandler(ExceptionHandler):
     def __init__(self):
-        super().__init__(self, StudentAlreadyExistsException)
+        super().__init__(StudentAlreadyExistsException)
 
     def response(self) -> str:
         return ReplyMessage.STUDENT_ALREADY_EXISTS

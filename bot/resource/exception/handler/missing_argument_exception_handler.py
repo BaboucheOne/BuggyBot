@@ -5,7 +5,7 @@ from bot.config.exception.exception_handler import ExceptionHandler
 
 class MissingArgumentsExceptionHandler(ExceptionHandler):
     def __init__(self):
-        super().__init__(self, MissingArgumentsException)
+        super().__init__(MissingArgumentsException)
 
     def response(self) -> str:
         return ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND

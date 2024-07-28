@@ -7,7 +7,7 @@ from bot.config.exception.exception_handler import ExceptionHandler
 
 class StudentAlreadyRegisteredExceptionHandler(ExceptionHandler):
     def __init__(self):
-        super().__init__(self, StudentAlreadyRegisteredException)
+        super().__init__(StudentAlreadyRegisteredException)
 
     def response(self) -> str:
         return ReplyMessage.ALREADY_REGISTERED

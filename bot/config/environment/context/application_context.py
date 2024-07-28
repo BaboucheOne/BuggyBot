@@ -7,6 +7,7 @@ from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
 from bot.application.student.student_service import StudentService
+from bot.config.exception.exception_handler import ExceptionHandler
 from bot.config.exception.exception_handler_locator import ExceptionHandlerLocator
 from bot.domain.task.task import Task
 from bot.domain.task.task_scheduler import TaskScheduler
@@ -18,8 +19,9 @@ from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
-from bot.resource.exception.handler.generic_exception_handler import (
-    GenericExceptionHandler,
+
+from bot.resource.exception.handler.invalid_format_exception_handler import (
+    InvalidFormatExceptionHandler,
 )
 from bot.resource.exception.handler.missing_argument_exception_handler import (
     MissingArgumentsExceptionHandler,
@@ -53,7 +55,15 @@ class ApplicationContext(ABC):
         ServiceLocator.register_dependency(Logger, self._instantiate_logger())
 
         ExceptionHandlerLocator.clear()
-        self.__register_exception_handlers()
+        self.__register_exception_handlers(
+            [
+                InvalidFormatExceptionHandler(),
+                MissingArgumentsExceptionHandler(),
+                StudentAlreadyExistsExceptionHandler(),
+                StudentAlreadyRegisteredExceptionHandler(),
+                StudentNotFoundExceptionHandler(),
+            ]
+        )
 
         mongo_client = self._instantiate_mongo_client()
         self.__is_database_available(mongo_client)
@@ -104,12 +114,9 @@ class ApplicationContext(ABC):
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
 
-    def __register_exception_handlers(self):
-        GenericExceptionHandler()
-        MissingArgumentsExceptionHandler()
-        StudentAlreadyExistsExceptionHandler()
-        StudentAlreadyRegisteredExceptionHandler()
-        StudentNotFoundExceptionHandler()
+    def __register_exception_handlers(self, handlers: List[ExceptionHandler]):
+        for handler in handlers:
+            ExceptionHandlerLocator.register_handler(handler)
 
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]
