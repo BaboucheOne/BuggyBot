@@ -1,8 +1,8 @@
 from typing import Dict
 
 from bot.config.exception.exception_handler import ExceptionHandler
-from bot.config.exception.exception_handler_not_found_exception import (
-    ExceptionHandlerNotFoundException,
+from bot.config.exception.not_found_exception_handler import (
+    NotFoundExceptionHandler,
 )
 
 
@@ -28,7 +28,7 @@ class ExceptionHandlerLocator:
             if issubclass(exception_class, exception_type):
                 return handler
 
-        raise ExceptionHandlerNotFoundException(exception_class)
+        raise NotFoundExceptionHandler(exception_class)
 
     @classmethod
     def clear(cls):

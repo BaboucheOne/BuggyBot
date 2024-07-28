@@ -1,4 +1,4 @@
-class ExceptionHandlerNotFoundException(RuntimeError):
+class NotFoundExceptionHandler(RuntimeError):
 
     MESSAGE: str = "Exception %s has no handler."
 
