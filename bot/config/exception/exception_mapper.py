@@ -1,7 +1,7 @@
 from typing import Dict
 
-from bot.config.exception.not_found_exception import (
-    NotFoundException,
+from bot.config.exception.mapper_not_found_exception import (
+    MapperNotFoundException,
 )
 
 
@@ -25,7 +25,7 @@ class ExceptionMapper:
             if issubclass(exception_class, exception_type):
                 return response
 
-        raise NotFoundException(exception_class)
+        raise MapperNotFoundException(exception_class)
 
     @classmethod
     def clear(cls):

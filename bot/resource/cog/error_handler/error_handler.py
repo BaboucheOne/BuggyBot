@@ -1,8 +1,8 @@
 from discord.ext import commands
 from discord.ext.commands import Context, CommandInvokeError
 
-from bot.config.exception.not_found_exception import (
-    NotFoundException,
+from bot.config.exception.mapper_not_found_exception import (
+    MapperNotFoundException,
 )
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
@@ -28,7 +28,7 @@ class ErrorHandlerCog(commands.Cog, name="ErrorHandler"):
             )
 
             await ctx.send(response)
-        except NotFoundException as e:
+        except MapperNotFoundException as e:
             self.__logger.warning(str(e), method="on_command_error", exception=e)
             await ctx.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
         except Exception as e:

@@ -1,4 +1,4 @@
-class NotFoundException(RuntimeError):
+class MapperNotFoundException(RuntimeError):
 
     MESSAGE: str = "L'exception %s n'est pas prise en charge."
 
