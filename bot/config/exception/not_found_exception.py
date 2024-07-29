@@ -1,4 +1,4 @@
-class NotFoundExceptionHandler(RuntimeError):
+class NotFoundException(RuntimeError):
 
     MESSAGE: str = "L'exception %s n'est pas prise en charge."
 

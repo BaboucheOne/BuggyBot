@@ -6,11 +6,22 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
+from bot.application.student.exceptions.invalid_format_exception import (
+    InvalidFormatException,
+)
+from bot.application.student.exceptions.student_already_exist import (
+    StudentAlreadyExistsException,
+)
+from bot.application.student.exceptions.student_already_registered_exception import (
+    StudentAlreadyRegisteredException,
+)
 from bot.application.student.student_service import StudentService
-from bot.config.exception.exception_handler import ExceptionHandler
-from bot.config.exception.exception_handler_locator import ExceptionHandlerLocator
+from bot.config.exception.exception_mapper import ExceptionMapper
 from bot.domain.task.task import Task
 from bot.domain.task.task_scheduler import TaskScheduler
+from bot.infra.student.exception.student_not_found_exception import (
+    StudentNotFoundException,
+)
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.error_handler.error_handler import ErrorHandlerCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
@@ -20,21 +31,8 @@ from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
 
-from bot.resource.exception.handler.invalid_format_exception_handler import (
-    InvalidFormatExceptionHandler,
-)
-from bot.resource.exception.handler.missing_argument_exception_handler import (
-    MissingArgumentsExceptionHandler,
-)
-from bot.resource.exception.handler.student_already_exists_exception_handler import (
-    StudentAlreadyExistsExceptionHandler,
-)
-from bot.resource.exception.handler.student_already_register_exception_handler import (
-    StudentAlreadyRegisteredExceptionHandler,
-)
-from bot.resource.exception.handler.student_not_found_exception_handler import (
-    StudentNotFoundExceptionHandler,
-)
+from bot.resource.constants import ReplyMessage
+from bot.resource.exception.missing_arguments_exception import MissingArgumentsException
 
 
 class ApplicationContext(ABC):
@@ -54,14 +52,14 @@ class ApplicationContext(ABC):
         ServiceLocator.clear()
         ServiceLocator.register_dependency(Logger, self._instantiate_logger())
 
-        ExceptionHandlerLocator.clear()
-        self.__register_exception_handlers(
+        ExceptionMapper.clear()
+        self.__register_exception(
             [
-                InvalidFormatExceptionHandler(),
-                MissingArgumentsExceptionHandler(),
-                StudentAlreadyExistsExceptionHandler(),
-                StudentAlreadyRegisteredExceptionHandler(),
-                StudentNotFoundExceptionHandler(),
+                (InvalidFormatException, ReplyMessage.INVALID_FORMAT),
+                (MissingArgumentsException, ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND),
+                (StudentAlreadyExistsException, ReplyMessage.STUDENT_ALREADY_EXISTS),
+                (StudentAlreadyRegisteredException, ReplyMessage.ALREADY_REGISTERED),
+                (StudentNotFoundException, ReplyMessage.STUDENT_NOT_FOUND),
             ]
         )
 
@@ -114,9 +112,9 @@ class ApplicationContext(ABC):
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
 
-    def __register_exception_handlers(self, handlers: List[ExceptionHandler]):
-        for handler in handlers:
-            ExceptionHandlerLocator.register_handler(handler)
+    def __register_exception(self, mapper: List[Tuple[type, str]]):
+        for exception, response in mapper:
+            ExceptionMapper.register(exception, response)
 
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]
