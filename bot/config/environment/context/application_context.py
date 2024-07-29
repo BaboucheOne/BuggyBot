@@ -53,7 +53,7 @@ class ApplicationContext(ABC):
         ServiceLocator.register_dependency(Logger, self._instantiate_logger())
 
         ExceptionMapper.clear()
-        self.__register_exception(
+        self.__register_exceptions(
             [
                 (InvalidFormatException, ReplyMessage.INVALID_FORMAT),
                 (MissingArgumentsException, ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND),
@@ -112,8 +112,8 @@ class ApplicationContext(ABC):
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
 
-    def __register_exception(self, mapper: List[Tuple[type, str]]):
-        for exception, response in mapper:
+    def __register_exceptions(self, exceptions: List[Tuple[type, str]]):
+        for exception, response in exceptions:
             ExceptionMapper.register(exception, response)
 
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
