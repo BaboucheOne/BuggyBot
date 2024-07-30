@@ -8,6 +8,9 @@ from bot.application.discord.event.member_removed.member_removed_observable impo
 from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
+from bot.application.student.exceptions.invalid_name_format_exception import (
+    InvalidNameFormatException,
+)
 from bot.application.student.exceptions.invalid_ni_format_exception import (
     InvalidNIFormatException,
 )
@@ -20,6 +23,7 @@ from bot.application.student.exceptions.student_already_exist import (
 from bot.application.student.exceptions.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
+from bot.application.student.validators.name_validator import NameValidator
 from bot.application.student.validators.ni_validator import NIValidator
 from bot.application.student.validators.program_code_validator import (
     ProgramCodeValidator,
@@ -54,6 +58,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository = student_repository
 
         self.__ni_validator = NIValidator()
+        self.__name_validator = NameValidator()
         self.__program_code_validator = ProgramCodeValidator()
 
         self.__ni_factory = NIFactory()
@@ -84,6 +89,12 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__logger.info(
             f"Réception de la requête {repr(add_student_request)}", method="add_student"
         )
+
+        if not self.__name_validator.validate(add_student_request.firstname):
+            raise InvalidNameFormatException(add_student_request.firstname)
+
+        if not self.__name_validator.validate(add_student_request.lastname):
+            raise InvalidNameFormatException(add_student_request.lastname)
 
         if not self.__ni_validator.validate(add_student_request.ni):
             raise InvalidNIFormatException(add_student_request.ni)
