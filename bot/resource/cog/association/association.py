@@ -3,7 +3,6 @@ from discord.ext.commands import Context
 
 from bot.resource.cog.association.embed.aeglo_embed import AegloEmbed
 from bot.resource.cog.association.embed.asetin_embed import AsetinEmbed
-from bot.resource.constants import ReplyMessage
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
@@ -31,18 +30,8 @@ class AssociationCog(commands.Cog, name="Association"):
 
         message = context.message
 
-        try:
-            await message.channel.send(embed=AsetinEmbed().embed)
-            self.__logger.info(
-                "La commande a été exécutée avec succès.", method="asetin"
-            )
-        except Exception as e:
-            self.__logger.error(
-                f"Erreur lors de l'exécution de la commande exécutée par {context.message.author}. {e}",
-                method="asetin",
-                exception=e,
-            )
-            await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
+        await message.channel.send(embed=AsetinEmbed().embed)
+        self.__logger.info("La commande a été exécutée avec succès.", method="asetin")
 
     @commands.command(
         name="aeglo",
@@ -59,15 +48,5 @@ class AssociationCog(commands.Cog, name="Association"):
 
         message = context.message
 
-        try:
-            await message.channel.send(embed=AegloEmbed().embed)
-            self.__logger.info(
-                "La commande a été exécutée avec succès.", method="aeglo"
-            )
-        except Exception as e:
-            self.__logger.error(
-                f"Erreur lors de l'exécution de la commande exécutée par {context.message.author}. {e}",
-                method="aeglo",
-                exception=e,
-            )
-            await message.channel.send(ReplyMessage.UNSUCCESSFUL_GENERIC)
+        await message.channel.send(embed=AegloEmbed().embed)
+        self.__logger.info("La commande a été exécutée avec succès.", method="aeglo")

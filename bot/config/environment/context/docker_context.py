@@ -12,6 +12,7 @@ from bot.application.task.kick_unregistered_user_task import KickUnregisteredUse
 from bot.application.task.sentence_of_the_day_task import SentenceOfTheDayTask
 from bot.domain.task.task import Task
 from bot.resource.cog.association.association import AssociationCog
+from bot.resource.cog.error_handler.error_handler import ErrorHandlerCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
 from bot.config.environment.context.application_context import ApplicationContext
 from bot.config.logger.logger import Logger
@@ -49,6 +50,9 @@ class DockerContext(ApplicationContext):
 
     def _instantiate_register_member_cog(self) -> RegisterMemberCog:
         return RegisterMemberCog()
+
+    def _instantiate_error_handler_cog(self) -> ErrorHandlerCog:
+        return ErrorHandlerCog()
 
     def _instantiate_student_repository(
         self, student_collection: Collection
