@@ -6,16 +6,33 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
+from bot.application.student.exceptions.invalid_format_exception import (
+    InvalidFormatException,
+)
+from bot.application.student.exceptions.student_already_exist import (
+    StudentAlreadyExistsException,
+)
+from bot.application.student.exceptions.student_already_registered_exception import (
+    StudentAlreadyRegisteredException,
+)
 from bot.application.student.student_service import StudentService
+from bot.config.exception.exception_mapper import ExceptionMapper
 from bot.domain.task.task import Task
 from bot.domain.task.task_scheduler import TaskScheduler
+from bot.infra.student.exception.student_not_found_exception import (
+    StudentNotFoundException,
+)
 from bot.resource.cog.association.association import AssociationCog
+from bot.resource.cog.error_handler.error_handler import ErrorHandlerCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
 from bot.config.environment.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.student_repository import StudentRepository
+
+from bot.resource.constants import ReplyMessage
+from bot.resource.exception.missing_arguments_exception import MissingArgumentsException
 
 
 class ApplicationContext(ABC):
@@ -34,6 +51,17 @@ class ApplicationContext(ABC):
     async def build_application(self):
         ServiceLocator.clear()
         ServiceLocator.register_dependency(Logger, self._instantiate_logger())
+
+        ExceptionMapper.clear()
+        self.__register_exceptions(
+            [
+                (InvalidFormatException, ReplyMessage.INVALID_FORMAT),
+                (MissingArgumentsException, ReplyMessage.MISSING_ARGUMENTS_IN_COMMAND),
+                (StudentAlreadyExistsException, ReplyMessage.STUDENT_ALREADY_EXISTS),
+                (StudentAlreadyRegisteredException, ReplyMessage.ALREADY_REGISTERED),
+                (StudentNotFoundException, ReplyMessage.STUDENT_NOT_FOUND),
+            ]
+        )
 
         mongo_client = self._instantiate_mongo_client()
         self.__is_database_available(mongo_client)
@@ -59,11 +87,12 @@ class ApplicationContext(ABC):
             (StudentService, student_service),
             (DiscordService, discord_service),
         ]
-        self.__assemble_dependencies(dependencies)
+        self.__register_dependencies(dependencies)
 
         cogs = [
             self._instantiate_register_member_cog(),
             self._instantiate_association_cog(),
+            self._instantiate_error_handler_cog(),
         ]
         await self.__register_cogs(discord_client, cogs)
 
@@ -79,9 +108,13 @@ class ApplicationContext(ABC):
         for cog in cogs:
             await discord_client.add_cog(cog)
 
-    def __assemble_dependencies(self, dependencies: List[Tuple]):
+    def __register_dependencies(self, dependencies: List[Tuple]):
         for dependency_type, dependency_instance in dependencies:
             ServiceLocator.register_dependency(dependency_type, dependency_instance)
+
+    def __register_exceptions(self, exceptions: List[Tuple[type, str]]):
+        for exception, response in exceptions:
+            ExceptionMapper.register(exception, response)
 
     def __instantiate_student_collection(self, client: MongoClient) -> Collection:
         database = client[self._configuration.mongodb_database_name]
@@ -97,6 +130,10 @@ class ApplicationContext(ABC):
 
     @abstractmethod
     def _instantiate_register_member_cog(self) -> RegisterMemberCog:
+        pass
+
+    @abstractmethod
+    def _instantiate_error_handler_cog(self) -> ErrorHandlerCog:
         pass
 
     @abstractmethod
