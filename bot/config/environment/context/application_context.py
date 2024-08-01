@@ -19,6 +19,12 @@ from bot.application.student.student_service import StudentService
 from bot.config.exception.exception_mapper import ExceptionMapper
 from bot.domain.task.task import Task
 from bot.domain.task.task_scheduler import TaskScheduler
+from bot.infra.student.exception.cannot_add_student_exception import (
+    CannotAddStudentException,
+)
+from bot.infra.student.exception.cannot_register_student_exception import (
+    CannotRegisterStudentException,
+)
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
@@ -60,6 +66,8 @@ class ApplicationContext(ABC):
                 (StudentAlreadyExistsException, ReplyMessage.STUDENT_ALREADY_EXISTS),
                 (StudentAlreadyRegisteredException, ReplyMessage.ALREADY_REGISTERED),
                 (StudentNotFoundException, ReplyMessage.STUDENT_NOT_FOUND),
+                (CannotRegisterStudentException, ReplyMessage.UNABLE_TO_REGISTER),
+                (CannotAddStudentException, ReplyMessage.UNABLE_TO_ADD_STUDENT),
             ]
         )
 

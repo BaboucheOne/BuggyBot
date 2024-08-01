@@ -17,6 +17,10 @@ class ReplyMessage:
         "Impossible de vous enregistrer. Vérifiez votre NI. Si votre NI est le bon, veuillez contacter un administrateur."
     )
 
+    UNABLE_TO_ADD_STUDENT: str = (
+        "Impossible d'ajouter l'étudiant à la base de données. Vérifiez les arguments. Si le problème persiste, contactez la personne en charge du bot."
+    )
+
     SUCCESSFUL_REGISTRATION: str = (
         "Vous êtes maintenant enregistré(e)! Votre rôle ainsi que votre nom sont désormais enregistrés."
     )
@@ -29,7 +33,9 @@ class ReplyMessage:
 
     STUDENT_ALREADY_EXISTS: str = "Cet étudiant existe déjà."
 
-    STUDENT_NOT_FOUND: str = "Cet étudiant n'existe pas."
+    STUDENT_NOT_FOUND: str = (
+        "Cet étudiant n'existe pas dans notre systeme. Veuillez contacter un administrateur."
+    )
 
     MISSING_ARGUMENTS_IN_COMMAND: str = "Arguments manquants dans la commande."
 

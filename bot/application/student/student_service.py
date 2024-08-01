@@ -64,13 +64,13 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__ni_factory = NIFactory()
         self.__student_factory = StudentFactory(self.__ni_factory)
 
-    def __does_student_registered(self, ni: NI):
+    def __does_student_registered(self, ni: NI) -> bool:
         try:
             return self.__student_repository.find_student_by_ni(ni).is_registered()
         except StudentNotFoundException:
             return False
 
-    def __does_student_exists(self, ni: NI):
+    def __does_student_exists(self, ni: NI) -> bool:
         try:
             _ = self.__student_repository.find_student_by_ni(ni)
             return True
@@ -129,6 +129,9 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
         student_ni = self.__ni_factory.create(register_student_request.ni)
         discord_user_id = DiscordUserId(register_student_request.discord_id)
+
+        if not self.__does_student_exists(student_ni):
+            raise StudentNotFoundException()
 
         if self.__does_student_registered(
             student_ni
