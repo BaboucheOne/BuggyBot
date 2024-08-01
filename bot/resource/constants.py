@@ -17,6 +17,10 @@ class ReplyMessage:
         "Impossible de vous enregistrer. Vérifiez votre NI. Si votre NI est le bon, veuillez contacter un administrateur."
     )
 
+    UNABLE_TO_ADD_STUDENT: str = (
+        "Impossible d'ajouter l'étudiant à la base de données. Vérifiez les arguments. Si le problème persiste, contactez la personne en charge du bot."
+    )
+
     SUCCESSFUL_REGISTRATION: str = (
         "Vous êtes maintenant enregistré(e)! Votre rôle ainsi que votre nom sont désormais enregistrés."
     )

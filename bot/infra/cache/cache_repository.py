@@ -39,12 +39,13 @@ class CacheRepository:
             raise CacheItemNotFoundException(cache_id)
 
     def _set_dirty(self, cache_id):
-        with self.__lock:
-            self.__cache[cache_id].set_dirty()
+        if self._is_cached(cache_id):
+            with self.__lock:
+                self.__cache[cache_id].set_dirty()
 
     def _set_cached_item(self, cache_id, data):
-        with self.__lock:
-            if not self._is_cached(cache_id) and len(self.__cache) + 1 > self.MAX_ITEMS:
+        if not self._is_cached(cache_id) and len(self.__cache) + 1 > self.MAX_ITEMS:
+            with self.__lock:
                 self.__remove_older_item()
 
             self.__cache[cache_id] = CacheItem(data)
