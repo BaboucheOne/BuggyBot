@@ -33,7 +33,9 @@ class ReplyMessage:
 
     STUDENT_ALREADY_EXISTS: str = "Cet étudiant existe déjà."
 
-    STUDENT_NOT_FOUND: str = "Cet étudiant n'existe pas."
+    STUDENT_NOT_FOUND: str = (
+        "Cet étudiant n'existe pas dans notre systeme. Veuillez contacter un administrateur."
+    )
 
     MISSING_ARGUMENTS_IN_COMMAND: str = "Arguments manquants dans la commande."
 
