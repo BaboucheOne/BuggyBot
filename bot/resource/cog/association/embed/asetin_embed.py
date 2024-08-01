@@ -13,11 +13,11 @@ class AsetinEmbed:
 
     WHO_WE_ARE_FIELD_NAME: str = "Qui sommes-nous?"
     WHO_WE_ARE_FIELD_DESCRIPTION: str = (
-        "Nous sommes votre association étudiante, dédiée à offrir une variété de services aux étudiants. Nos activités incluent : \n- L'assistance aux étudiants.\n- L'organisation de concours.\n- La planification d'événements.\n- Un lieu de rencontre convivial. L'ASETIN représente les intérêts des étudiants et étudiantes de premier cycle en informatique auprès des différentes instances officielles de l’Université Laval, sur les différents comités et devant les autres associations étudiantes."
+        "Nous sommes votre association étudiante, dédiée à offrir une variété de services aux étudiants. Nos activités incluent : \n- L'assistance aux étudiants.\n- L'organisation de concours.\n- La planification d'événements.\n- Un lieu de rencontre convivial.\n L'ASETIN représente les intérêts des étudiants et étudiantes de premier cycle en informatique auprès des différentes instances officielles de l’Université Laval, sur les différents comités et devant les autres associations étudiantes."
     )
 
     PART_OF_FIELD_NAME: str = "Qui en fait partie?"
-    PART_OF_FIELD_VALUE: str = "Les étudiants en informatique, génie logiciel, informatique et gestion ainsi que les étudiants inscrits aux certificats en informatique"
+    PART_OF_FIELD_VALUE: str = "- Informatique\n- Génie logiciel\n- Informatique et gestion\n- Certificats en informatique"
 
     LOCAL_FIELD_NAME: str = "Local"
     LOCAL_FIELD_VALUE: str = "PLT-3902"

@@ -17,7 +17,7 @@ class AegloEmbed:
     )
 
     PART_OF_FIELD_NAME: str = "Qui en fait partie?"
-    PART_OF_FIELD_VALUE: str = "Les étudiants en génie logiciel"
+    PART_OF_FIELD_VALUE: str = "- Génie logiciel"
 
     LOCAL_FIELD_NAME: str = "Local"
     LOCAL_FIELD_VALUE: str = "VCH-00113 (en dessous de la cafétéria)"
