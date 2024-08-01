@@ -13,18 +13,18 @@ class AegloEmbed:
 
     WHO_WE_ARE_FIELD_NAME: str = "Qui sommes-nous?"
     WHO_WE_ARE_FIELD_DESCRIPTION: str = (
-        "Nous sommes votre association étudiante, dédiée à offrir une variété de services aux étudiants. Nos activités incluent : \n- L'assistance aux étudiants.\n- La planification d'événements.\n- Un lieu de rencontre convivial."
+        "Nous sommes votre association étudiante, dédiée à offrir une variété de services aux étudiants. Nos activités incluent : \n- L'assistance aux étudiants.\n- La planification d'événements.\n- Un lieu de rencontre convivial.\nL’Association représente les intérêts des étudiants du programme de baccalauréat en génie logiciel de l’Université Laval auprès des différentes instances officielles de l’Université, sur les différents comités et les autres associations étudiantes."
     )
 
     PART_OF_FIELD_NAME: str = "Qui en fait partie?"
-    PART_OF_FIELD_VALUE: str = "Étudiant en génie logiciel"
+    PART_OF_FIELD_VALUE: str = "- Génie logiciel"
 
     LOCAL_FIELD_NAME: str = "Local"
-    LOCAL_FIELD_VALUE: str = "VCH-00113"
+    LOCAL_FIELD_VALUE: str = "VCH-00113 (en dessous de la cafétéria)"
 
     LINK_FIELD_NAME: str = "Réseaux"
     LINK_FIELD_VALUE: str = (
-        "[Facebook](https://www.facebook.com/groups/aeglo)\n[Site web](https://aeglo.ift.ulaval.ca/)"
+        "[Facebook](https://www.facebook.com/groups/aeglo)\n[Instagram](https://www.instagram.com/_aeglo/)\n[Site web](https://aeglo.ift.ulaval.ca/)"
     )
 
     FOOTER_TEXT: str = "Pro tip: Restez informé via le Discord ou le groupe Facebook!"
