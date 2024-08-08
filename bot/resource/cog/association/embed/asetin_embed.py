@@ -17,7 +17,9 @@ class AsetinEmbed:
     )
 
     PART_OF_FIELD_NAME: str = "Qui en fait partie?"
-    PART_OF_FIELD_VALUE: str = "- Informatique\n- Génie logiciel\n- Informatique et gestion\n- Certificats en informatique"
+    PART_OF_FIELD_VALUE: str = (
+        "- Informatique\n- Génie logiciel\n- Informatique et gestion\n- Certificats en informatique"
+    )
 
     LOCAL_FIELD_NAME: str = "Local"
     LOCAL_FIELD_VALUE: str = "PLT-3902"
@@ -27,7 +29,9 @@ class AsetinEmbed:
         "[Facebook](https://www.facebook.com/groups/180156004739308)\n[Instagram](https://www.instagram.com/asetin_ulaval/)\n[Site web](https://asetin.ift.ulaval.ca/)"
     )
 
-    FOOTER_TEXT: str = "Pro tip: Restez informé via le Discord, le groupe Facebook ou la page Instagram!"
+    FOOTER_TEXT: str = (
+        "Pro tip: Restez informé via le Discord, le groupe Facebook ou la page Instagram!"
+    )
 
     def __init__(self):
         self.embed = Embed(

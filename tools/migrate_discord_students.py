@@ -241,9 +241,9 @@ async def main(arguments: List[str] = None):
 
     client = connect_to_mongo_db(configuration.mongodb_connection_string)
     database = client[configuration.mongodb_database_name]
-    students_collection = database[configuration.student_collection_name]
+    student_collection = database[configuration.student_collection_name]
 
-    unregistered_students = get_unregistered_students(students_collection)
+    unregistered_students = get_unregistered_students(student_collection)
 
     thread = threading.Thread(
         target=start_bot,
@@ -256,7 +256,7 @@ async def main(arguments: List[str] = None):
 
     time.sleep(WAIT_FOR_THREAD_INITIALIZATION)
 
-    await migrate(students_collection, unregistered_students, discord_client)
+    await migrate(student_collection, unregistered_students, discord_client)
 
 
 if __name__ == "__main__":

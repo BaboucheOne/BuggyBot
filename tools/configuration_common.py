@@ -8,11 +8,14 @@ from bot.config.service_locator import ServiceLocator
 
 
 def get_configuration(args: argparse.Namespace) -> DotEnvConfiguration:
+    configuration = DotEnvConfiguration()
     if args.env == "dev":
         print("La configuration de développement est en cours d'utilisation.")
-        return DotEnvConfiguration().from_file(ConfigurationFilename.DEVELOPMENT)
+        configuration.from_file(f"../{ConfigurationFilename.DEVELOPMENT}")
+        return configuration
     print("La configuration de production est en cours d'utilisation.")
-    return DotEnvConfiguration().from_file(ConfigurationFilename.PRODUCTION)
+    configuration.from_file(f"../{ConfigurationFilename.PRODUCTION}")
+    return configuration
 
 
 def add_configuration_argument(parser: argparse.ArgumentParser):
@@ -28,6 +31,6 @@ def add_configuration_argument(parser: argparse.ArgumentParser):
 
 
 def setup_logger(filename: str) -> Logger:
-    logger = Logger(f"../{filename}", logging.DEBUG)
+    logger = Logger(f"../log/{filename}", logging.DEBUG)
     ServiceLocator.register_dependency(Logger, logger)
     return logger
