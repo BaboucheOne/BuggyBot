@@ -28,7 +28,7 @@ ARGUMENT_FILENAME_KEY = "csv_filename"
 def read_arguments(arguments: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Lire le fichier CSV.")
     parser.add_argument(
-        ARGUMENT_FILENAME_KEY, type=str, help="Chemin vers le fichier CSV."
+        dest=ARGUMENT_FILENAME_KEY, type=str, help="Chemin vers le fichier CSV."
     )
     add_configuration_argument(parser)
 
@@ -116,10 +116,11 @@ async def remove_roles_from_students(discord_client: DiscordClient):
         method="remove_roles_from_students",
     )
 
-    for member in discord_client.get_all_members():
+    for member in discord_client.server.members:
         try:
-            roles = get_member_uni_roles(member)
-            await member.remove_roles(*roles)
+            if not member.bot:
+                roles = get_member_uni_roles(member)
+                await member.remove_roles(*roles)
         except discord.Forbidden as e:
             logger.warning(
                 f"Impossible d'enlever les rôles de {member.name}, permission refusée.",
@@ -138,16 +139,17 @@ async def notify_students_to_register(discord_client: DiscordClient):
         method="notify_students_to_register",
     )
 
-    for member in discord_client.get_all_members():
+    for member in discord_client.server.members:
         try:
-            await member.send(
-                "En ce début de nouvelle session, "
-                "nous vous demandons de bien vouloir vous enregistrer à nouveau grâce à la commande !register TON_NI. "
-                "Exemple : !register 111111111.\n "
-                "Noter que si vous avez fait une demande de membre honorifique, "
-                "celle-ci sera traitée dans les plus brefs délais et vous serez informé(e) en conséquence.\n"
-                "Sur ce, bonne fin d'été à tous, et on se retrouve en septembre ! :tada:"
-            )
+            if not member.bot:
+                await member.send(
+                    "En ce début de nouvelle session, "
+                    "nous vous demandons de bien vouloir vous enregistrer à nouveau grâce à la commande !register TON_NI. "
+                    "Exemple : !register 111111111.\n"
+                    "Noter que si vous avez fait une demande de membre honorifique, "
+                    "celle-ci sera traitée dans les plus brefs délais et vous serez informé(e) en conséquence.\n"
+                    "Sur ce, bonne fin d'été à tous, et on se retrouve en septembre ! :tada:"
+                )
         except discord.Forbidden as e:
             logger.warning(
                 f"Impossible d'envoyer un message à {member.name}, permission refusée.",
@@ -158,6 +160,14 @@ async def notify_students_to_register(discord_client: DiscordClient):
     logger.info(
         "Tous les étudiants ont été informés.", method="notify_students_to_register"
     )
+
+
+async def start_discord_client(discord_client: DiscordClient, token: str):
+    await discord_client.start(token)
+
+
+async def stop_discord_client(discord_client: DiscordClient):
+    await discord_client.close()
 
 
 async def main(arguments: List[str]):
@@ -172,19 +182,33 @@ async def main(arguments: List[str]):
         command_prefix="!", intents=intents, server_id=configuration.server_id
     )
 
+    discord_client_task = asyncio.create_task(
+        start_discord_client(discord_client, configuration.discord_token)
+    )
+
+    while not discord_client.is_ready():
+        logger.info("Waiting for discord client to start", method="main")
+        await asyncio.sleep(2)
+
     client = connect_to_mongo_db(configuration.mongodb_connection_string)
     database = client[configuration.mongodb_database_name]
     student_collection = database[configuration.student_collection_name]
 
-    warn_user()
+    try:
+        warn_user()
 
-    await remove_roles_from_students(discord_client)
-    flush_student_collection(student_collection)
-    populate_student_collection(configuration, arguments.csv_filename)
-    await notify_students_to_register(discord_client)
+        await remove_roles_from_students(discord_client)
+        flush_student_collection(student_collection)
+        populate_student_collection(configuration, arguments.csv_filename)
+        await notify_students_to_register(discord_client)
+
+        discord_client_task.cancel()
+    except asyncio.CancelledError:
+        client.close()
+        await stop_discord_client(discord_client)
 
     logger.info("La procédure s'est effectuée avec succès.", method="main")
 
 
 if __name__ == "__main__":
-    asyncio.run(main(sys.argv))
+    asyncio.run(main(sys.argv[1:]))
