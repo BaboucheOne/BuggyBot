@@ -122,31 +122,37 @@ def get_dot_env_filepath():
     return os.path.join(root_directory, ConfigurationFilename.DEVELOPMENT)
 
 
-def main(arguments: List[str]):
-    arguments = read_arguments(arguments)
-    configuration: DotEnvConfiguration = get_configuration(arguments)
-    logger = setup_logger(configuration.logger_filename)
-
+def update_list(configuration: DotEnvConfiguration, csv_filename: str) -> int:
     client = connect_to_mongo_db(configuration.mongodb_connection_string)
     database = client[configuration.mongodb_database_name]
-    students_collection = database[configuration.student_collection_name]
+    student_collection = database[configuration.student_collection_name]
 
-    students_df = read_students_csv(arguments.csv_filename)
+    students_df = read_students_csv(csv_filename)
     rename_student_list_to_mongodb_schema(students_df)
 
     filtered_students_df = filter_students_by_program(students_df)
     filtered_students_df = map_nouveau_column(filtered_students_df)
-    existing_nis = get_nis_from_collection(students_collection)
+    existing_nis = get_nis_from_collection(student_collection)
     students_to_insert = get_students_to_insert(filtered_students_df, existing_nis)
 
     for student in students_to_insert:
         student[StudentMongoDbKey.DISCORD_USER_ID] = DiscordUserId.INVALID_DISCORD_ID
 
-    insert_students_into_collection(students_collection, students_to_insert)
+    insert_students_into_collection(student_collection, students_to_insert)
 
     client.close()
 
-    logger.info(f"{len(students_to_insert)} nouveaux étudiants insérés.", method="main")
+    return len(students_to_insert)
+
+
+def main(arguments: List[str]):
+    arguments = read_arguments(arguments)
+    configuration: DotEnvConfiguration = get_configuration(arguments)
+    logger = setup_logger(configuration.logger_filename)
+
+    students_to_inserted = update_list(configuration, arguments.csv_filename)
+
+    logger.info(f"{students_to_inserted} nouveaux étudiants insérés.", method="main")
     logger.info("La table des étudiants a été mise à jour !", method="main")
 
 

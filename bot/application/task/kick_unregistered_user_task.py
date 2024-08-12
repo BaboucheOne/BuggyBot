@@ -53,7 +53,7 @@ class KickUnregisteredUserTask(Task):
                 await member.kick(reason=self.KICK_REASON)
                 self.__logger.info(f"{member.name} a été expulsé.", method="do")
             except discord.Forbidden as e:
-                self.__logger.info(
+                self.__logger.warning(
                     f"Impossible d'expulser {member.nick}, permission refusée.",
                     method="do",
                     exception=e,
@@ -65,7 +65,7 @@ class KickUnregisteredUserTask(Task):
                     exception=e,
                 )
             except discord.HTTPException as e:
-                self.__logger.info(
+                self.__logger.error(
                     f"Impossible d'expulser {member.nick}, erreur http {e}.",
                     method="do",
                     exception=e,
