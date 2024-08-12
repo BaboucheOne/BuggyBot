@@ -9,7 +9,7 @@ from bot.resource.cog.registration.request.add_student_request import AddStudent
 
 class AddStudentRequestFactory(RequestFactory):
 
-    REQUIRED_ARGUMENTS = 5
+    REQUIRED_ARGUMENTS = 4
 
     def __init__(self, ni_sanitizer: ResponsibilityHandler):
         super().__init__(self.REQUIRED_ARGUMENTS)
@@ -19,11 +19,10 @@ class AddStudentRequestFactory(RequestFactory):
         return re.sub(r"\s+", " ", input_string).strip()
 
     def create(self, content: str) -> AddStudentRequest:
-        ni, firstname, lastname, program, new_admitted = self._get_arguments(content)
+        ni, firstname, lastname, program = self._get_arguments(content)
         return AddStudentRequest(
             self.__ni_sanitizer.handle(ni),
             self.__remove_extra_spaces(firstname),
             self.__remove_extra_spaces(lastname),
             program,
-            new_admitted,
         )

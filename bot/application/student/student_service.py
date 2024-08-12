@@ -43,7 +43,6 @@ from bot.domain.student.factory.ni_factory import NIFactory
 from bot.domain.student.factory.student_factory import StudentFactory
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
-from bot.domain.utility import Utility
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
@@ -102,13 +101,11 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         if not self.__program_code_validator.validate(add_student_request.program_code):
             raise MissingProgramCodeException(add_student_request.program_code)
 
-        new_admitted = Utility.str_to_bool(add_student_request.new_admitted)
         student = self.__student_factory.create(
             add_student_request.ni,
             add_student_request.firstname,
             add_student_request.lastname,
             add_student_request.program_code,
-            new_admitted,
         )
 
         if self.__does_student_exists(student.ni) or self.__does_student_registered(

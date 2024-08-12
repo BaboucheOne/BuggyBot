@@ -26,7 +26,6 @@ STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
     StudentCsvKey.PROGRAM_CODE,
     StudentCsvKey.LASTNAME,
     StudentCsvKey.FIRSTNAME,
-    StudentCsvKey.NEW,
 ]
 
 STUDENT_ALLOWED_PROGRAM = [
@@ -42,7 +41,6 @@ STUDENTS_LIST_RENAMING_MAPPING = {
     StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
     StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
     StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-    StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
 }
 
 
@@ -77,7 +75,6 @@ def rename_student_list_to_mongodb_schema(students_df: pd.DataFrame):
             StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
             StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
             StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-            StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
         },
         inplace=True,
     )
@@ -87,13 +84,6 @@ def filter_students_by_program(students_df: pd.DataFrame) -> pd.DataFrame:
     return students_df[
         students_df[StudentMongoDbKey.PROGRAM_CODE].isin(STUDENT_ALLOWED_PROGRAM)
     ].copy()
-
-
-def map_nouveau_column(students_df: pd.DataFrame) -> pd.DataFrame:
-    students_df.loc[:, StudentMongoDbKey.NEW_ADMITTED] = students_df.loc[
-        :, StudentMongoDbKey.NEW_ADMITTED
-    ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
-    return students_df
 
 
 def get_nis_from_collection(collection) -> set:
@@ -131,7 +121,6 @@ def update_list(configuration: DotEnvConfiguration, csv_filename: str) -> int:
     rename_student_list_to_mongodb_schema(students_df)
 
     filtered_students_df = filter_students_by_program(students_df)
-    filtered_students_df = map_nouveau_column(filtered_students_df)
     existing_nis = get_nis_from_collection(student_collection)
     students_to_insert = get_students_to_insert(filtered_students_df, existing_nis)
 
