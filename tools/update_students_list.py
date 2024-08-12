@@ -86,13 +86,6 @@ def filter_students_by_program(students_df: pd.DataFrame) -> pd.DataFrame:
     ].copy()
 
 
-def map_nouveau_column(students_df: pd.DataFrame) -> pd.DataFrame:
-    students_df.loc[:, StudentMongoDbKey.NEW_ADMITTED] = students_df.loc[
-        :, StudentMongoDbKey.NEW_ADMITTED
-    ].replace(STUDENT_NOUVEAU_COLUMN_MAPPING)
-    return students_df
-
-
 def get_nis_from_collection(collection) -> set:
     return set(
         col[StudentMongoDbKey.NI]
@@ -128,7 +121,6 @@ def update_list(configuration: DotEnvConfiguration, csv_filename: str) -> int:
     rename_student_list_to_mongodb_schema(students_df)
 
     filtered_students_df = filter_students_by_program(students_df)
-    filtered_students_df = map_nouveau_column(filtered_students_df)
     existing_nis = get_nis_from_collection(student_collection)
     students_to_insert = get_students_to_insert(filtered_students_df, existing_nis)
 
