@@ -105,7 +105,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             add_student_request.ni,
             add_student_request.firstname,
             add_student_request.lastname,
-            add_student_request.program_code
+            add_student_request.program_code,
         )
 
         if self.__does_student_exists(student.ni) or self.__does_student_registered(
