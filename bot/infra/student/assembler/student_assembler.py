@@ -3,7 +3,6 @@ from typing import Dict
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.firstname import Firstname
 from bot.domain.student.attribut.lastname import Lastname
-from bot.domain.student.attribut.new_admitted import NewAdmitted
 from bot.domain.student.attribut.ni import NI
 from bot.domain.student.attribut.program_code import ProgramCode
 from bot.domain.student.student import Student
@@ -18,7 +17,6 @@ class StudentAssembler:
             firstname=Firstname(student_json[StudentMongoDbKey.FIRSTNAME]),
             lastname=Lastname(student_json[StudentMongoDbKey.LASTNAME]),
             program_code=ProgramCode(student_json[StudentMongoDbKey.PROGRAM_CODE]),
-            new_admitted=NewAdmitted(student_json[StudentMongoDbKey.NEW_ADMITTED]),
             discord_user_id=DiscordUserId(
                 student_json[StudentMongoDbKey.DISCORD_USER_ID]
             ),
@@ -30,7 +28,6 @@ class StudentAssembler:
             firstname=Firstname(entry[StudentMongoDbKey.FIRSTNAME]),
             lastname=Lastname(entry[StudentMongoDbKey.LASTNAME]),
             program_code=ProgramCode(entry[StudentMongoDbKey.PROGRAM_CODE]),
-            new_admitted=NewAdmitted(entry[StudentMongoDbKey.NEW_ADMITTED]),
             discord_user_id=DiscordUserId(entry[StudentMongoDbKey.DISCORD_USER_ID]),
         )
 
@@ -40,6 +37,5 @@ class StudentAssembler:
             StudentMongoDbKey.FIRSTNAME: student.firstname.value,
             StudentMongoDbKey.LASTNAME: student.lastname.value,
             StudentMongoDbKey.PROGRAM_CODE: student.program_code.value,
-            StudentMongoDbKey.NEW_ADMITTED: student.new_admitted.value,
             StudentMongoDbKey.DISCORD_USER_ID: student.discord_user_id.value,
         }
