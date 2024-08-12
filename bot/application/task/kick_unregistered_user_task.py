@@ -19,10 +19,18 @@ class KickUnregisteredUserTask(Task):
         "nouveau et de vous identifier."
     )
 
+    FIRST_OF_AUGUST = (8, 1)
+    FIFTEENTH_OF_SEPTEMBER = (9, 15)
+
     def __init__(self, discord_client: DiscordClient, schedule_method: Callable):
         super().__init__(schedule_method)
         self.__discord_client: DiscordClient = discord_client
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
+
+    def __is_in_begging_of_school(self) -> bool:
+        current_date = datetime.now()
+        current_month_day = current_date.month, current_date.day
+        return self.FIRST_OF_AUGUST <= current_month_day <= self.FIFTEENTH_OF_SEPTEMBER
 
     def __has_no_role(self, member: Member) -> bool:
         return len(member.roles) == 1
@@ -35,6 +43,14 @@ class KickUnregisteredUserTask(Task):
 
     async def do(self):
         self.__logger.info("Début de la tâche.", method="do")
+
+        if self.__is_in_begging_of_school():
+            self.__logger.info(
+                "La tâche d'expulsion ne s'exécutera pas car nous sommes dans la période de la rentrée scolaire.",
+                method="do",
+            )
+            self.__logger.info("Fin de la tâche.", method="do")
+            return
 
         no_role_members: List[Member] = list(
             filter(self.__has_no_role, self.__discord_client.server.members)
