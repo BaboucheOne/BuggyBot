@@ -27,7 +27,7 @@ class KickUnregisteredUserTask(Task):
         self.__discord_client: DiscordClient = discord_client
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
-    def __is_in_begging_of_school(self) -> bool:
+    def __is_in_school_start_period(self) -> bool:
         current_date = datetime.now()
         current_month_day = current_date.month, current_date.day
         return self.FIRST_OF_AUGUST <= current_month_day <= self.FIFTEENTH_OF_SEPTEMBER
