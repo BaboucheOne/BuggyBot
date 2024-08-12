@@ -28,9 +28,9 @@ class KickUnregisteredUserTask(Task):
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
     def __is_in_school_start_period(self) -> bool:
-        current_date = datetime.now()
-        current_month_day = current_date.month, current_date.day
-        return self.FIRST_OF_AUGUST <= current_month_day <= self.FIFTEENTH_OF_SEPTEMBER
+        today_date = datetime.now()
+        today_month_day = today_date.month, today_date.day
+        return self.FIRST_OF_AUGUST <= today_month_day <= self.FIFTEENTH_OF_SEPTEMBER
 
     def __has_no_role(self, member: Member) -> bool:
         return len(member.roles) == 1
