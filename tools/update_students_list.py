@@ -26,7 +26,6 @@ STUDENTS_LIST_COLUMNS_TO_KEEP: List[str] = [
     StudentCsvKey.PROGRAM_CODE,
     StudentCsvKey.LASTNAME,
     StudentCsvKey.FIRSTNAME,
-    StudentCsvKey.NEW,
 ]
 
 STUDENT_ALLOWED_PROGRAM = [
@@ -42,7 +41,6 @@ STUDENTS_LIST_RENAMING_MAPPING = {
     StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
     StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
     StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-    StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
 }
 
 
@@ -77,7 +75,6 @@ def rename_student_list_to_mongodb_schema(students_df: pd.DataFrame):
             StudentCsvKey.FIRSTNAME: StudentMongoDbKey.FIRSTNAME,
             StudentCsvKey.LASTNAME: StudentMongoDbKey.LASTNAME,
             StudentCsvKey.PROGRAM_CODE: StudentMongoDbKey.PROGRAM_CODE,
-            StudentCsvKey.NEW: StudentMongoDbKey.NEW_ADMITTED,
         },
         inplace=True,
     )
