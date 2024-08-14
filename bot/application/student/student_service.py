@@ -34,7 +34,7 @@ from bot.application.student.validators.program_code_validator import (
 )
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
-from bot.domain.discord_client.discord_client import DiscordClient
+from bot.domain.utility import Utility
 from bot.resource.cog.registration.request.add_student_request import AddStudentRequest
 from bot.resource.cog.registration.request.force_register_student_request import (
     ForceRegisterStudentRequest,
@@ -62,9 +62,6 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
     def __init__(self, student_repository: StudentRepository):
         super().__init__()
 
-        self.__discord_client: DiscordClient = ServiceLocator.get_dependency(
-            DiscordClient
-        )
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
         self.__student_repository = student_repository
 
@@ -75,9 +72,6 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
         self.__ni_factory = NIFactory()
         self.__student_factory = StudentFactory(self.__ni_factory)
-
-    def __does_user_exist_on_server(self, discord_id: int) -> bool:
-        return self.__discord_client.get_user(discord_id) is not None
 
     def __does_student_registered(self, ni: NI) -> bool:
         try:
@@ -172,7 +166,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
                 force_register_student_request.discord_id
             )
 
-        if not self.__does_user_exist_on_server(
+        if not Utility.does_user_exist_on_server(
             force_register_student_request.discord_id
         ):
             raise UserNotInServerException(force_register_student_request.discord_id)

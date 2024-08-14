@@ -69,6 +69,9 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__ni_sanitizer
         )
 
+    def __does_user_exist_on_server(self, discord_id: int) -> bool:
+        return self.__discord_client.get_user(discord_id) is not None
+
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
         await member.create_dm()
@@ -167,7 +170,16 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             force_register_student_request
         )
 
-        self.__logger.info("La commande a été exécutée avec succès.", method="register")
+        await message.channel.send(ReplyMessage.SUCCESSFUL_FORCE_REGISTRATION)
+
+        member_to_notify = self.__discord_client.get_user(
+            force_register_student_request.discord_id
+        )
+        await member_to_notify.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
+
+        self.__logger.info(
+            "La commande a été exécutée avec succès.", method="force_register"
+        )
 
     @commands.command(
         name="unregister",

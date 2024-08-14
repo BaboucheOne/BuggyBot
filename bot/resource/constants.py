@@ -22,7 +22,11 @@ class ReplyMessage:
     )
 
     SUCCESSFUL_REGISTRATION: str = (
-        "Vous êtes maintenant enregistré(e)! Votre rôle ainsi que votre nom sont désormais enregistrés."
+        "Vous êtes maintenant enregistré(e) ! Vous avez pleinement accès au serveur Discord."
+    )
+
+    SUCCESSFUL_FORCE_REGISTRATION: str = (
+        "L'étudiant a bien été enregistré. Son rôle ainsi que son nom sont désormais affichés."
     )
 
     SUCCESSFUL_STUDENT_ADDED: str = (
