@@ -14,6 +14,8 @@ __pycache__
 .env.dev
 .env.prod
 
+./log
+
 README.md
 
 *.csv

@@ -9,6 +9,8 @@ RUN pip3 install -r requirements.txt
 
 COPY . /buggybot
 
+RUN mkdir -p /buggybot/log
+
 EXPOSE 27017
 
 CMD ["python3", "main.py", "--env", "docker"]
