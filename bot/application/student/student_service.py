@@ -54,6 +54,9 @@ from bot.domain.student.student_repository import StudentRepository
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
+from bot.resource.cog.registration.request.unregister_student_request import (
+    UnregisterStudentRequest,
+)
 from bot.resource.exception.user_not_in_server_exception import UserNotInServerException
 
 
@@ -185,12 +188,39 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.register_student(student_ni, discord_user_id)
         await self.notify_on_student_registered(student_ni)
 
+    async def unregister_student(
+        self, unregister_student_request: UnregisterStudentRequest
+    ):
+        self.__logger.info(
+            f"Réception de la requête {repr(unregister_student_request)}",
+            method="unregister_student",
+        )
+
+        if not Utility.does_user_exist_on_server(unregister_student_request.discord_id):
+            raise UserNotInServerException(unregister_student_request.discord_id)
+
+        discord_user_id = DiscordUserId(unregister_student_request.discord_id)
+
+        if not self.__does_discord_user_id_already_registered_an_account(
+            discord_user_id
+        ):
+            raise StudentNotFoundException()
+
+        student = self.__student_repository.find_student_by_discord_user_id(
+            discord_user_id
+        )
+
+        self.__student_repository.unregister_student(
+            student.ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
+        )
+        await self.notify_on_student_unregistered(student.discord_user_id)
+
     async def force_unregister_student(
         self, force_unregister_student_request: ForceUnregisterStudentRequest
     ):
         self.__logger.info(
             f"Réception de la requête {repr(force_unregister_student_request)}",
-            method="unregister_student",
+            method="force_unregister_student",
         )
 
         if not self.__ni_validator.validate(force_unregister_student_request.ni):

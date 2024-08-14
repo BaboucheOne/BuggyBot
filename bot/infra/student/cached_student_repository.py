@@ -62,7 +62,9 @@ class CachedStudentRepository(StudentRepository, CacheRepository):
 
     def find_student_by_ni(self, ni: NI) -> Student:
         try:
-            return self._find_cache_item(lambda cache_item: cache_item.data.ni == ni)
+            return self._find_cache_item(
+                lambda cache_item: cache_item.data.discord_id == ni
+            )
         except CacheFindOperationNotFoundException:
             student = self.__repository.find_student_by_ni(ni)
             self._set_cached_item(ni, student)

@@ -15,6 +15,9 @@ from bot.resource.chain_of_responsibility.responsibility_builder import (
 from bot.resource.cog.registration.factory.force_register_student_request_factory import (
     ForceRegisterStudentRequestFactory,
 )
+from bot.resource.cog.registration.request.unregister_student_request import (
+    UnregisterStudentRequest,
+)
 from bot.resource.constants import ReplyMessage
 from bot.resource.decorator.prohibit_self_message import prohibit_self_message
 from bot.resource.decorator.role_check import role_check
@@ -65,8 +68,8 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             ForceRegisterStudentRequestFactory(self.__ni_sanitizer)
         )
 
-        self.__force_unregister_student_request_factory = ForceUnregisterStudentRequestFactory(
-            self.__ni_sanitizer
+        self.__force_unregister_student_request_factory = (
+            ForceUnregisterStudentRequestFactory(self.__ni_sanitizer)
         )
 
     def __does_user_exist_on_server(self, discord_id: int) -> bool:
@@ -94,8 +97,8 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.command(
         name="add_student",
-        help="Arguments nécessaires dans l'ordre: !add_student ni, prénom, nom, code_programme.",
-        brief="Ajouter un utilisateur à la liste des étudiants. Admin SEULEMENT",
+        help="Arguments nécessaires: !add_student ni, prénom, nom, code_programme.",
+        brief="Ajouter un utilisateur à la liste étudiante.",
     )
     @commands.dm_only()
     @prohibit_self_message()
@@ -121,7 +124,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.command(
         name="register",
-        help="Votre NI est requis. Exemple : !register 123456789",
+        help="Argument nécessaire: !register VOTRE_NI\nExemple: !register 123456789",
         brief="Enregistrez-vous pour accéder au Discord.",
     )
     @commands.dm_only()
@@ -147,8 +150,8 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
     @commands.command(
         name="force_register",
-        help="Votre NI est requis. Exemple : !force_register 123456789, 3545356457645",
-        brief="Forcer l'enregistrez d'un etudiant pour accéder au Discord.",
+        help="Arguments nécessaires: !force_register NI_ETUDIANT, DISCORD_ID_ETUDIANT",
+        brief="Forcer l'enregistrez d'un etudiant pour accéder au discord.",
     )
     @commands.dm_only()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
@@ -182,9 +185,30 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         )
 
     @commands.command(
+        name="unregister",
+        help="Il suffit de taper !unregister.",
+        brief="Annulez votre enregistrement.",
+    )
+    @commands.dm_only()
+    @prohibit_self_message()
+    async def unregister(self, context: Context):
+        self.__logger.info(
+            f"Exécution de la commande par {context.message.author}",
+            method="unregister",
+        )
+
+        unregister_student_request = UnregisterStudentRequest(context.message.author.id)
+
+        await self.__student_service.unregister_student(unregister_student_request)
+
+        self.__logger.info(
+            "La commande a été exécutée avec succès.", method="unregister"
+        )
+
+    @commands.command(
         name="force_unregister",
-        help="Arguments nécessaires dans l'ordre: !unregister ni",
-        brief="Supprimer un utilisateur de la liste des étudiants. Admin SEULEMENT",
+        help="Argument nécessaire: !unregister ni",
+        brief="Forcer un utilisateur à se désinscrire.",
     )
     @commands.dm_only()
     @prohibit_self_message()
@@ -192,19 +216,21 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
     async def force_unregister(self, context: Context):
         self.__logger.info(
             f"Exécution de la commande par {context.message.author}",
-            method="unregister",
+            method="force_unregister",
         )
 
         message = context.message
 
         content = Utility.get_content_without_command(message.content)
-        force_unregister_student_request = self.__force_unregister_student_request_factory.create(
-            content
+        force_unregister_student_request = (
+            self.__force_unregister_student_request_factory.create(content)
         )
 
-        await self.__student_service.force_unregister_student(force_unregister_student_request)
+        await self.__student_service.force_unregister_student(
+            force_unregister_student_request
+        )
         await message.channel.send(ReplyMessage.SUCCESSFUL_FORCE_UNREGISTER)
 
         self.__logger.info(
-            "La commande a été exécutée avec succès.", method="unregister"
+            "La commande a été exécutée avec succès.", method="force_unregister"
         )
