@@ -44,3 +44,5 @@ class ReplyMessage:
     )
 
     INVALID_FORMAT: str = "Un des arguments n'est pas dans le bon format."
+
+    USER_NOT_IN_SERVER: str = "Action impossible, vous n'êtes pas sur le serveur."
