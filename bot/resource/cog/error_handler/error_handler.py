@@ -1,5 +1,10 @@
 from discord.ext import commands
-from discord.ext.commands import Context, CommandInvokeError
+from discord.ext.commands import (
+    Context,
+    CommandInvokeError,
+    CommandNotFound,
+    PrivateMessageOnly,
+)
 
 from bot.config.exception.mapper_not_found_exception import (
     MapperNotFoundException,
@@ -18,8 +23,17 @@ class ErrorHandlerCog(commands.Cog, name="ErrorHandler"):
         self.__bot = ServiceLocator.get_dependency(DiscordClient)
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
+    def __is_error_should_be_handled(self, exception: Exception) -> bool:
+        return not isinstance(exception, CommandNotFound) or isinstance(
+            exception, PrivateMessageOnly
+        )
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx: Context, error: CommandInvokeError):
+
+        if not self.__is_error_should_be_handled(error.original):
+            return
+
         try:
             response: str = ExceptionMapper.get_response(type(error.original))
 
