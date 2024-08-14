@@ -84,7 +84,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         )
         return len(students) >= 1
 
-    def add_student(self, add_student_request: AddStudentRequest):
+    async def add_student(self, add_student_request: AddStudentRequest):
         self.__logger.info(
             f"Réception de la requête {repr(add_student_request)}", method="add_student"
         )
@@ -115,7 +115,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
         self.__student_repository.add_student(student)
 
-    def register_student(self, register_student_request: RegisterStudentRequest):
+    async def register_student(self, register_student_request: RegisterStudentRequest):
         self.__logger.info(
             f"Réception de la requête {repr(register_student_request)}",
             method="register_student",
@@ -136,9 +136,11 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             raise StudentAlreadyRegisteredException(ni=student_ni)
 
         self.__student_repository.register_student(student_ni, discord_user_id)
-        self.notify_on_student_registered(student_ni)
+        await self.notify_on_student_registered(student_ni)
 
-    def unregister_student(self, unregister_student_request: UnregisterStudentRequest):
+    async def unregister_student(
+        self, unregister_student_request: UnregisterStudentRequest
+    ):
         self.__logger.info(
             f"Réception de la requête {repr(unregister_student_request)}",
             method="unregister_student",
@@ -154,9 +156,9 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.unregister_student(
             student_ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
         )
-        self.notify_on_student_unregistered(student.discord_user_id)
+        await self.notify_on_student_unregistered(student.discord_user_id)
 
-    def remove_member(self, member: Member):
+    async def remove_member(self, member: Member):
         student: Student = self.__student_repository.find_student_by_discord_user_id(
             DiscordUserId(member.id)
         )
@@ -165,4 +167,4 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             student.ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
         )
 
-        self.notify_on_member_removed(member)
+        await self.notify_on_member_removed(member)
