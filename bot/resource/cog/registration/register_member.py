@@ -148,6 +148,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         brief="Forcer l'enregistrez d'un etudiant pour accéder au Discord.",
     )
     @commands.dm_only()
+    @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
     @prohibit_self_message()
     async def force_register(self, context: Context):
         self.__logger.info(
