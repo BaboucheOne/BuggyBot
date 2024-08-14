@@ -29,13 +29,16 @@ from bot.config.service_locator import ServiceLocator
 from bot.domain.constants import DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.utility import Utility
+from bot.resource.decorator.user_in_server import user_in_server
 
 
 class RegisterMemberCog(commands.Cog, name="Registration"):
 
     def __init__(self):
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
-        self.__bot: DiscordClient = ServiceLocator.get_dependency(DiscordClient)
+        self.__discord_client: DiscordClient = ServiceLocator.get_dependency(
+            DiscordClient
+        )
         self.__student_service: StudentService = ServiceLocator.get_dependency(
             StudentService
         )
@@ -112,6 +115,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         brief="Enregistrez-vous pour accéder au Discord.",
     )
     @commands.dm_only()
+    @user_in_server()
     @prohibit_self_message()
     async def register(self, context: Context):
         self.__logger.info(

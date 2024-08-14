@@ -39,6 +39,7 @@ from bot.domain.student.student_repository import StudentRepository
 
 from bot.resource.constants import ReplyMessage
 from bot.resource.exception.missing_arguments_exception import MissingArgumentsException
+from bot.resource.exception.user_not_in_server_exception import UserNotInServerException
 
 
 class ApplicationContext(ABC):
@@ -68,6 +69,7 @@ class ApplicationContext(ABC):
                 (StudentNotFoundException, ReplyMessage.STUDENT_NOT_FOUND),
                 (CannotRegisterStudentException, ReplyMessage.UNABLE_TO_REGISTER),
                 (CannotAddStudentException, ReplyMessage.UNABLE_TO_ADD_STUDENT),
+                (UserNotInServerException, ReplyMessage.USER_NOT_IN_SERVER),
             ]
         )
 
