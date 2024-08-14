@@ -190,7 +190,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         brief="Annulez votre enregistrement.",
     )
     @commands.dm_only()
-    @user_in_server
+    @user_in_server()
     @prohibit_self_message()
     async def unregister(self, context: Context):
         self.__logger.info(
