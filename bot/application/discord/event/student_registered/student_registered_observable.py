@@ -17,10 +17,10 @@ class StudentRegisteredObservable:
     def unregister_all_from_on_student_registered(self):
         self.__observers.clear()
 
-    def notify_on_student_registered(self, ni: NI):
+    async def notify_on_student_registered(self, ni: NI):
         for observer in self.__observers:
-            observer.on_student_registered(ni)
+            await observer.on_student_registered(ni)
 
-    def notify_on_student_unregistered(self, discord_user_id: DiscordUserId):
+    async def notify_on_student_unregistered(self, discord_user_id: DiscordUserId):
         for observer in self.__observers:
-            observer.on_student_unregistered(discord_user_id)
+            await observer.on_student_unregistered(discord_user_id)

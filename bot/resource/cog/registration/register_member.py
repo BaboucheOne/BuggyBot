@@ -74,7 +74,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             f"Exécution de la commande par {member.name}.",
             method="on_member_remove",
         )
-        self.__student_service.remove_member(member)
+        await self.__student_service.remove_member(member)
         self.__logger.info(
             "La commande a été exécutée avec succès.", method="on_member_remove"
         )
@@ -98,7 +98,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         content = Utility.get_content_without_command(message.content)
         add_student_request = self.__add_student_request_factory.create(content)
 
-        self.__student_service.add_student(add_student_request)
+        await self.__student_service.add_student(add_student_request)
 
         await message.channel.send(ReplyMessage.SUCCESSFUL_STUDENT_ADDED)
 
@@ -125,7 +125,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             content, message.author.id
         )
 
-        self.__student_service.register_student(register_student_request)
+        await self.__student_service.register_student(register_student_request)
 
         await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
 
@@ -152,7 +152,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             content
         )
 
-        self.__student_service.unregister_student(unregister_student_request)
+        await self.__student_service.unregister_student(unregister_student_request)
         await message.channel.send(ReplyMessage.SUCCESSFUL_UNREGISTER)
 
         self.__logger.info(

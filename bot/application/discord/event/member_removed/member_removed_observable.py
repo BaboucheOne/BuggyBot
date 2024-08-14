@@ -17,6 +17,6 @@ class MemberRemovedObservable:
     def unregister_all_from_on_member_registered(self):
         self.__observers.clear()
 
-    def notify_on_member_removed(self, member: Member):
+    async def notify_on_member_removed(self, member: Member):
         for observer in self.__observers:
-            observer.on_member_removed(member)
+            await observer.on_member_removed(member)

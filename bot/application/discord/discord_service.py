@@ -1,4 +1,3 @@
-import asyncio
 from typing import List
 
 import discord
@@ -71,31 +70,31 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
 
         return student_name
 
-    def on_student_registered(self, ni: NI):
+    async def on_student_registered(self, ni: NI):
         student = self.__student_repository.find_student_by_ni(ni)
         member = self.__discord_client.server.get_member(student.discord_user_id.value)
         role_name = self.__get_role_name(student.program_code.value)
 
         role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
-        asyncio.ensure_future(self.__add_member_roles(member, role))
+        await self.__add_member_roles(member, role)
 
         if member != self.__discord_client.server.owner:
             student_name = self.__get_name(
                 student.firstname.value, student.lastname.value
             )
-            asyncio.ensure_future(self.__set_member_nick_name(member, student_name))
+            await self.__set_member_nick_name(member, student_name)
 
-    def on_student_unregistered(self, discord_user_id: DiscordUserId):
+    async def on_student_unregistered(self, discord_user_id: DiscordUserId):
         member = self.__discord_client.server.get_member(discord_user_id.value)
 
         uni_roles = self.__get_member_uni_roles(member)
-        asyncio.ensure_future(self.__remove_member_roles(member, uni_roles))
+        await self.__remove_member_roles(member, uni_roles)
 
-        asyncio.ensure_future(member.send(ReplyMessage.NOTIFY_UNREGISTER))
+        await member.send(ReplyMessage.NOTIFY_UNREGISTER)
 
-    def on_member_removed(self, member: Member):
+    async def on_member_removed(self, member: Member):
         uni_roles = self.__get_member_uni_roles(member)
-        asyncio.ensure_future(self.__remove_member_roles(member, uni_roles))
+        await self.__remove_member_roles(member, uni_roles)
 
     async def __set_member_nick_name(self, member: Member, nickname: str):
         try:
