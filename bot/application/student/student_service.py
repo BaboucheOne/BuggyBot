@@ -8,6 +8,9 @@ from bot.application.discord.event.member_removed.member_removed_observable impo
 from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
+from bot.application.student.exceptions.invalid_discord_id_format_exception import (
+    InvalidDiscordIdFormatException,
+)
 from bot.application.student.exceptions.invalid_name_format_exception import (
     InvalidNameFormatException,
 )
@@ -23,6 +26,7 @@ from bot.application.student.exceptions.student_already_exist import (
 from bot.application.student.exceptions.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
+from bot.application.student.validators.discord_id_validator import DiscordIdValidator
 from bot.application.student.validators.name_validator import NameValidator
 from bot.application.student.validators.ni_validator import NIValidator
 from bot.application.student.validators.program_code_validator import (
@@ -30,7 +34,11 @@ from bot.application.student.validators.program_code_validator import (
 )
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
+from bot.domain.discord_client.discord_client import DiscordClient
 from bot.resource.cog.registration.request.add_student_request import AddStudentRequest
+from bot.resource.cog.registration.request.force_register_student_request import (
+    ForceRegisterStudentRequest,
+)
 from bot.resource.cog.registration.request.register_student_request import (
     RegisterStudentRequest,
 )
@@ -46,6 +54,7 @@ from bot.domain.student.student_repository import StudentRepository
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
+from bot.resource.exception.user_not_in_server_exception import UserNotInServerException
 
 
 class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
@@ -53,15 +62,22 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
     def __init__(self, student_repository: StudentRepository):
         super().__init__()
 
+        self.__discord_client: DiscordClient = ServiceLocator.get_dependency(
+            DiscordClient
+        )
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
         self.__student_repository = student_repository
 
         self.__ni_validator = NIValidator()
         self.__name_validator = NameValidator()
+        self.__discord_id_validator = DiscordIdValidator()
         self.__program_code_validator = ProgramCodeValidator()
 
         self.__ni_factory = NIFactory()
         self.__student_factory = StudentFactory(self.__ni_factory)
+
+    def __does_user_exist_on_server(self, discord_id: int) -> bool:
+        return self.__discord_client.get_user(discord_id) is not None
 
     def __does_student_registered(self, ni: NI) -> bool:
         try:
@@ -126,6 +142,43 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
         student_ni = self.__ni_factory.create(register_student_request.ni)
         discord_user_id = DiscordUserId(register_student_request.discord_id)
+
+        if not self.__does_student_exists(student_ni):
+            raise StudentNotFoundException()
+
+        if self.__does_student_registered(
+            student_ni
+        ) or self.__does_discord_user_id_already_registered_an_account(discord_user_id):
+            raise StudentAlreadyRegisteredException(ni=student_ni)
+
+        self.__student_repository.register_student(student_ni, discord_user_id)
+        await self.notify_on_student_registered(student_ni)
+
+    async def force_register_student(
+        self, force_register_student_request: ForceRegisterStudentRequest
+    ):
+        self.__logger.info(
+            f"Réception de la requête {repr(force_register_student_request)}",
+            method="force_register_student",
+        )
+
+        if not self.__ni_validator.validate(force_register_student_request.ni):
+            raise InvalidNIFormatException(force_register_student_request.ni)
+
+        if not self.__discord_id_validator.validate(
+            force_register_student_request.discord_id
+        ):
+            raise InvalidDiscordIdFormatException(
+                force_register_student_request.discord_id
+            )
+
+        if not self.__does_user_exist_on_server(
+            force_register_student_request.discord_id
+        ):
+            raise UserNotInServerException(force_register_student_request.discord_id)
+
+        student_ni = self.__ni_factory.create(force_register_student_request.ni)
+        discord_user_id = DiscordUserId(force_register_student_request.discord_id)
 
         if not self.__does_student_exists(student_ni):
             raise StudentNotFoundException()

@@ -12,6 +12,9 @@ from bot.resource.chain_of_responsibility.handlers.strip_handler import StripHan
 from bot.resource.chain_of_responsibility.responsibility_builder import (
     ResponsibilityBuilder,
 )
+from bot.resource.cog.registration.factory.force_register_student_request_factory import (
+    ForceRegisterStudentRequestFactory,
+)
 from bot.resource.constants import ReplyMessage
 from bot.resource.decorator.prohibit_self_message import prohibit_self_message
 from bot.resource.decorator.role_check import role_check
@@ -56,6 +59,10 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
         self.__register_student_request_factory = RegisterStudentRequestFactory(
             self.__ni_sanitizer
+        )
+
+        self.__force_register_student_request_factory = (
+            ForceRegisterStudentRequestFactory(self.__ni_sanitizer)
         )
 
         self.__unregister_student_request_factory = UnregisterStudentRequestFactory(
@@ -132,6 +139,32 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         await self.__student_service.register_student(register_student_request)
 
         await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
+
+        self.__logger.info("La commande a été exécutée avec succès.", method="register")
+
+    @commands.command(
+        name="force_register",
+        help="Votre NI est requis. Exemple : !force_register 123456789, 3545356457645",
+        brief="Forcer l'enregistrez d'un etudiant pour accéder au Discord.",
+    )
+    @commands.dm_only()
+    @prohibit_self_message()
+    async def force_register(self, context: Context):
+        self.__logger.info(
+            f"Exécution de la commande par {context.message.author}",
+            method="force_register",
+        )
+
+        message = context.message
+
+        content = Utility.get_content_without_command(message.content)
+        force_register_student_request = (
+            self.__force_register_student_request_factory.create(content)
+        )
+
+        await self.__student_service.force_register_student(
+            force_register_student_request
+        )
 
         self.__logger.info("La commande a été exécutée avec succès.", method="register")
 
