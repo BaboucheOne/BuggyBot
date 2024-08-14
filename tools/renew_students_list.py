@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import os
 import sys
 from typing import List
 
@@ -110,10 +111,32 @@ def get_member_uni_roles(member: Member) -> List[Role]:
     return list(filter(lambda role: role.name in role_names, member.roles))
 
 
-async def remove_roles_from_students(discord_client: DiscordClient):
+async def reset_students_nickname(discord_client: DiscordClient):
+    logger.info(
+        "Les surnoms de tous les étudiants vont maintenant être réinitialisés.",
+        method="reset_students_nickname",
+    )
+
+    for member in discord_client.server.members:
+        try:
+            if not member.bot:
+                await member.edit(nick=None)
+        except discord.Forbidden as e:
+            logger.warning(
+                f"Impossible de réinitialiser le surnom de {member.name}, permission refusée.",
+                method="reset_students_nickname",
+                exception=e,
+            )
+
+    logger.info(
+        "Tous les surnoms ont bien été réinitialisés.", method="reset_students_nickname"
+    )
+
+
+async def remove_students_roles(discord_client: DiscordClient):
     logger.info(
         "Les rôles de tous les étudiants vont maintenant être supprimés.",
-        method="remove_roles_from_students",
+        method="remove_students_roles",
     )
 
     for member in discord_client.server.members:
@@ -124,12 +147,12 @@ async def remove_roles_from_students(discord_client: DiscordClient):
         except discord.Forbidden as e:
             logger.warning(
                 f"Impossible d'enlever les rôles de {member.name}, permission refusée.",
-                method="remove_roles_from_students",
+                method="remove_students_roles",
                 exception=e,
             )
 
     logger.info(
-        "Tous les rôles ont bien été supprimés.", method="remove_roles_from_students"
+        "Tous les rôles ont bien été supprimés.", method="remove_students_roles"
     )
 
 
@@ -187,7 +210,7 @@ async def main(arguments: List[str]):
     )
 
     while not discord_client.is_ready():
-        logger.info("Waiting for discord client to start", method="main")
+        logger.info("En attente du démarrage du client Discord.", method="main")
         await asyncio.sleep(2)
 
     client = connect_to_mongo_db(configuration.mongodb_connection_string)
@@ -195,9 +218,16 @@ async def main(arguments: List[str]):
     student_collection = database[configuration.student_collection_name]
 
     try:
+        if not os.path.exists(arguments.csv_filename):
+            logger.fatal(
+                f"Le fichier {arguments.csv_filename} n'existe pas. Impossible d'exécuter la commande.", method="main"
+            )
+            exit(-1)
+
         warn_user()
 
-        await remove_roles_from_students(discord_client)
+        await remove_students_roles(discord_client)
+        await reset_students_nickname(discord_client)
         flush_student_collection(student_collection)
         populate_student_collection(configuration, arguments.csv_filename)
         await notify_students_to_register(discord_client)
