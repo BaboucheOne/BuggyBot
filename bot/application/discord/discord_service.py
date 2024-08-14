@@ -25,6 +25,7 @@ from bot.domain.student.student_repository import StudentRepository
 class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
 
     MAX_NICKNAME_LENGTH = 32
+    DEFAULT_NICKNAME = None
 
     def __init__(
         self, discord_client: DiscordClient, student_repository: StudentRepository
@@ -82,13 +83,17 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
             student_name = self.__get_name(
                 student.firstname.value, student.lastname.value
             )
-            await self.__set_member_nick_name(member, student_name)
+            await self.__set_member_nickname(member, student_name)
 
     async def on_student_unregistered(self, discord_user_id: DiscordUserId):
         member = self.__discord_client.server.get_member(discord_user_id.value)
 
-        uni_roles = self.__get_member_uni_roles(member)
-        await self.__remove_member_roles(member, uni_roles)
+        if member:
+            uni_roles = self.__get_member_uni_roles(member)
+            await self.__remove_member_roles(member, uni_roles)
+            await self.__set_member_nickname(member, self.DEFAULT_NICKNAME)
+        else:
+            member = self.__discord_client.get_user(discord_user_id.value)
 
         await member.send(ReplyMessage.NOTIFY_UNREGISTER)
 
@@ -96,7 +101,7 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
         uni_roles = self.__get_member_uni_roles(member)
         await self.__remove_member_roles(member, uni_roles)
 
-    async def __set_member_nick_name(self, member: Member, nickname: str):
+    async def __set_member_nickname(self, member: Member, nickname: str or None):
         try:
             await member.edit(nick=nickname)
         except (discord.Forbidden, discord.HTTPException) as e:
