@@ -8,5 +8,5 @@ services:
       - "27017"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./logs:buggybot/log
+      - ./logs:/buggybot/log
     restart: always
