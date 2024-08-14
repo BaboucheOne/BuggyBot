@@ -33,7 +33,7 @@ class ReplyMessage:
         "Étudiant ajouté ! Il peut maintenant s'inscrire lui-même en m'envoyant un message privé."
     )
 
-    SUCCESSFUL_UNREGISTER: str = "L'utilisateur a été supprimé avec succès."
+    SUCCESSFUL_FORCE_UNREGISTER: str = "L'utilisateur a été supprimé avec succès."
 
     STUDENT_ALREADY_EXISTS: str = "Cet étudiant existe déjà."
 
@@ -44,7 +44,7 @@ class ReplyMessage:
     MISSING_ARGUMENTS_IN_COMMAND: str = "Arguments manquants dans la commande."
 
     NOTIFY_UNREGISTER: str = (
-        "Vous avez été supprimé du serveur ASETIN. Contactez un administrateur pour plus d'informations."
+        "Vous avez été désinscrit(e) du serveur de l'ASETIN. Contactez un administrateur pour plus d'informations si vous n'avez pas effectué cette commande."
     )
 
     INVALID_FORMAT: str = "Un des arguments n'est pas dans le bon format."

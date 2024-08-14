@@ -42,8 +42,8 @@ from bot.resource.cog.registration.request.force_register_student_request import
 from bot.resource.cog.registration.request.register_student_request import (
     RegisterStudentRequest,
 )
-from bot.resource.cog.registration.request.unregister_student_request import (
-    UnregisterStudentRequest,
+from bot.resource.cog.registration.request.force_unregister_student_request import (
+    ForceUnregisterStudentRequest,
 )
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
@@ -53,6 +53,9 @@ from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
 from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
+)
+from bot.resource.cog.registration.request.unregister_student_request import (
+    UnregisterStudentRequest,
 )
 from bot.resource.exception.user_not_in_server_exception import UserNotInServerException
 
@@ -193,10 +196,37 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             method="unregister_student",
         )
 
-        if not self.__ni_validator.validate(unregister_student_request.ni):
-            raise InvalidNIFormatException(unregister_student_request.ni)
+        if not Utility.does_user_exist_on_server(unregister_student_request.discord_id):
+            raise UserNotInServerException(unregister_student_request.discord_id)
 
-        student_ni = self.__ni_factory.create(unregister_student_request.ni)
+        discord_user_id = DiscordUserId(unregister_student_request.discord_id)
+
+        if not self.__does_discord_user_id_already_registered_an_account(
+            discord_user_id
+        ):
+            raise StudentNotFoundException()
+
+        student = self.__student_repository.find_student_by_discord_user_id(
+            discord_user_id
+        )
+
+        self.__student_repository.unregister_student(
+            student.ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
+        )
+        await self.notify_on_student_unregistered(student.discord_user_id)
+
+    async def force_unregister_student(
+        self, force_unregister_student_request: ForceUnregisterStudentRequest
+    ):
+        self.__logger.info(
+            f"Réception de la requête {repr(force_unregister_student_request)}",
+            method="force_unregister_student",
+        )
+
+        if not self.__ni_validator.validate(force_unregister_student_request.ni):
+            raise InvalidNIFormatException(force_unregister_student_request.ni)
+
+        student_ni = self.__ni_factory.create(force_unregister_student_request.ni)
 
         student = self.__student_repository.find_student_by_ni(student_ni)
 
