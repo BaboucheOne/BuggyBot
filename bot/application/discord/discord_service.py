@@ -57,11 +57,16 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
         }
         return list(filter(lambda role: role.name in role_names, member.roles))
 
-    def __get_name(self, student_firstname: str, student_lastname: str) -> str:
+    def __get_name(self, student_firstname: str, student_lastname: str, member: Member) -> str:
         student_name = f"{student_firstname} {student_lastname}"
 
         if len(student_name) > self.MAX_NICKNAME_LENGTH:
             student_name = f"{student_firstname} {student_lastname[0]}."
+            member.dm_channel.send(
+                f"Votre nom est trop long pour que Discord puisse l'afficher en entier."
+                f" Par conséquent, il a été remplacé par {student_name}."
+                f" Si vous souhaitez changer votre nom, veuillez contacter un administrateur du serveur."
+            )
             self.__logger.info(
                 f"L'étudiant {student_firstname} {student_lastname} "
                 f"a un nom plus long que {self.MAX_NICKNAME_LENGTH} caractères. "
@@ -81,7 +86,7 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
 
         if member != self.__discord_client.server.owner:
             student_name = self.__get_name(
-                student.firstname.value, student.lastname.value
+                student.firstname.value, student.lastname.value, member
             )
             await self.__set_member_nickname(member, student_name)
 
