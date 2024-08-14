@@ -42,8 +42,8 @@ from bot.resource.cog.registration.request.force_register_student_request import
 from bot.resource.cog.registration.request.register_student_request import (
     RegisterStudentRequest,
 )
-from bot.resource.cog.registration.request.unregister_student_request import (
-    UnregisterStudentRequest,
+from bot.resource.cog.registration.request.force_unregister_student_request import (
+    ForceUnregisterStudentRequest,
 )
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
@@ -185,18 +185,18 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.register_student(student_ni, discord_user_id)
         await self.notify_on_student_registered(student_ni)
 
-    async def unregister_student(
-        self, unregister_student_request: UnregisterStudentRequest
+    async def force_unregister_student(
+        self, force_unregister_student_request: ForceUnregisterStudentRequest
     ):
         self.__logger.info(
-            f"Réception de la requête {repr(unregister_student_request)}",
+            f"Réception de la requête {repr(force_unregister_student_request)}",
             method="unregister_student",
         )
 
-        if not self.__ni_validator.validate(unregister_student_request.ni):
-            raise InvalidNIFormatException(unregister_student_request.ni)
+        if not self.__ni_validator.validate(force_unregister_student_request.ni):
+            raise InvalidNIFormatException(force_unregister_student_request.ni)
 
-        student_ni = self.__ni_factory.create(unregister_student_request.ni)
+        student_ni = self.__ni_factory.create(force_unregister_student_request.ni)
 
         student = self.__student_repository.find_student_by_ni(student_ni)
 

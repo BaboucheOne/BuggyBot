@@ -24,8 +24,8 @@ from bot.resource.cog.registration.factory.add_student_request_factory import (
 from bot.resource.cog.registration.factory.register_student_request_factory import (
     RegisterStudentRequestFactory,
 )
-from bot.resource.cog.registration.factory.unregister_student_request_factory import (
-    UnregisterStudentRequestFactory,
+from bot.resource.cog.registration.factory.force_unregister_student_request_factory import (
+    ForceUnregisterStudentRequestFactory,
 )
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
@@ -65,7 +65,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             ForceRegisterStudentRequestFactory(self.__ni_sanitizer)
         )
 
-        self.__unregister_student_request_factory = UnregisterStudentRequestFactory(
+        self.__force_unregister_student_request_factory = ForceUnregisterStudentRequestFactory(
             self.__ni_sanitizer
         )
 
@@ -182,14 +182,14 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         )
 
     @commands.command(
-        name="unregister",
+        name="force_unregister",
         help="Arguments nécessaires dans l'ordre: !unregister ni",
         brief="Supprimer un utilisateur de la liste des étudiants. Admin SEULEMENT",
     )
     @commands.dm_only()
     @prohibit_self_message()
     @role_check(DiscordRole.ASETIN, DiscordRole.ADMIN)
-    async def unregister(self, context: Context):
+    async def force_unregister(self, context: Context):
         self.__logger.info(
             f"Exécution de la commande par {context.message.author}",
             method="unregister",
@@ -198,12 +198,12 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         message = context.message
 
         content = Utility.get_content_without_command(message.content)
-        unregister_student_request = self.__unregister_student_request_factory.create(
+        force_unregister_student_request = self.__force_unregister_student_request_factory.create(
             content
         )
 
-        await self.__student_service.unregister_student(unregister_student_request)
-        await message.channel.send(ReplyMessage.SUCCESSFUL_UNREGISTER)
+        await self.__student_service.force_unregister_student(force_unregister_student_request)
+        await message.channel.send(ReplyMessage.SUCCESSFUL_FORCE_UNREGISTER)
 
         self.__logger.info(
             "La commande a été exécutée avec succès.", method="unregister"

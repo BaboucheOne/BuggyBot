@@ -33,7 +33,7 @@ class ReplyMessage:
         "Étudiant ajouté ! Il peut maintenant s'inscrire lui-même en m'envoyant un message privé."
     )
 
-    SUCCESSFUL_UNREGISTER: str = "L'utilisateur a été supprimé avec succès."
+    SUCCESSFUL_FORCE_UNREGISTER: str = "L'utilisateur a été supprimé avec succès."
 
     STUDENT_ALREADY_EXISTS: str = "Cet étudiant existe déjà."
 
