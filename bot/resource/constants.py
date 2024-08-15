@@ -33,7 +33,7 @@ class ReplyMessage:
         "Étudiant ajouté ! Il peut maintenant s'inscrire lui-même en m'envoyant un message privé."
     )
 
-    NOTIFY_NAME_CHANGE: str = (
+    NOTIFY_NICKNAME_CHANGE: str = (
         "Votre nom est trop long pour que Discord puisse l'afficher en entier."
         " Par conséquent, il a été remplacé par celui que vous avez présentement sur le serveur."
         " Si vous souhaitez changer votre nom, veuillez contacter un administrateur du serveur."

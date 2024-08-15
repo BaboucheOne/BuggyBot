@@ -90,7 +90,7 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
                 student.firstname.value, student.lastname.value
             )
             if self.__name_has_changed(student.firstname, student.lastname, student_name) :
-                await member.dm_channel.send(ReplyMessage.NOTIFY_NAME_CHANGE)
+                await member.dm_channel.send(ReplyMessage.NOTIFY_NICKNAME_CHANGE)
             await self.__set_member_nickname(member, student_name)
 
     async def on_student_unregistered(self, discord_user_id: DiscordUserId):
