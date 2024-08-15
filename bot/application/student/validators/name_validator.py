@@ -3,7 +3,9 @@ import re
 
 class NameValidator:
 
-    REGEX_PATTERN: str = r"^(?=.{1,40}$)([A-Z][a-z]+)([- ][A-Z][a-z]+)*$"
+    REGEX_PATTERN: str = (
+        r"^(?=.{1,40}$)([A-ZÀ-ÖØ-Ý][a-zà-öø-ÿ]+)([- ][A-ZÀ-ÖØ-Ý][a-zà-öø-ÿ]+)*$"
+    )
 
     def __init__(self):
         pass
