@@ -14,6 +14,8 @@ from bot.application.discord.exception.role_not_found_exception import (
 )
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
+from bot.domain.student.attribut.firstname import Firstname
+from bot.domain.student.attribut.lastname import Lastname
 from bot.resource.constants import ReplyMessage
 from bot.domain.constants import UniProgram, DiscordRole
 from bot.domain.discord_client.discord_client import DiscordClient
@@ -26,6 +28,7 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
 
     MAX_NICKNAME_LENGTH = 32
     DEFAULT_NICKNAME = None
+    SPACE_BETWEEN_FIRST_AND_LAST_NAME = 1
 
     def __init__(
         self, discord_client: DiscordClient, student_repository: StudentRepository
@@ -71,6 +74,9 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
 
         return student_name
 
+    def __name_has_changed(self, student_firstname: Firstname, student_lastname: Lastname, student_changed_name: str) -> bool:
+        return len(student_changed_name) < len(student_firstname.value) + len(student_lastname.value) + self.SPACE_BETWEEN_FIRST_AND_LAST_NAME
+
     async def on_student_registered(self, ni: NI):
         student = self.__student_repository.find_student_by_ni(ni)
         member = self.__discord_client.server.get_member(student.discord_user_id.value)
@@ -83,6 +89,12 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
             student_name = self.__get_name(
                 student.firstname.value, student.lastname.value
             )
+            if self.__name_has_changed(student.firstname, student.lastname, student_name) :
+                await member.dm_channel.send(
+                    f"Votre nom est trop long pour que Discord puisse l'afficher en entier."
+                    f" Par conséquent, il a été remplacé par {student_name}."
+                    f" Si vous souhaitez changer votre nom, veuillez contacter un administrateur du serveur."
+                )
             await self.__set_member_nickname(member, student_name)
 
     async def on_student_unregistered(self, discord_user_id: DiscordUserId):
