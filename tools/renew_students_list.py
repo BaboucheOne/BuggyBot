@@ -220,7 +220,8 @@ async def main(arguments: List[str]):
     try:
         if not os.path.exists(arguments.csv_filename):
             logger.fatal(
-                f"Le fichier {arguments.csv_filename} n'existe pas. Impossible d'exécuter la commande.", method="main"
+                f"Le fichier {arguments.csv_filename} n'existe pas. Impossible d'exécuter la commande.",
+                method="main",
             )
             exit(-1)
 
