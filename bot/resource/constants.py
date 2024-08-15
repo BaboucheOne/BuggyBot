@@ -33,6 +33,12 @@ class ReplyMessage:
         "Étudiant ajouté ! Il peut maintenant s'inscrire lui-même en m'envoyant un message privé."
     )
 
+    NOTIFY_NAME_CHANGE: str = (
+        f"Votre nom est trop long pour que Discord puisse l'afficher en entier."
+        f" Par conséquent, il a été remplacé par celui que vous avez présentement sur le serveur."
+        f" Si vous souhaitez changer votre nom, veuillez contacter un administrateur du serveur."
+    )
+
     SUCCESSFUL_FORCE_UNREGISTER: str = "L'utilisateur a été supprimé avec succès."
 
     STUDENT_ALREADY_EXISTS: str = "Cet étudiant existe déjà."
