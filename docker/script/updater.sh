@@ -7,13 +7,23 @@ if [ ! -f "$COMPOSE_FILE_PATH" ]; then
         exit 1
 fi
 
-docker-compose down
+echo "Checking for updates..."
 
-echo "Pulling the latest image & updating container"
+CURRENT_IMAGE_ID=$(docker-compose images -q)
 docker-compose pull
+PULLED_IMAGE_ID=$(docker-compose images -q)
+
+if ["$CURRENT_IMAGE_ID" == "$PULLED_IMAGE_ID"]; then
+        echo "No updates are available."
+        exit 1
+fi
+
+echo "Now updating container."
+
+docker-compose down
 docker-compose up --force-recreate -d
 
-echo "Erasing oldest image"
+echo "Erasing oldest image."
 docker image prune -f
 
-echo "Buggybot has been successfully updated"
+echo "Buggybot has been successfully updated."
