@@ -200,6 +200,13 @@ async def main(arguments: List[str]):
     configuration: DotEnvConfiguration = get_configuration(arguments)
     logger = setup_logger(configuration.logger_filename)
 
+    if not os.path.exists(arguments.csv_filename):
+        logger.fatal(
+            f"Le fichier {arguments.csv_filename} n'existe pas. Impossible d'exécuter la commande.",
+            method="main",
+        )
+        exit(-1)
+
     intents = discord.Intents.all()
     discord_client: DiscordClient = DiscordClient(
         command_prefix="!", intents=intents, server_id=configuration.server_id
@@ -218,13 +225,6 @@ async def main(arguments: List[str]):
     student_collection = database[configuration.student_collection_name]
 
     try:
-        if not os.path.exists(arguments.csv_filename):
-            logger.fatal(
-                f"Le fichier {arguments.csv_filename} n'existe pas. Impossible d'exécuter la commande.",
-                method="main",
-            )
-            exit(-1)
-
         warn_user()
 
         await remove_students_roles(discord_client)
@@ -238,7 +238,9 @@ async def main(arguments: List[str]):
         client.close()
         await stop_discord_client(discord_client)
 
-    logger.info("La procédure s'est effectuée avec succès.", method="main")
+    logger.info(
+        "La procédure de renouvellement s'est effectuée avec succès.", method="main"
+    )
 
 
 if __name__ == "__main__":

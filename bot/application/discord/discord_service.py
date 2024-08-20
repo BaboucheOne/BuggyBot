@@ -74,8 +74,18 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
 
         return student_name
 
-    def __name_has_changed(self, student_firstname: Firstname, student_lastname: Lastname, student_changed_name: str) -> bool:
-        return len(student_changed_name) < len(student_firstname.value) + len(student_lastname.value) + self.SPACE_BETWEEN_FIRST_AND_LAST_NAME
+    def __name_has_changed(
+        self,
+        student_firstname: Firstname,
+        student_lastname: Lastname,
+        student_changed_name: str,
+    ) -> bool:
+        return (
+            len(student_changed_name)
+            < len(student_firstname.value)
+            + len(student_lastname.value)
+            + self.SPACE_BETWEEN_FIRST_AND_LAST_NAME
+        )
 
     async def on_student_registered(self, ni: NI):
         student = self.__student_repository.find_student_by_ni(ni)
@@ -89,7 +99,9 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
             student_name = self.__get_name(
                 student.firstname.value, student.lastname.value
             )
-            if self.__name_has_changed(student.firstname, student.lastname, student_name) :
+            if self.__name_has_changed(
+                student.firstname, student.lastname, student_name
+            ):
                 await member.dm_channel.send(ReplyMessage.NOTIFY_NICKNAME_CHANGE)
             await self.__set_member_nickname(member, student_name)
 
