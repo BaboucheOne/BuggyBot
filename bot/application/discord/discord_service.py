@@ -95,15 +95,11 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
         role = discord.utils.get(self.__discord_client.server.roles, name=role_name)
         await self.__add_member_roles(member, role)
 
-        if member != self.__discord_client.server.owner:
-            student_name = self.__get_name(
-                student.firstname.value, student.lastname.value
-            )
-            if self.__name_has_changed(
-                student.firstname, student.lastname, student_name
-            ):
-                await member.dm_channel.send(ReplyMessage.NOTIFY_NICKNAME_CHANGE)
-            await self.__set_member_nickname(member, student_name)
+        student_name = self.__get_name(student.firstname.value, student.lastname.value)
+        if self.__name_has_changed(student.firstname, student.lastname, student_name):
+            await self.__notify_member(member, ReplyMessage.NOTIFY_NICKNAME_CHANGE)
+
+        await self.__set_member_nickname(member, student_name)
 
     async def on_student_unregistered(self, discord_user_id: DiscordUserId):
         member = self.__discord_client.server.get_member(discord_user_id.value)
@@ -147,6 +143,16 @@ class DiscordService(StudentRegisteredObserver, MemberRemovedObserver):
         except (discord.Forbidden, discord.HTTPException) as e:
             self.__logger.error(
                 f"Impossible d'ajouter le role {role} à {member.name}, {member.id} dû à {e}",
+                method="__add_member_roles",
+                exception=e,
+            )
+
+    async def __notify_member(self, member: Member, message: str):
+        try:
+            await member.send(message)
+        except (discord.Forbidden, discord.HTTPException) as e:
+            self.__logger.error(
+                f"Impossible d'envoyer le message : {message}. Receveur du message : {member.name} (ID : {member.id}) en raison de : {e}",
                 method="__add_member_roles",
                 exception=e,
             )
