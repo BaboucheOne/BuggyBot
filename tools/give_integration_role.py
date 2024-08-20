@@ -30,6 +30,14 @@ PARTICIPANTS_LIST_COLUMNS_TO_KEEP: List[str] = [
     "Numéro de matricule / NI (9 chiffres, présent entre autre sur votre profil sur le portail et sur votre carte étudiante (virtuelle ou non))"
 ]
 
+NOTIFY_INTEGRATION_ROLE = (
+    "Boo booooo ! :wave:\n\n"
+    "Juste un petit message pour te prévenir que tu as maintenant accès au salon de discussion #Integration 2024 ! :speech_left:\n"
+    "Ce salon te permettra de recevoir toutes les informations nécessaires durant la semaine d'intégration. Assure-toi de le consulter attentivement ! :bell:\n\n"
+    "On se retrouve lors des intégrations ! :rocket:\n\n"
+    ":point_right: Si tu as des questions, n'hésite pas à les poser sur les channels Discord."
+)
+
 
 def read_arguments(arguments: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Lire le fichier CSV.")
@@ -87,13 +95,7 @@ async def add_role_to_student(member: Member, student: Student, role):
 
 async def notify_new_role_to_student(member: Member, student: Student):
     try:
-        await member.send(
-            "Boo booooo ! :wave:\n\n"
-            "Juste un petit message pour te prévenir que tu as maintenant accès au salon de discussion #Integration 2024 ! :speech_left:\n"
-            "Ce salon te permettra de recevoir toutes les informations nécessaires durant la semaine d'intégration. Assure-toi de le consulter attentivement ! :bell:\n\n"
-            "On se retrouve lors des intégrations ! :rocket:\n\n"
-            ":point_right: Si tu as des questions, n'hésite pas à les poser sur les channels Discord."
-        )
+        await member.send(NOTIFY_INTEGRATION_ROLE)
 
         logger.info(
             f"{student.firstname.value} {student.lastname.value} a été notifié de son nouveau rôle.",
