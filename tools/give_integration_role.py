@@ -26,8 +26,12 @@ global logger
 ARGUMENT_FILENAME_KEY = "csv_filename"
 INTEGRATION_ROLE_NAME = "Intégrations 2024"
 
-PARTICIPANTS_LIST_COLUMNS_TO_KEEP: List[str] = [
+EVELYA_PARTICIPANTS_LIST_COLUMNS_TO_KEEP: List[str] = [
     "Numéro de matricule / NI (9 chiffres, présent entre autre sur votre profil sur le portail et sur votre carte étudiante (virtuelle ou non))"
+]
+
+GOOGLE_FORM_LIST_COLUMNS_TO_KEEP: List[str] = [
+    "ton NI (check ton profil dans monPortail)"
 ]
 
 NOTIFY_INTEGRATION_ROLE = (
@@ -67,9 +71,32 @@ async def stop_discord_client(discord_client: DiscordClient):
     await discord_client.close()
 
 
+def select_correct_dataframe(file_path: str) -> DataFrame:
+    try:
+        return pd.read_excel(
+            file_path, usecols=EVELYA_PARTICIPANTS_LIST_COLUMNS_TO_KEEP
+        )
+    except ValueError as e:
+        logger.info(
+            f"La colonne {EVELYA_PARTICIPANTS_LIST_COLUMNS_TO_KEEP} n'existe pas. Tentative de lecture du Google Form.",
+            method="select_correct_dataframe",
+            exception=e,
+        )
+        try:
+            return pd.read_excel(file_path, usecols=GOOGLE_FORM_LIST_COLUMNS_TO_KEEP)
+        except ValueError as e:
+            logger.fatal(
+                f"La colonne {GOOGLE_FORM_LIST_COLUMNS_TO_KEEP} n'existe pas. Impossible de lire le fichier.",
+                method="select_correct_dataframe",
+                exception=e,
+            )
+            exit(-1)
+
+
 def read_participants_csv(file_path: str) -> List[int]:
-    df: DataFrame = pd.read_excel(file_path, usecols=PARTICIPANTS_LIST_COLUMNS_TO_KEEP)
+    df: DataFrame = select_correct_dataframe(file_path)
     df = df.dropna()
+    df = df.replace(r"\s+", "", regex=True)
     df = df.astype(int)
     return df.to_numpy().ravel().tolist()
 
