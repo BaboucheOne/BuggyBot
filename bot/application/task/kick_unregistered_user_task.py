@@ -35,16 +35,16 @@ class KickUnregisteredUserTask(Task):
     def __has_no_role(self, member: Member) -> bool:
         return len(member.roles) == 1
 
-    def __has_joined_one_week_ago(self, member: Member):
-        one_week_ago = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(
-            weeks=1
+    def __has_joined_more_than_two_weeks_ago(self, member: Member):
+        two_weeks_ago = datetime.utcnow().replace(tzinfo=timezone.utc) - timedelta(
+            weeks=2
         )
-        return member.joined_at <= one_week_ago
+        return member.joined_at <= two_weeks_ago
 
     async def do(self):
         self.__logger.info("Début de la tâche.", method="do")
 
-        if self.__is_in_begging_of_school():
+        if self.__is_in_school_start_period():
             self.__logger.info(
                 "La tâche d'expulsion ne s'exécutera pas car nous sommes dans la période de la rentrée scolaire.",
                 method="do",
@@ -56,7 +56,7 @@ class KickUnregisteredUserTask(Task):
             filter(self.__has_no_role, self.__discord_client.server.members)
         )
         verification_expired_members: List[Member] = list(
-            filter(self.__has_joined_one_week_ago, no_role_members)
+            filter(self.__has_joined_more_than_two_weeks_ago, no_role_members)
         )
 
         self.__logger.info(
