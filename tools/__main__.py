@@ -33,6 +33,12 @@ def read_arguments() -> argparse.Namespace:
         ],
     )
 
+    parser.add_argument(
+        "args",
+        nargs=argparse.REMAINDER,
+        help="Arguments à passer à la commande choisie.",
+    )
+
     return parser.parse_args()
 
 
