@@ -96,7 +96,7 @@ def select_correct_dataframe(file_path: str) -> DataFrame:
 def read_participants_csv(file_path: str) -> List[int]:
     df: DataFrame = select_correct_dataframe(file_path)
     df = df.dropna()
-    df = df.replace(r"\s+", "", regex=True)
+    df = df.replace(r"[^0-9]", "", regex=True)
     df = df.astype(int)
     return df.to_numpy().ravel().tolist()
 
