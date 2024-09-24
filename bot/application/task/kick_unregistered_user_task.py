@@ -67,22 +67,24 @@ class KickUnregisteredUserTask(Task):
         for member in verification_expired_members:
             try:
                 await member.kick(reason=self.KICK_REASON)
-                self.__logger.info(f"{member.name} a été expulsé.", method="do")
+                self.__logger.info(
+                    f"{member.name} ({member.nick}) a été expulsé.", method="do"
+                )
             except discord.Forbidden as e:
                 self.__logger.warning(
-                    f"Impossible d'expulser {member.nick}, permission refusée.",
+                    f"Impossible d'expulser {member.name} ({member.nick}), permission refusée.",
                     method="do",
                     exception=e,
                 )
             except discord.NotFound as e:
                 self.__logger.info(
-                    f"Impossible d'expulser {member.nick}, non trouvé.",
+                    f"Impossible d'expulser {member.name} ({member.nick}), non trouvé.",
                     method="do",
                     exception=e,
                 )
             except discord.HTTPException as e:
                 self.__logger.error(
-                    f"Impossible d'expulser {member.nick}, erreur http {e}.",
+                    f"Impossible d'expulser {member.name} ({member.nick}), erreur http {e}.",
                     method="do",
                     exception=e,
                 )
