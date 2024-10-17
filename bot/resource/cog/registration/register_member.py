@@ -5,13 +5,6 @@ from discord.ext.commands import Context
 from bot.application.student.student_service import (
     StudentService,
 )
-from bot.resource.chain_of_responsibility.handlers.keep_digits_handler import (
-    KeepDigitsHandler,
-)
-from bot.resource.chain_of_responsibility.handlers.strip_handler import StripHandler
-from bot.resource.chain_of_responsibility.responsibility_builder import (
-    ResponsibilityBuilder,
-)
 from bot.resource.cog.registration.factory.force_register_student_request_factory import (
     ForceRegisterStudentRequestFactory,
 )
@@ -49,27 +42,16 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             StudentService
         )
 
-        self.__ni_sanitizer = (
-            ResponsibilityBuilder()
-            .with_handler(StripHandler())
-            .with_handler(KeepDigitsHandler())
-            .build()
-        )
+        self.__add_student_request_factory = AddStudentRequestFactory()
 
-        self.__add_student_request_factory = AddStudentRequestFactory(
-            self.__ni_sanitizer
-        )
-
-        self.__register_student_request_factory = RegisterStudentRequestFactory(
-            self.__ni_sanitizer
-        )
+        self.__register_student_request_factory = RegisterStudentRequestFactory()
 
         self.__force_register_student_request_factory = (
-            ForceRegisterStudentRequestFactory(self.__ni_sanitizer)
+            ForceRegisterStudentRequestFactory()
         )
 
         self.__force_unregister_student_request_factory = (
-            ForceUnregisterStudentRequestFactory(self.__ni_sanitizer)
+            ForceUnregisterStudentRequestFactory()
         )
 
     def __does_user_exist_on_server(self, discord_id: int) -> bool:
