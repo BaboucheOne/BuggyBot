@@ -6,4 +6,4 @@ class NIValidator:
         pass
 
     def validate(self, ni: str) -> bool:
-        return len(ni) is self.NI_DIGITS_COUNT
+        return len(ni) == self.NI_DIGITS_COUNT and ni.isdigit()
