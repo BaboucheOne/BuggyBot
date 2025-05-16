@@ -6,4 +6,4 @@ class DiscordIdValidator:
         pass
 
     def validate(self, discord_id: int) -> bool:
-        return len(str(discord_id)) is self.DISCORD_ID_DIGITS_COUNT
+        return len(str(discord_id)) == self.DISCORD_ID_DIGITS_COUNT

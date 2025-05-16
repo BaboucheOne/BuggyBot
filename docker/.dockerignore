@@ -18,5 +18,7 @@ __pycache__
 
 README.md
 
+./tests
+
 *.csv
 *.log
