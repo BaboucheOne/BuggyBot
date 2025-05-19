@@ -14,6 +14,9 @@ from bot.domain.student.attribut.ni import NI
 from bot.domain.student.attribut.program_code import ProgramCode
 from bot.domain.student.student import Student
 from bot.domain.student.student_repository import StudentRepository
+from bot.resource.cog.registration.request.force_register_student_request import (
+    ForceRegisterStudentRequest,
+)
 from bot.resource.cog.registration.request.register_student_request import (
     RegisterStudentRequest,
 )
@@ -117,7 +120,39 @@ async def test__given_registered_student__when_unregister_student__then_student_
 
 
 @pytest.mark.asyncio
-async def test__given__member__when_remove_member__then_member_is_removed(
+async def test__given_unregistered_student__when_force_register_student__then_student_is_registered(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    student_repository = MagicMock(spec=StudentRepository)
+    student_repository.find_student_by_ni.return_value = UNREGISTERED_STUDENT
+    student_repository.find_students_by_discord_user_id.return_value = []
+    student_repository.register_student = MagicMock()
+
+    student_service: StudentService = StudentService(student_repository)
+    student_service.notify_on_student_registered = AsyncMock()
+
+    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
+        A_NI, A_DISCORD_ID
+    )
+
+    with patch(
+        "bot.domain.utility.Utility.does_user_exist_on_server"
+    ) as mock_does_user_exist_on_server:
+        mock_does_user_exist_on_server.return_value = True
+
+        await student_service.force_register_student(request)
+
+        student_repository.register_student.assert_called_with(
+            NI(value=int(A_NI)), DiscordUserId(value=A_DISCORD_ID)
+        )
+        student_service.notify_on_student_registered(NI(value=int(A_NI)))
+
+
+@pytest.mark.asyncio
+async def test__given__discord_member__when_remove_member__then_member_is_removed(
     setup_and_teardown_dependencies,
 ):
     logger_mock = MagicMock(spec=Logger)
