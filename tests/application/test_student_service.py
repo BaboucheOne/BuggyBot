@@ -2,6 +2,8 @@ import pytest
 
 from unittest.mock import MagicMock, AsyncMock, patch
 
+from discord import Member
+
 from bot.application.student.student_service import StudentService
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
@@ -112,3 +114,27 @@ async def test__given_registered_student__when_unregister_student__then_student_
         student_service.notify_on_student_unregistered.assert_awaited_once_with(
             DiscordUserId(value=A_DISCORD_ID)
         )
+
+
+@pytest.mark.asyncio
+async def test__given__member__when_remove_member__then_member_is_removed(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    student_repository = MagicMock(spec=StudentRepository)
+    student_repository.unregister_student = MagicMock()
+
+    student_service: StudentService = StudentService(student_repository)
+    student_service.notify_on_member_removed = AsyncMock()
+
+    member = MagicMock(spec=Member)
+    member.id.return_value = A_DISCORD_ID
+
+    await student_service.remove_member(member)
+
+    student_repository.unregister_student(
+        NI(value=int(A_NI)), DiscordUserId(value=AN_INVALID_DISCORD_ID)
+    )
+    student_service.notify_on_member_removed.assert_awaited_once_with(member)
