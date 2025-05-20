@@ -324,16 +324,32 @@ async def test__given_registered_student__when_unregister_student__then_student_
 
     request: UnregisterStudentRequest = UnregisterStudentRequest(A_DISCORD_ID)
 
-    with patch(
-        "bot.domain.utility.Utility.does_user_exist_on_server"
-    ) as mock_does_user_exist_on_server:
-        mock_does_user_exist_on_server.return_value = True
+    await student_service.unregister_student(request)
 
+    student_service.notify_on_student_unregistered.assert_awaited_once_with(
+        DiscordUserId(value=A_DISCORD_ID)
+    )
+
+
+@pytest.mark.asyncio
+async def test__given_unregistered_student__when_unregister_student__then_student_not_found_exception(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    unregistered_student: Student = given_unregistered_student(A_NI)
+    student_repository: StudentRepository = InMemoryStudentRepository(
+        [unregistered_student]
+    )
+
+    student_service: StudentService = StudentService(student_repository)
+    student_service.notify_on_student_unregistered = AsyncMock()
+
+    request: UnregisterStudentRequest = UnregisterStudentRequest(A_DISCORD_ID)
+
+    with pytest.raises(StudentNotFoundException):
         await student_service.unregister_student(request)
-
-        student_service.notify_on_student_unregistered.assert_awaited_once_with(
-            DiscordUserId(value=A_DISCORD_ID)
-        )
 
 
 @pytest.mark.asyncio

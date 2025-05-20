@@ -196,9 +196,6 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             method="unregister_student",
         )
 
-        if not Utility.does_user_exist_on_server(unregister_student_request.discord_id):
-            raise UserNotInServerException(unregister_student_request.discord_id)
-
         discord_user_id = DiscordUserId(unregister_student_request.discord_id)
 
         if not self.__does_discord_user_id_already_registered_an_account(
