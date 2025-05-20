@@ -121,9 +121,10 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             add_student_request.program_code,
         )
 
-        if self.__does_student_exists(student.ni) or self.__does_student_registered(
-            student.ni
-        ):
+        if self.__does_student_registered(student.ni):
+            raise StudentAlreadyRegisteredException(ni=student.ni)
+
+        if self.__does_student_exists(student.ni):
             raise StudentAlreadyExistsException(ni=student.ni)
 
         self.__student_repository.add_student(student)
@@ -196,9 +197,6 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             method="unregister_student",
         )
 
-        if not Utility.does_user_exist_on_server(unregister_student_request.discord_id):
-            raise UserNotInServerException(unregister_student_request.discord_id)
-
         discord_user_id = DiscordUserId(unregister_student_request.discord_id)
 
         if not self.__does_discord_user_id_already_registered_an_account(
@@ -213,6 +211,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.unregister_student(
             student.ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
         )
+
         await self.notify_on_student_unregistered(student.discord_user_id)
 
     async def force_unregister_student(
@@ -233,6 +232,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.unregister_student(
             student_ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
         )
+
         await self.notify_on_student_unregistered(student.discord_user_id)
 
     async def remove_member(self, member: Member):

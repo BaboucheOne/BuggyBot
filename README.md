@@ -2,6 +2,7 @@
 Simply a customs agent
 
 ![CI](https://github.com/BaboucheOne/BuggyBot/actions/workflows/python-formatter.yml/badge.svg)
+![Tests](https://github.com/BaboucheOne/BuggyBot/actions/workflows/pytest.yml/badge.svg)
 ![DockerBuild](https://github.com/BaboucheOne/BuggyBot/actions/workflows/docker-build.yml/badge.svg)
 ![DockerDeployment](https://github.com/BaboucheOne/BuggyBot/actions/workflows/build-push-docker-image.yml/badge.svg)
 
