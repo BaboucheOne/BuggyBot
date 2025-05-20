@@ -1,3 +1,4 @@
+import copy
 from typing import List
 
 from bot.config.logger.logger import Logger
@@ -36,14 +37,14 @@ class InMemoryStudentRepository(StudentRepository):
     ) -> Student:
         for student in self.__student_collection:
             if student.discord_user_id.value == discord_user_id.value:
-                return student
+                return copy.deepcopy(student)
         raise StudentNotFoundException(discord_id=discord_user_id)
 
     def find_students_by_discord_user_id(
         self, discord_user_id: DiscordUserId
     ) -> List[Student]:
         found_students = [
-            student
+            copy.deepcopy(student)
             for student in self.__student_collection
             if student.discord_user_id.value == discord_user_id.value
         ]
@@ -52,7 +53,7 @@ class InMemoryStudentRepository(StudentRepository):
     def find_student_by_ni(self, ni: NI) -> Student:
         for student in self.__student_collection:
             if student.ni.value == ni.value:
-                return student
+                return copy.deepcopy(student)
         raise StudentNotFoundException(ni=ni)
 
     def add_student(self, student: Student):
@@ -91,7 +92,7 @@ class InMemoryStudentRepository(StudentRepository):
             if student.ni.value == ni.value:
                 student.discord_user_id = DiscordUserId(
                     DiscordUserId.INVALID_DISCORD_ID
-                )  # or None, depending on your model
+                )
                 self.__logger.info(
                     f"L'étudiant {repr(ni)} {repr(discord_user_id)} en cache a bien été désenregistré.",
                     method="unregister_student",

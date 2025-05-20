@@ -213,6 +213,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.unregister_student(
             student.ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
         )
+
         await self.notify_on_student_unregistered(student.discord_user_id)
 
     async def force_unregister_student(
