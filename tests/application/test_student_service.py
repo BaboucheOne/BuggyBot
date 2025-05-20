@@ -32,6 +32,7 @@ from bot.resource.cog.registration.request.register_student_request import (
 from bot.resource.cog.registration.request.unregister_student_request import (
     UnregisterStudentRequest,
 )
+from bot.resource.exception.user_not_in_server_exception import UserNotInServerException
 
 A_BAC_NAME: str = "B-GLO"
 A_STUDENT_FIRSTNAME: str = "Jack"
@@ -40,6 +41,7 @@ A_STUDENT_LASTNAME: str = "Black"
 A_NI: str = "123456789"
 ANOTHER_NI: str = "987654321"
 A_DISCORD_ID: int = 123456789012749572
+ANOTHER_DISCORD_ID: int = 944456689012749572
 AN_INVALID_DISCORD_ID: int = -1
 
 
@@ -53,13 +55,13 @@ def given_unregistered_student(ni: str) -> Student:
     )
 
 
-def given_registered_student(ni: str) -> Student:
+def given_registered_student(ni: str, discord_user_id: int) -> Student:
     return Student(
         NI(value=int(ni)),
         Firstname(value=A_STUDENT_FIRSTNAME),
         Lastname(value=A_STUDENT_LASTNAME),
         ProgramCode(value=A_BAC_NAME),
-        DiscordUserId(value=A_DISCORD_ID),
+        DiscordUserId(value=discord_user_id),
     )
 
 
@@ -136,13 +138,119 @@ async def test__given_unregistered_student__when_force_register_student__then_st
 
 
 @pytest.mark.asyncio
-async def test__given_already_registered_account__when_register_with_same_discord_client_id__then_student_already_registered_exception(
+async def test__given_unregistered_student_and_discord_user_id_not_on_server__when_force_register_student__then_user_not_in_server_exception(
     setup_and_teardown_dependencies,
 ):
     logger_mock = MagicMock(spec=Logger)
     ServiceLocator.register_dependency(Logger, logger_mock)
 
-    registered_student: Student = given_registered_student(A_NI)
+    unregistered_student: Student = given_unregistered_student(A_NI)
+    student_repository: StudentRepository = InMemoryStudentRepository(
+        [unregistered_student]
+    )
+
+    student_service: StudentService = StudentService(student_repository)
+
+    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
+        A_NI, ANOTHER_DISCORD_ID
+    )
+
+    with patch(
+        "bot.domain.utility.Utility.does_user_exist_on_server"
+    ) as mock_does_user_exist_on_server:
+        mock_does_user_exist_on_server.return_value = False
+
+        with pytest.raises(UserNotInServerException):
+            await student_service.force_register_student(request)
+
+
+@pytest.mark.asyncio
+async def test__given_no_students__when_force_register_student__then_student_not_found(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    student_repository: StudentRepository = InMemoryStudentRepository([])
+
+    student_service: StudentService = StudentService(student_repository)
+
+    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
+        A_NI, A_DISCORD_ID
+    )
+
+    with patch(
+        "bot.domain.utility.Utility.does_user_exist_on_server"
+    ) as mock_does_user_exist_on_server:
+        mock_does_user_exist_on_server.return_value = True
+
+        with pytest.raises(StudentNotFoundException):
+            await student_service.force_register_student(request)
+
+
+@pytest.mark.asyncio
+async def test__given_already_registered_student__when_force_register_student__then_student_already_registered_exception(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    register_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
+    student_repository: StudentRepository = InMemoryStudentRepository(
+        [register_student]
+    )
+
+    student_service: StudentService = StudentService(student_repository)
+
+    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
+        A_NI, A_DISCORD_ID
+    )
+
+    with patch(
+        "bot.domain.utility.Utility.does_user_exist_on_server"
+    ) as mock_does_user_exist_on_server:
+        mock_does_user_exist_on_server.return_value = True
+
+        with pytest.raises(StudentAlreadyRegisteredException):
+            await student_service.force_register_student(request)
+
+
+@pytest.mark.asyncio
+async def test__given_already_registered_student__when_force_register_with_same_discord_client_id__then_student_already_registered_exception(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    register_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
+    unregistered_student: Student = given_unregistered_student(ANOTHER_NI)
+    student_repository: StudentRepository = InMemoryStudentRepository(
+        [register_student, unregistered_student]
+    )
+
+    student_service: StudentService = StudentService(student_repository)
+
+    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
+        ANOTHER_NI, A_DISCORD_ID
+    )
+
+    with patch(
+        "bot.domain.utility.Utility.does_user_exist_on_server"
+    ) as mock_does_user_exist_on_server:
+        mock_does_user_exist_on_server.return_value = True
+
+        with pytest.raises(StudentAlreadyRegisteredException):
+            await student_service.force_register_student(request)
+
+
+@pytest.mark.asyncio
+async def test__given_already_registered_student__when_register_with_same_discord_client_id__then_student_already_registered_exception(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    registered_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
     unregistered_student: Student = given_unregistered_student(ANOTHER_NI)
     student_repository: StudentRepository = InMemoryStudentRepository(
         [registered_student, unregistered_student]
@@ -183,7 +291,7 @@ async def test__given_registered_student__when_register_student__then_raise_stud
     logger_mock = MagicMock(spec=Logger)
     ServiceLocator.register_dependency(Logger, logger_mock)
 
-    registered_student: Student = given_registered_student(A_NI)
+    registered_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
 
     student_repository: StudentRepository = InMemoryStudentRepository(
         [registered_student]
@@ -206,7 +314,7 @@ async def test__given_registered_student__when_unregister_student__then_student_
     logger_mock = MagicMock(spec=Logger)
     ServiceLocator.register_dependency(Logger, logger_mock)
 
-    registered_student: Student = given_registered_student(A_NI)
+    registered_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
     student_repository: StudentRepository = InMemoryStudentRepository(
         [registered_student]
     )
@@ -235,7 +343,7 @@ async def test__given_registered_student__when_force_unregister_student__then_st
     logger_mock = MagicMock(spec=Logger)
     ServiceLocator.register_dependency(Logger, logger_mock)
 
-    registered_student: Student = given_registered_student(A_NI)
+    registered_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
     student_repository: StudentRepository = InMemoryStudentRepository(
         [registered_student]
     )
