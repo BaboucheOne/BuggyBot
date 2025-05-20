@@ -2,6 +2,7 @@ import pytest
 
 from unittest.mock import MagicMock, AsyncMock, patch
 
+from bot.application.student.exceptions.student_already_exist import StudentAlreadyExistsException
 from bot.application.student.exceptions.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
@@ -73,7 +74,7 @@ def setup_and_teardown_dependencies():
 
 
 @pytest.mark.asyncio
-async def test__when_add_student__then_student_is_added(
+async def test__given_no_students__when_add_student__then_student_is_added(
     setup_and_teardown_dependencies,
 ):
     logger_mock = MagicMock(spec=Logger)
@@ -88,6 +89,46 @@ async def test__when_add_student__then_student_is_added(
     )
 
     await student_service.add_student(request)
+
+
+@pytest.mark.asyncio
+async def test__given_registered_student__when_add_same_student__then_student_already_registered_exception(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    registered_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
+    student_repository: StudentRepository = InMemoryStudentRepository([registered_student])
+
+    student_service: StudentService = StudentService(student_repository)
+
+    request: AddStudentRequest = AddStudentRequest(
+        A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_BAC_NAME
+    )
+
+    with pytest.raises(StudentAlreadyRegisteredException):
+        await student_service.add_student(request)
+
+
+@pytest.mark.asyncio
+async def test__given_a_student__when_add_already_existing_student__then_student_already_exists_exception(
+    setup_and_teardown_dependencies,
+):
+    logger_mock = MagicMock(spec=Logger)
+    ServiceLocator.register_dependency(Logger, logger_mock)
+
+    a_student: Student = given_unregistered_student(A_NI)
+    student_repository: StudentRepository = InMemoryStudentRepository([a_student])
+
+    student_service: StudentService = StudentService(student_repository)
+
+    request: AddStudentRequest = AddStudentRequest(
+        A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_BAC_NAME
+    )
+
+    with pytest.raises(StudentAlreadyExistsException):
+        await student_service.add_student(request)
 
 
 @pytest.mark.asyncio
@@ -379,22 +420,3 @@ async def test__given_registered_student__when_force_unregister_student__then_st
         student_service.notify_on_student_unregistered.assert_awaited_once_with(
             DiscordUserId(value=A_DISCORD_ID)
         )
-
-
-# TODO: We will need the validation refactor...
-# @pytest.mark.asyncio
-# async def test__given_registered_student__when_remove_member__then_member_is_removed(
-#     setup_and_teardown_dependencies,
-# ):
-#     logger_mock = MagicMock(spec=Logger)
-#     ServiceLocator.register_dependency(Logger, logger_mock)
-#
-#     member = MagicMock(spec=Member)
-#     member.id.return_value = A_DISCORD_ID
-#
-#     registered_student: Student = given_registered_student()
-#     student_repository: StudentRepository = InMemoryStudentRepository([registered_student])
-#
-#     student_service: StudentService = StudentService(student_repository)
-#
-#     await student_service.remove_member(member)

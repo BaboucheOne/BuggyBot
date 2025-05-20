@@ -121,9 +121,10 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
             add_student_request.program_code,
         )
 
-        if self.__does_student_exists(student.ni) or self.__does_student_registered(
-            student.ni
-        ):
+        if self.__does_student_registered(student.ni):
+            raise StudentAlreadyRegisteredException(ni=student.ni)
+
+        if self.__does_student_exists(student.ni):
             raise StudentAlreadyExistsException(ni=student.ni)
 
         self.__student_repository.add_student(student)
@@ -231,6 +232,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         self.__student_repository.unregister_student(
             student_ni, DiscordUserId(DiscordUserId.INVALID_DISCORD_ID)
         )
+
         await self.notify_on_student_unregistered(student.discord_user_id)
 
     async def remove_member(self, member: Member):
