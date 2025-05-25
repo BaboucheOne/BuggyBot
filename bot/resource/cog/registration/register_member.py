@@ -102,7 +102,16 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
 
         add_student_request = self.__add_student_request_factory.create(content)
 
-        await self.__student_service.add_student(add_student_request)
+        self.__logger.info(
+            f"Réception de la requête {repr(add_student_request)}", method="add_student"
+        )
+
+        await self.__student_service.add_student(
+            add_student_request.ni,
+            add_student_request.firstname,
+            add_student_request.lastname,
+            add_student_request.program_code,
+        )
 
         await message.channel.send(ReplyMessage.SUCCESSFUL_STUDENT_ADDED)
 
@@ -130,7 +139,14 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             content, message.author.id
         )
 
-        await self.__student_service.register_student(register_student_request)
+        self.__logger.info(
+            f"Réception de la requête {repr(register_student_request)}",
+            method="register_student",
+        )
+
+        await self.__student_service.register_student(
+            register_student_request.ni, register_student_request.discord_id
+        )
 
         await message.channel.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
 
@@ -157,8 +173,13 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__force_register_student_request_factory.create(content)
         )
 
+        self.__logger.info(
+            f"Réception de la requête {repr(force_register_student_request)}",
+            method="force_register_student",
+        )
+
         await self.__student_service.force_register_student(
-            force_register_student_request
+            force_register_student_request.ni, force_register_student_request.discord_id
         )
 
         await message.channel.send(ReplyMessage.SUCCESSFUL_FORCE_REGISTRATION)
@@ -193,7 +214,14 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__unregister_student_request_factory.create(content)
         )
 
-        await self.__student_service.unregister_student(unregister_student_request)
+        self.__logger.info(
+            f"Réception de la requête {repr(unregister_student_request)}",
+            method="unregister_student",
+        )
+
+        await self.__student_service.unregister_student(
+            unregister_student_request.discord_id
+        )
 
         self.__logger.info(
             "La commande a été exécutée avec succès.", method="unregister"
@@ -220,8 +248,13 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             self.__force_unregister_student_request_factory.create(content)
         )
 
+        self.__logger.info(
+            f"Réception de la requête {repr(force_unregister_student_request)}",
+            method="force_unregister_student",
+        )
+
         await self.__student_service.force_unregister_student(
-            force_unregister_student_request
+            force_unregister_student_request.ni
         )
         await message.channel.send(ReplyMessage.SUCCESSFUL_FORCE_UNREGISTER)
 
