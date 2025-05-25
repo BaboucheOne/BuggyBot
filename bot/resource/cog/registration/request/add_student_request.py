@@ -1,6 +1,18 @@
+from bot.domain.student.attribut.firstname import Firstname
+from bot.domain.student.attribut.lastname import Lastname
+from bot.domain.student.attribut.ni import NI
+from bot.domain.student.attribut.program_code import ProgramCode
+
+
 class AddStudentRequest:
 
-    def __init__(self, ni: str, firstname: str, lastname: str, program_code: str):
+    def __init__(
+        self,
+        ni: NI,
+        firstname: Firstname,
+        lastname: Lastname,
+        program_code: ProgramCode,
+    ):
         self.ni = ni
         self.firstname = firstname
         self.lastname = lastname
