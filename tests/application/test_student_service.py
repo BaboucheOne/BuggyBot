@@ -22,49 +22,36 @@ from bot.infra.student.exception.student_not_found_exception import (
     StudentNotFoundException,
 )
 from bot.infra.student.in_memory_student_repository import InMemoryStudentRepository
-from bot.resource.cog.registration.request.add_student_request import AddStudentRequest
-from bot.resource.cog.registration.request.force_register_student_request import (
-    ForceRegisterStudentRequest,
-)
-from bot.resource.cog.registration.request.force_unregister_student_request import (
-    ForceUnregisterStudentRequest,
-)
-from bot.resource.cog.registration.request.register_student_request import (
-    RegisterStudentRequest,
-)
-from bot.resource.cog.registration.request.unregister_student_request import (
-    UnregisterStudentRequest,
-)
 from bot.resource.exception.user_not_in_server_exception import UserNotInServerException
 
-A_BAC_NAME: str = "B-GLO"
-A_STUDENT_FIRSTNAME: str = "Jack"
-A_STUDENT_LASTNAME: str = "Black"
+A_PROGRAM_CODE: ProgramCode = ProgramCode("B-GLO")
+A_STUDENT_FIRSTNAME: Firstname = Firstname("Jack")
+A_STUDENT_LASTNAME: Lastname = Lastname("Black")
 
-A_NI: str = "123456789"
-ANOTHER_NI: str = "987654321"
-A_DISCORD_ID: int = 123456789012749572
-ANOTHER_DISCORD_ID: int = 944456689012749572
-AN_INVALID_DISCORD_ID: int = -1
+A_NI: NI = NI(123456789)
+ANOTHER_NI: NI = NI(987654321)
+A_DISCORD_ID: DiscordUserId = DiscordUserId(123456789012749572)
+ANOTHER_DISCORD_ID: DiscordUserId = DiscordUserId(944456689012749572)
+AN_INVALID_DISCORD_ID: DiscordUserId = DiscordUserId(-1)
 
 
-def given_unregistered_student(ni: str) -> Student:
+def given_unregistered_student(ni: NI) -> Student:
     return Student(
-        NI(value=int(ni)),
-        Firstname(value=A_STUDENT_FIRSTNAME),
-        Lastname(value=A_STUDENT_LASTNAME),
-        ProgramCode(value=A_BAC_NAME),
-        DiscordUserId(value=AN_INVALID_DISCORD_ID),
+        ni,
+        A_STUDENT_FIRSTNAME,
+        A_STUDENT_LASTNAME,
+        A_PROGRAM_CODE,
+        AN_INVALID_DISCORD_ID,
     )
 
 
-def given_registered_student(ni: str, discord_user_id: int) -> Student:
+def given_registered_student(ni: NI, discord_user_id: DiscordUserId) -> Student:
     return Student(
-        NI(value=int(ni)),
-        Firstname(value=A_STUDENT_FIRSTNAME),
-        Lastname(value=A_STUDENT_LASTNAME),
-        ProgramCode(value=A_BAC_NAME),
-        DiscordUserId(value=discord_user_id),
+        ni,
+        A_STUDENT_FIRSTNAME,
+        A_STUDENT_LASTNAME,
+        A_PROGRAM_CODE,
+        discord_user_id,
     )
 
 
@@ -86,11 +73,9 @@ async def test__given_no_students__when_add_student__then_student_is_added(
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: AddStudentRequest = AddStudentRequest(
-        A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_BAC_NAME
+    await student_service.add_student(
+        A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_PROGRAM_CODE
     )
-
-    await student_service.add_student(request)
 
 
 @pytest.mark.asyncio
@@ -107,12 +92,10 @@ async def test__given_registered_student__when_add_same_student__then_student_al
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: AddStudentRequest = AddStudentRequest(
-        A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_BAC_NAME
-    )
-
     with pytest.raises(StudentAlreadyRegisteredException):
-        await student_service.add_student(request)
+        await student_service.add_student(
+            A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_PROGRAM_CODE
+        )
 
 
 @pytest.mark.asyncio
@@ -127,12 +110,10 @@ async def test__given_a_student__when_add_already_existing_student__then_student
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: AddStudentRequest = AddStudentRequest(
-        A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_BAC_NAME
-    )
-
     with pytest.raises(StudentAlreadyExistsException):
-        await student_service.add_student(request)
+        await student_service.add_student(
+            A_NI, A_STUDENT_FIRSTNAME, A_STUDENT_LASTNAME, A_PROGRAM_CODE
+        )
 
 
 @pytest.mark.asyncio
@@ -149,11 +130,7 @@ async def test__given_unregistered_student__when_register_student__then_student_
 
     student_service: StudentService = StudentService(student_repository)
 
-    register_request: RegisterStudentRequest = RegisterStudentRequest(
-        A_NI, A_DISCORD_ID
-    )
-
-    await student_service.register_student(register_request)
+    await student_service.register_student(A_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -170,16 +147,12 @@ async def test__given_unregistered_student__when_force_register_student__then_st
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
-        A_NI, A_DISCORD_ID
-    )
-
     with patch(
         "bot.domain.utility.Utility.does_user_exist_on_server"
     ) as mock_does_user_exist_on_server:
         mock_does_user_exist_on_server.return_value = True
 
-        await student_service.force_register_student(request)
+        await student_service.force_register_student(A_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -196,17 +169,13 @@ async def test__given_unregistered_student_and_discord_user_id_not_on_server__wh
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
-        A_NI, ANOTHER_DISCORD_ID
-    )
-
     with patch(
         "bot.domain.utility.Utility.does_user_exist_on_server"
     ) as mock_does_user_exist_on_server:
         mock_does_user_exist_on_server.return_value = False
 
         with pytest.raises(UserNotInServerException):
-            await student_service.force_register_student(request)
+            await student_service.force_register_student(A_NI, ANOTHER_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -220,17 +189,13 @@ async def test__given_no_students__when_force_register_student__then_student_not
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
-        A_NI, A_DISCORD_ID
-    )
-
     with patch(
         "bot.domain.utility.Utility.does_user_exist_on_server"
     ) as mock_does_user_exist_on_server:
         mock_does_user_exist_on_server.return_value = True
 
         with pytest.raises(StudentNotFoundException):
-            await student_service.force_register_student(request)
+            await student_service.force_register_student(A_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -247,17 +212,13 @@ async def test__given_already_registered_student__when_force_register_student__t
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
-        A_NI, A_DISCORD_ID
-    )
-
     with patch(
         "bot.domain.utility.Utility.does_user_exist_on_server"
     ) as mock_does_user_exist_on_server:
         mock_does_user_exist_on_server.return_value = True
 
         with pytest.raises(StudentAlreadyRegisteredException):
-            await student_service.force_register_student(request)
+            await student_service.force_register_student(A_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -275,17 +236,13 @@ async def test__given_already_registered_student__when_force_register_with_same_
 
     student_service: StudentService = StudentService(student_repository)
 
-    request: ForceRegisterStudentRequest = ForceRegisterStudentRequest(
-        ANOTHER_NI, A_DISCORD_ID
-    )
-
     with patch(
         "bot.domain.utility.Utility.does_user_exist_on_server"
     ) as mock_does_user_exist_on_server:
         mock_does_user_exist_on_server.return_value = True
 
         with pytest.raises(StudentAlreadyRegisteredException):
-            await student_service.force_register_student(request)
+            await student_service.force_register_student(ANOTHER_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -303,12 +260,8 @@ async def test__given_already_registered_student__when_register_with_same_discor
 
     student_service: StudentService = StudentService(student_repository)
 
-    register_request: RegisterStudentRequest = RegisterStudentRequest(
-        ANOTHER_NI, A_DISCORD_ID
-    )
-
     with pytest.raises(StudentAlreadyRegisteredException):
-        await student_service.register_student(register_request)
+        await student_service.register_student(ANOTHER_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -321,12 +274,8 @@ async def test__given_no_students_and_unregistered_student__when_register_studen
     student_repository: StudentRepository = InMemoryStudentRepository([])
     student_service: StudentService = StudentService(student_repository)
 
-    register_request: RegisterStudentRequest = RegisterStudentRequest(
-        A_NI, A_DISCORD_ID
-    )
-
     with pytest.raises(StudentNotFoundException):
-        await student_service.register_student(register_request)
+        await student_service.register_student(A_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -344,12 +293,8 @@ async def test__given_registered_student__when_register_student__then_raise_stud
 
     student_service: StudentService = StudentService(student_repository)
 
-    register_request: RegisterStudentRequest = RegisterStudentRequest(
-        A_NI, A_DISCORD_ID
-    )
-
     with pytest.raises(StudentAlreadyRegisteredException):
-        await student_service.register_student(register_request)
+        await student_service.register_student(A_NI, A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -367,12 +312,10 @@ async def test__given_registered_student__when_unregister_student__then_student_
     student_service: StudentService = StudentService(student_repository)
     student_service.notify_on_student_unregistered = AsyncMock()
 
-    request: UnregisterStudentRequest = UnregisterStudentRequest(A_DISCORD_ID)
-
-    await student_service.unregister_student(request)
+    await student_service.unregister_student(A_DISCORD_ID)
 
     student_service.notify_on_student_unregistered.assert_awaited_once_with(
-        DiscordUserId(value=A_DISCORD_ID)
+        A_DISCORD_ID
     )
 
 
@@ -391,10 +334,8 @@ async def test__given_unregistered_student__when_unregister_student__then_studen
     student_service: StudentService = StudentService(student_repository)
     student_service.notify_on_student_unregistered = AsyncMock()
 
-    request: UnregisterStudentRequest = UnregisterStudentRequest(A_DISCORD_ID)
-
     with pytest.raises(StudentNotFoundException):
-        await student_service.unregister_student(request)
+        await student_service.unregister_student(A_DISCORD_ID)
 
 
 @pytest.mark.asyncio
@@ -412,9 +353,7 @@ async def test__given_registered_student__when_force_unregister_student__then_st
     student_service: StudentService = StudentService(student_repository)
     student_service.notify_on_student_unregistered = AsyncMock()
 
-    request: ForceUnregisterStudentRequest = ForceUnregisterStudentRequest(A_NI)
-
-    await student_service.force_unregister_student(request)
+    await student_service.force_unregister_student(A_NI)
 
     with patch(
         "bot.domain.utility.Utility.does_user_exist_on_server"
@@ -422,5 +361,5 @@ async def test__given_registered_student__when_force_unregister_student__then_st
         mock_does_user_exist_on_server.return_value = True
 
         student_service.notify_on_student_unregistered.assert_awaited_once_with(
-            DiscordUserId(value=A_DISCORD_ID)
+            A_DISCORD_ID
         )
