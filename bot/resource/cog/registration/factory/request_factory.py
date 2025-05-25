@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Tuple, List
 
 from bot.resource.exception.missing_arguments_exception import MissingArgumentsException
@@ -10,6 +10,10 @@ class RequestFactory(ABC):
 
     def __strip_arguments(self, arguments: List[str]) -> List[str]:
         return [argument.strip() for argument in arguments]
+
+    @abstractmethod
+    def _validate_arguments(self, content: str) -> Tuple[any, ...] or any:
+        pass
 
     def _get_arguments(self, content: str) -> Tuple[any, ...] or any:
         content = content.rstrip()

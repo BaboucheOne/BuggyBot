@@ -2,7 +2,9 @@ import pytest
 
 from unittest.mock import MagicMock, AsyncMock, patch
 
-from bot.application.student.exceptions.student_already_exist import StudentAlreadyExistsException
+from bot.application.student.exceptions.student_already_exist import (
+    StudentAlreadyExistsException,
+)
 from bot.application.student.exceptions.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
@@ -99,7 +101,9 @@ async def test__given_registered_student__when_add_same_student__then_student_al
     ServiceLocator.register_dependency(Logger, logger_mock)
 
     registered_student: Student = given_registered_student(A_NI, A_DISCORD_ID)
-    student_repository: StudentRepository = InMemoryStudentRepository([registered_student])
+    student_repository: StudentRepository = InMemoryStudentRepository(
+        [registered_student]
+    )
 
     student_service: StudentService = StudentService(student_repository)
 

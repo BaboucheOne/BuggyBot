@@ -8,6 +8,9 @@ from bot.application.student.student_service import (
 from bot.resource.cog.registration.factory.force_register_student_request_factory import (
     ForceRegisterStudentRequestFactory,
 )
+from bot.resource.cog.registration.factory.unregister_student_request_factory import (
+    UnregisterStudentRequestFactory,
+)
 from bot.resource.cog.registration.request.unregister_student_request import (
     UnregisterStudentRequest,
 )
@@ -45,6 +48,8 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         self.__add_student_request_factory = AddStudentRequestFactory()
 
         self.__register_student_request_factory = RegisterStudentRequestFactory()
+
+        self.__unregister_student_request_factory = UnregisterStudentRequestFactory()
 
         self.__force_register_student_request_factory = (
             ForceRegisterStudentRequestFactory()
@@ -94,6 +99,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         message: Message = context.message
 
         content = Utility.get_content_without_command(message.content)
+
         add_student_request = self.__add_student_request_factory.create(content)
 
         await self.__student_service.add_student(add_student_request)
@@ -158,7 +164,7 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
         await message.channel.send(ReplyMessage.SUCCESSFUL_FORCE_REGISTRATION)
 
         member_to_notify = self.__discord_client.get_user(
-            force_register_student_request.discord_id
+            force_register_student_request.discord_id.value
         )
         await member_to_notify.send(ReplyMessage.SUCCESSFUL_REGISTRATION)
 
@@ -180,7 +186,12 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             method="unregister",
         )
 
-        unregister_student_request = UnregisterStudentRequest(context.message.author.id)
+        message = context.message
+
+        content = Utility.get_content_without_command(message.content)
+        unregister_student_request: UnregisterStudentRequest = (
+            self.__unregister_student_request_factory.create(content)
+        )
 
         await self.__student_service.unregister_student(unregister_student_request)
 
