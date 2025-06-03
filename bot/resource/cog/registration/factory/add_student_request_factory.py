@@ -10,10 +10,10 @@ from bot.application.student.exceptions.invalid_ni_format_exception import (
 from bot.application.student.exceptions.missing_program_code_exception import (
     MissingProgramCodeException,
 )
-from bot.application.student.validators.discord_id_validator import DiscordIdValidator
-from bot.application.student.validators.name_validator import NameValidator
-from bot.application.student.validators.ni_validator import NIValidator
-from bot.application.student.validators.program_code_validator import (
+from bot.resource.cog.validators.discord_id_validator import DiscordIdValidator
+from bot.resource.cog.validators.name_validator import NameValidator
+from bot.resource.cog.validators.ni_validator import NIValidator
+from bot.resource.cog.validators.program_code_validator import (
     ProgramCodeValidator,
 )
 from bot.domain.student.attribut.firstname import Firstname
