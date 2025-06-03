@@ -3,7 +3,7 @@ from typing import Tuple
 from bot.application.student.exceptions.invalid_ni_format_exception import (
     InvalidNIFormatException,
 )
-from bot.application.student.validators.ni_validator import NIValidator
+from bot.resource.cog.validators.ni_validator import NIValidator
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.factory.ni_factory import NIFactory
 from bot.resource.cog.registration.factory.request_factory import RequestFactory

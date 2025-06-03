@@ -1,6 +1,6 @@
 import pytest
 
-from bot.application.student.validators.name_validator import NameValidator
+from bot.resource.cog.validators.name_validator import NameValidator
 
 NAME: str = "Clemou Delta"
 COMPOSED_NAME: str = "Clemou-Delta"
