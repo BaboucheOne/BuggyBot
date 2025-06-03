@@ -16,10 +16,10 @@ from bot.application.student.exceptions.student_already_registered_exception imp
 )
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
+from bot.domain.discord_client.discord_client import DiscordClient
 from bot.domain.student.attribut.firstname import Firstname
 from bot.domain.student.attribut.lastname import Lastname
 from bot.domain.student.attribut.program_code import ProgramCode
-from bot.domain.utility import Utility
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.domain.student.attribut.ni import NI
 from bot.domain.student.factory.student_factory import StudentFactory
@@ -37,6 +37,10 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         super().__init__()
 
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
+        self.__discord_client: DiscordClient = ServiceLocator.get_dependency(
+            DiscordClient
+        )
+
         self.__student_repository = student_repository
 
         self.__student_factory = StudentFactory()
@@ -97,7 +101,7 @@ class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
         await self.notify_on_student_registered(ni)
 
     async def force_register_student(self, ni: NI, discord_id: DiscordUserId):
-        if not Utility.does_user_exist_on_server(discord_id.value):
+        if not self.__discord_client.does_user_exists(discord_id):
             raise UserNotInServerException(discord_id)
 
         if not self.__does_student_exists(ni):

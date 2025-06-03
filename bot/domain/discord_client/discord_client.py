@@ -6,6 +6,7 @@ from discord.ext.commands import Bot
 
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
+from bot.domain.student.attribut.discord_user_id import DiscordUserId
 
 
 class DiscordClient(Bot):
@@ -25,6 +26,9 @@ class DiscordClient(Bot):
     async def on_ready(self):
         self.__server = self.get_guild(self.__server_id)
         self.__logger.info("DiscordClient prêt à fonctionner.", method="on_ready")
+
+    def does_user_exists(self, discord_id: DiscordUserId) -> bool:
+        return self.get_user(discord_id.value) is not None
 
     @property
     def ready(self) -> bool:

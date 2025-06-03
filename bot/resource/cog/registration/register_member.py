@@ -59,9 +59,6 @@ class RegisterMemberCog(commands.Cog, name="Registration"):
             ForceUnregisterStudentRequestFactory()
         )
 
-    def __does_user_exist_on_server(self, discord_id: int) -> bool:
-        return self.__discord_client.get_user(discord_id) is not None
-
     @commands.Cog.listener()
     async def on_member_join(self, member: Member):
         await member.create_dm()
