@@ -1,6 +1,6 @@
 import pytest
 
-from bot.resource.cog.validators.discord_id_validator import DiscordIdValidator
+from bot.resource.cog.validator.discord_id_validator import DiscordIdValidator
 
 DISCORD_ID: int = 123456789012749572
 OLD_DISCORD_ID: int = 1234567891023567

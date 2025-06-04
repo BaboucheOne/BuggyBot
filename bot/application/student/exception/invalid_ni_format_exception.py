@@ -1,6 +1,6 @@
 from typing import Union
 
-from bot.application.student.exceptions.invalid_format_exception import (
+from bot.application.student.exception.invalid_format_exception import (
     InvalidFormatException,
 )
 from bot.domain.student.attribut.ni import NI

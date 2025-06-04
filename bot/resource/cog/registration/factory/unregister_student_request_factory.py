@@ -1,9 +1,9 @@
 from typing import Tuple
 
-from bot.application.student.exceptions.invalid_discord_id_format_exception import (
+from bot.application.student.exception.invalid_discord_id_format_exception import (
     InvalidDiscordIdFormatException,
 )
-from bot.resource.cog.validators.discord_id_validator import DiscordIdValidator
+from bot.resource.cog.validator.discord_id_validator import DiscordIdValidator
 from bot.domain.student.attribut.discord_user_id import DiscordUserId
 from bot.resource.cog.registration.factory.request_factory import RequestFactory
 from bot.resource.cog.registration.request.unregister_student_request import (

@@ -2,10 +2,10 @@ import pytest
 
 from unittest.mock import MagicMock, AsyncMock
 
-from bot.application.student.exceptions.student_already_exist import (
+from bot.application.student.exception.student_already_exist import (
     StudentAlreadyExistsException,
 )
-from bot.application.student.exceptions.student_already_registered_exception import (
+from bot.application.student.exception.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
 from bot.application.student.student_service import StudentService

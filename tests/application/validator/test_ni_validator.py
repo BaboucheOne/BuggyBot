@@ -1,6 +1,6 @@
 import pytest
 
-from bot.resource.cog.validators.ni_validator import NIValidator
+from bot.resource.cog.validator.ni_validator import NIValidator
 
 NI: str = "111222333"
 INVALID_DIGIT_LEN_NI: str = "11122233"

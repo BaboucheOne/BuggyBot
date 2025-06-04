@@ -1,19 +1,19 @@
 import re
 from typing import Tuple
 
-from bot.application.student.exceptions.invalid_name_format_exception import (
+from bot.application.student.exception.invalid_name_format_exception import (
     InvalidNameFormatException,
 )
-from bot.application.student.exceptions.invalid_ni_format_exception import (
+from bot.application.student.exception.invalid_ni_format_exception import (
     InvalidNIFormatException,
 )
-from bot.application.student.exceptions.missing_program_code_exception import (
+from bot.application.student.exception.missing_program_code_exception import (
     MissingProgramCodeException,
 )
-from bot.resource.cog.validators.discord_id_validator import DiscordIdValidator
-from bot.resource.cog.validators.name_validator import NameValidator
-from bot.resource.cog.validators.ni_validator import NIValidator
-from bot.resource.cog.validators.program_code_validator import (
+from bot.resource.cog.validator.discord_id_validator import DiscordIdValidator
+from bot.resource.cog.validator.name_validator import NameValidator
+from bot.resource.cog.validator.ni_validator import NIValidator
+from bot.resource.cog.validator.program_code_validator import (
     ProgramCodeValidator,
 )
 from bot.domain.student.attribut.firstname import Firstname

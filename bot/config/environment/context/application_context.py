@@ -6,13 +6,13 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
-from bot.application.student.exceptions.invalid_format_exception import (
+from bot.application.student.exception.invalid_format_exception import (
     InvalidFormatException,
 )
-from bot.application.student.exceptions.student_already_exist import (
+from bot.application.student.exception.student_already_exist import (
     StudentAlreadyExistsException,
 )
-from bot.application.student.exceptions.student_already_registered_exception import (
+from bot.application.student.exception.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
 from bot.application.student.student_service import StudentService

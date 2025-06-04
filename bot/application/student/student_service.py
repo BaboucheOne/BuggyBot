@@ -8,10 +8,10 @@ from bot.application.discord.event.member_removed.member_removed_observable impo
 from bot.application.discord.event.student_registered.student_registered_observable import (
     StudentRegisteredObservable,
 )
-from bot.application.student.exceptions.student_already_exist import (
+from bot.application.student.exception.student_already_exist import (
     StudentAlreadyExistsException,
 )
-from bot.application.student.exceptions.student_already_registered_exception import (
+from bot.application.student.exception.student_already_registered_exception import (
     StudentAlreadyRegisteredException,
 )
 from bot.config.logger.logger import Logger
