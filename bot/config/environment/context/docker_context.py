@@ -7,12 +7,14 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
+from bot.application.miscellaneous.miscellaneous_service import MiscellaneousService
 from bot.application.student.student_service import StudentService
 from bot.application.task.kick_unregistered_user_task import KickUnregisteredUserTask
 from bot.application.task.sentence_of_the_day_task import SentenceOfTheDayTask
 from bot.domain.task.task import Task
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.error_handler.error_handler import ErrorHandlerCog
+from bot.resource.cog.miscellaneous.miscellaneous import MiscellaneousCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
 from bot.config.environment.context.application_context import ApplicationContext
 from bot.config.logger.logger import Logger
@@ -51,6 +53,9 @@ class DockerContext(ApplicationContext):
     def _instantiate_register_member_cog(self) -> RegisterMemberCog:
         return RegisterMemberCog()
 
+    def _instantiate_miscellaneous_cog(self) -> MiscellaneousCog:
+        return MiscellaneousCog()
+
     def _instantiate_error_handler_cog(self) -> ErrorHandlerCog:
         return ErrorHandlerCog()
 
@@ -69,6 +74,9 @@ class DockerContext(ApplicationContext):
         self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> DiscordService:
         return DiscordService(discord_client, student_repository)
+
+    def _instantiate_miscellaneous_service(self) -> MiscellaneousService:
+        return MiscellaneousService()
 
     def _instantiate_tasks(self, discord_client: DiscordClient) -> List[Task]:
         return [
