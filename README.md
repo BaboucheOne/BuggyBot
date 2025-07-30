@@ -104,9 +104,9 @@ If this happens, script will ask you if you want to contact them by hand or auto
 
 ## Commands
 To fix linter and format errors run these two commands:
-```commandline
+```sh
 ruff check . --fix
 ```
-```commandline
+```sh
 black .
 ```
