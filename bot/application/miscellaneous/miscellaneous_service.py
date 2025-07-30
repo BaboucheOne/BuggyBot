@@ -22,7 +22,7 @@ class MiscellaneousService:
             ip_address: str = socket.gethostbyname(self.DOCKER_HOST)
             return f"http://{ip_address}"
         except socket.gaierror:
-            return f"http://127.0.0.1"
+            return "http://127.0.0.1"
 
     def retrieve_dashboard_url(self) -> str:
         ip_address: str = self.__get_host_ip_address()
