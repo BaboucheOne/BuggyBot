@@ -11,3 +11,4 @@ class DotenvConfigurationKey:
     DISCORD_TOKEN: str = "DISCORD_TOKEN"
     SERVER_ID: str = "SERVER_ID"
     LOGGER_FILENAME: str = "LOGGER_FILENAME"
+    DASHBOARD_PORT: str = "DASHBOARD_PORT"

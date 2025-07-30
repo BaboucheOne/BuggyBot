@@ -78,7 +78,7 @@ class ProductionContext(ApplicationContext):
         return DiscordService(discord_client, student_repository)
 
     def _instantiate_miscellaneous_service(self) -> MiscellaneousService:
-        return MiscellaneousService()
+        return MiscellaneousService(self._configuration.dashboard_port)
 
     def _instantiate_tasks(self, discord_client: DiscordClient) -> List[Task]:
         return [

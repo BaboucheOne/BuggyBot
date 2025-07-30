@@ -64,3 +64,7 @@ class DotEnvConfiguration:
     @property
     def logger_filename(self) -> str:
         return self.__get_string(DotenvConfigurationKey.LOGGER_FILENAME)
+
+    @property
+    def dashboard_port(self) -> int:
+        return self.__get_int(DotenvConfigurationKey.DASHBOARD_PORT)

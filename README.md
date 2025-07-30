@@ -38,6 +38,7 @@ Simply a customs agent
     DISCORD_TOKEN=YOUR DISCORD BOT TOKEN
     SERVER_ID=YOUR SERVER ID (RIGHT CLICK ON SERVER ICON AND COPY ID)
     LOGGER_FILENAME=YOUR LOG FILENAME
+    DASHBOARD_PORT=PORT OF THE DASHBOARD ON THE LOCAL MACHINE
     ```
 
 :warning: Do not add space between `=`. Even for string, **do not** add `"`.
