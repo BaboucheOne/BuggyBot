@@ -111,3 +111,8 @@ ruff check . --fix
 ```sh
 black .
 ```
+
+To run tests:
+```sh
+pytest
+```
