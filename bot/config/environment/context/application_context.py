@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 
 from bot.application.discord.discord_service import DiscordService
+from bot.application.miscellaneous.miscellaneous_service import MiscellaneousService
 from bot.application.student.exception.invalid_format_exception import (
     InvalidFormatException,
 )
@@ -30,6 +31,7 @@ from bot.infra.student.exception.student_not_found_exception import (
 )
 from bot.resource.cog.association.association import AssociationCog
 from bot.resource.cog.error_handler.error_handler import ErrorHandlerCog
+from bot.resource.cog.miscellaneous.miscellaneous import MiscellaneousCog
 from bot.resource.cog.registration.register_member import RegisterMemberCog
 from bot.config.environment.dotenv_configuration import DotEnvConfiguration
 from bot.config.logger.logger import Logger
@@ -83,10 +85,13 @@ class ApplicationContext(ABC):
 
         task_scheduler = TaskScheduler()
 
-        student_service = self._instantiate_student_service(student_repository)
+        student_service = self._instantiate_student_service(
+            discord_client, student_repository
+        )
         discord_service = self._instantiate_discord_service(
             discord_client, student_repository
         )
+        miscellaneous_service = self._instantiate_miscellaneous_service(discord_client)
 
         student_service.register_to_on_student_registered(discord_service)
 
@@ -96,12 +101,14 @@ class ApplicationContext(ABC):
             (StudentRepository, student_repository),
             (StudentService, student_service),
             (DiscordService, discord_service),
+            (MiscellaneousService, miscellaneous_service),
         ]
         self.__register_dependencies(dependencies)
 
         cogs = [
             self._instantiate_register_member_cog(),
             self._instantiate_association_cog(),
+            self._instantiate_miscellaneous_cog(),
             self._instantiate_error_handler_cog(),
         ]
         await self.__register_cogs(discord_client, cogs)
@@ -143,6 +150,10 @@ class ApplicationContext(ABC):
         pass
 
     @abstractmethod
+    def _instantiate_miscellaneous_cog(self) -> MiscellaneousCog:
+        pass
+
+    @abstractmethod
     def _instantiate_error_handler_cog(self) -> ErrorHandlerCog:
         pass
 
@@ -162,7 +173,7 @@ class ApplicationContext(ABC):
 
     @abstractmethod
     def _instantiate_student_service(
-        self, student_repository: StudentRepository
+        self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> StudentService:
         pass
 
@@ -170,6 +181,12 @@ class ApplicationContext(ABC):
     def _instantiate_discord_service(
         self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> DiscordService:
+        pass
+
+    @abstractmethod
+    def _instantiate_miscellaneous_service(
+        self, discord_client: DiscordClient
+    ) -> MiscellaneousService:
         pass
 
     @abstractmethod

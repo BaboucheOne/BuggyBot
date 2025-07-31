@@ -33,13 +33,13 @@ from bot.resource.exception.user_not_in_server_exception import UserNotInServerE
 
 class StudentService(StudentRegisteredObservable, MemberRemovedObservable):
 
-    def __init__(self, student_repository: StudentRepository):
+    def __init__(
+        self, discord_client: DiscordClient, student_repository: StudentRepository
+    ):
         super().__init__()
 
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
-        self.__discord_client: DiscordClient = ServiceLocator.get_dependency(
-            DiscordClient
-        )
+        self.__discord_client = discord_client
 
         self.__student_repository = student_repository
 

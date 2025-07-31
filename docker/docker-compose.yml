@@ -9,4 +9,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./logs:/buggybot/log
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - HOST_IP=host.docker.internal
     restart: always

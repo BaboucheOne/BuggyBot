@@ -5,14 +5,12 @@ from bot.resource.cog.association.embed.aeglo_embed import AegloEmbed
 from bot.resource.cog.association.embed.asetin_embed import AsetinEmbed
 from bot.config.logger.logger import Logger
 from bot.config.service_locator import ServiceLocator
-from bot.domain.discord_client.discord_client import DiscordClient
 from bot.resource.decorator.prohibit_self_message import prohibit_self_message
 
 
 class AssociationCog(commands.Cog, name="Association"):
 
     def __init__(self):
-        self.__bot = ServiceLocator.get_dependency(DiscordClient)
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
 
     @commands.command(
