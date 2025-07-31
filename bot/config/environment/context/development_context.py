@@ -68,17 +68,19 @@ class DevelopmentContext(ApplicationContext):
         return CachedStudentRepository(student_repository)
 
     def _instantiate_student_service(
-        self, student_repository: StudentRepository
+        self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> StudentService:
-        return StudentService(student_repository)
+        return StudentService(discord_client, student_repository)
 
     def _instantiate_discord_service(
         self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> DiscordService:
         return DiscordService(discord_client, student_repository)
 
-    def _instantiate_miscellaneous_service(self) -> MiscellaneousService:
-        return MiscellaneousService(self._configuration.dashboard_port)
+    def _instantiate_miscellaneous_service(
+        self, discord_client: DiscordClient
+    ) -> MiscellaneousService:
+        return MiscellaneousService(discord_client, self._configuration.dashboard_port)
 
     def _instantiate_tasks(self, discord_client: DiscordClient) -> List[Task]:
         return [

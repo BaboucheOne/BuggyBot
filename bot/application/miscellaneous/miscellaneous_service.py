@@ -9,11 +9,9 @@ class MiscellaneousService:
 
     DOCKER_HOST: str = "host.docker.internal"
 
-    def __init__(self, dashboard_port: int):
+    def __init__(self, discord_client: DiscordClient, dashboard_port: int):
         self.__logger: Logger = ServiceLocator.get_dependency(Logger)
-        self.__discord_client: DiscordClient = ServiceLocator.get_dependency(
-            DiscordClient
-        )
+        self.__discord_client = discord_client
 
         self.__dashboard_board: int = dashboard_port
 

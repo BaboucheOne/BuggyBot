@@ -85,11 +85,13 @@ class ApplicationContext(ABC):
 
         task_scheduler = TaskScheduler()
 
-        student_service = self._instantiate_student_service(student_repository)
+        student_service = self._instantiate_student_service(
+            discord_client, student_repository
+        )
         discord_service = self._instantiate_discord_service(
             discord_client, student_repository
         )
-        miscellaneous_service = self._instantiate_miscellaneous_service()
+        miscellaneous_service = self._instantiate_miscellaneous_service(discord_client)
 
         student_service.register_to_on_student_registered(discord_service)
 
@@ -171,7 +173,7 @@ class ApplicationContext(ABC):
 
     @abstractmethod
     def _instantiate_student_service(
-        self, student_repository: StudentRepository
+        self, discord_client: DiscordClient, student_repository: StudentRepository
     ) -> StudentService:
         pass
 
@@ -182,7 +184,9 @@ class ApplicationContext(ABC):
         pass
 
     @abstractmethod
-    def _instantiate_miscellaneous_service(self) -> MiscellaneousService:
+    def _instantiate_miscellaneous_service(
+        self, discord_client: DiscordClient
+    ) -> MiscellaneousService:
         pass
 
     @abstractmethod
