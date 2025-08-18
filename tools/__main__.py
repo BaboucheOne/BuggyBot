@@ -46,7 +46,7 @@ args = read_arguments()
 if args.command == TOOL_NAME_MIGRATE_STUDENT:
     asyncio.run(migrate_discord_students.main(arguments=sys.argv[2:]))
 elif args.command == TOOL_NAME_UPDATE_STUDENTS_LIST:
-    asyncio.run(update_students_list.main(arguments=sys.argv[2:]))
+    update_students_list.main(arguments=sys.argv[2:])
 elif args.command == TOOL_NAME_RENEW_STUDENTS_LIST:
     asyncio.run(renew_students_list.main(arguments=sys.argv[2:]))
 elif args.command == TOOL_NAME_GIVE_INTEGRATION_ROLE:
