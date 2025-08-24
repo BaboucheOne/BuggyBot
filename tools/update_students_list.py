@@ -1,3 +1,4 @@
+import asyncio
 import os
 import argparse
 import pandas as pd
@@ -134,7 +135,9 @@ def update_list(configuration: DotEnvConfiguration, csv_filename: str) -> int:
     return len(students_to_insert)
 
 
-def main(arguments: List[str]):
+async def main(arguments: List[str]):
+    global logger
+
     arguments = read_arguments(arguments)
     configuration: DotEnvConfiguration = get_configuration(arguments)
     logger = setup_logger(configuration.logger_filename)
@@ -146,4 +149,4 @@ def main(arguments: List[str]):
 
 
 if __name__ == "__main__":
-    main(arguments=sys.argv[1:])
+    asyncio.run(main(arguments=sys.argv[1:]))
