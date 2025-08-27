@@ -39,7 +39,7 @@ class ForceRegisterStudentRequestFactory(RequestFactory):
         if not self.__discord_id_validator.validate(member_discord_id):
             raise InvalidDiscordIdFormatException(member_discord_id)
 
-        return ni, member_discord_id
+        return ni, int(member_discord_id)
 
     def create(self, content: str) -> ForceRegisterStudentRequest:
         ni, member_discord_id = self._validate_arguments(content)
